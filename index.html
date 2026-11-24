@@ -2367,7 +2367,10 @@ document.addEventListener("submit", (e) => {
   if (id === "warriorForm") {
     if (!state.nickname.trim()) return toast("Escolha um nome de guerra.");
     if (state.lastGrad.length < 10) return toast("Preencha a data da última graduação (DD/MM/AAAA).");
-    const s = { id: "s" + uid(), pid: db.projects[0].id, first: state.firstName.trim(), last: state.lastName.trim(), nick: state.nickname.trim(), birth: brToIso(state.birthDate), kid: state.isKid, belt: state.belt, degrees: state.degrees, lastGrad: brToIso(state.lastGrad), joined: TODAY(), kimono: "", school: "", social: "", guardian: state.guardian, phone: state.phone, email: state.email.trim(), active: true };
+    /* Autocadastro: o aluno entra no projeto do Mestre (o primeiro Mestre cadastrado, hoje o Mestre Jardel) */
+    const mestre = db.staff.find((t) => t.role === "mestre");
+    const signupPid = (mestre && db.projects.some((p) => p.id === mestre.pid) ? mestre.pid : db.projects[0].id);
+    const s = { id: "s" + uid(), pid: signupPid, first: state.firstName.trim(), last: state.lastName.trim(), nick: state.nickname.trim(), birth: brToIso(state.birthDate), kid: state.isKid, belt: state.belt, degrees: state.degrees, lastGrad: brToIso(state.lastGrad), joined: TODAY(), kimono: "", school: "", social: "", guardian: state.guardian, phone: state.phone, email: state.email.trim(), active: true };
     db.students.push(s);
     login(s.email); toast(`Bem-vindo ao dojo, ${s.nick}!`); return;
   }
