@@ -1392,6 +1392,7 @@ views.aluno = () => {
     ${g ? criteriaPanel(g) : ""}
     <div class="tabsbar" role="tablist">${Object.entries(tabs).map(([k, l]) => `<button role="tab" aria-selected="${state.tab === k}" class="${state.tab === k ? "on" : ""}" data-a="tab" data-v="${k}">${l}</button>`).join("")}</div>
     <div class="panel" style="padding:4px 12px"><div class="list">${body}</div></div>
+    ${!isStaff() && s.id === state.user.studentId ? `<button class="btn outline" data-a="excluirConta" style="color:var(--abs)">${icon("del")}Excluir minha conta</button>` : ""}
   </div>`;
 };
 
@@ -1714,7 +1715,8 @@ views.mais = () => {
     ${extra.length ? group("Mais seções","", extra.map(([k, l]) => `<button class="row" data-a="nav" data-view="${k}"><span class="grow">${l}</span>${chev()}</button>`).join(""), "padding:0 16px") : ""}
     ${group("Dados pessoais", "", `
       <button class="row" data-a="me">${avat(u.name, (mePerson || {}).photo)}<span class="grow">${esc(u.name)}<small>${ROLE_LABEL[u.role]} · ${esc(project(myPid()).name)}</small></span>${chev()}</button>
-      ${!CLOUD ? `<button class="row" data-a="reset"><span class="grow">Restaurar dados de exemplo<small>Apaga o que foi registrado neste navegador</small></span>${chev()}</button>` : ""}`, "padding:0 16px")}
+      ${!CLOUD ? `<button class="row" data-a="reset"><span class="grow">Restaurar dados de exemplo<small>Apaga o que foi registrado neste navegador</small></span>${chev()}</button>` : ""}
+      ${!isStaff() ? `<button class="row" data-a="excluirConta" style="color:var(--abs)"><span class="grow">Excluir minha conta<small>Apaga seu perfil e todos os seus dados do projeto</small></span>${chev()}</button>` : ""}`, "padding:0 16px")}
     ${isMestre() ? group("Projeto", "", `<button class="row" data-a="zerar"><span class="grow">Começar do zero<small>Apaga os dados de exemplo e deixa só o seu projeto e você</small></span>${chev()}</button>`, "padding:0 16px") : ""}
     ${group("Sobre", "", `<button class="row" data-toast="Termos de Serviço em breve."><span class="grow">Termos de Serviço</span>${chev()}</button>`, "padding:0 16px")}
     <div class="brand-foot"><span class="wordmark">dojo social</span><b>Dojo Social 1.3.0 (protótipo)</b><span class="muted small">${cloudLabel()}</span></div>
@@ -1952,6 +1954,24 @@ const sheets = {
       <div class="row2">${fs("degrees", "Graus", [0, 1, 2, 3, 4].map((n) => opt(n, `${n}`, t ? t.degrees : 0)).join(""))}${fi("phone", "Telefone", t ? t.phone : "", "tel")}</div>
       ${fi("email", "E-mail de acesso", t ? t.email : "", "email", true)}
       <button class="btn" type="submit">${t ? "Salvar" : "Adicionar"}</button>
+    </form>`;
+  },
+
+  excluirConta: () => {
+    const s = student(state.user.studentId) || {};
+    return `<form id="sheetForm" data-kind="excluirConta">
+      ${sheetHead("Excluir minha conta")}
+      <p class="muted" style="margin:-8px 0 14px;line-height:1.5">Isso apaga <b style="color:var(--ink)">para sempre</b> a conta de <b style="color:var(--ink)">${esc(fullName(s))}</b> e tudo ligado a ela:</p>
+      <ul class="muted" style="margin:0 0 18px;padding-left:20px;line-height:1.7">
+        <li>perfil, foto, faixa e dados pessoais</li>
+        <li>presenças, FO e histórico de graduação</li>
+        <li>campeonatos e fotos de medalhas</li>
+        <li>suas publicações, comentários e marcações no mural</li>
+      </ul>
+      <p class="muted small" style="margin:0 0 18px;line-height:1.5">Não dá para desfazer. Para voltar a treinar no projeto, será preciso criar um perfil novo.</p>
+      ${fi("confirma", "Para confirmar, digite EXCLUIR", "", "text", true, 'autocapitalize="characters"')}
+      <button class="btn" type="submit" style="background:var(--abs-fill);color:#fff">Excluir minha conta</button>
+      <button class="btn outline" type="button" data-a="closeSheet">Cancelar</button>
     </form>`;
   },
 
@@ -2307,6 +2327,7 @@ document.addEventListener("click", (e) => {
     /* graduação */
     case "gfilter": state.gfilter = v; render(); break;
     case "zerar": if (isMestre()) openSheet({ kind: "zerar" }); break;
+    case "excluirConta": if (state.user && !isStaff()) openSheet({ kind: "excluirConta" }); break;
     case "frole": state.frole = v; render(); break;
     case "grad": openSheet({ kind: "grad", id }); break;
 
@@ -2410,6 +2431,27 @@ document.addEventListener("submit", (e) => {
     const sid = isStaff() ? fd.sid : state.user.studentId;
     db.comps.push({ id: "m" + uid(), sid, event: fd.event.trim(), date: fd.date, category: fd.category.trim(), result: fd.result, photo: state.sheet.photo || "" });
     persist(); closeSheet(); toast("Campeonato registrado.");
+  }
+
+  if (kind === "excluirConta") {
+    if (!state.user || isStaff()) return;
+    if (fd.confirma.trim().toUpperCase() !== "EXCLUIR") return toast("Digite EXCLUIR para confirmar.");
+    const sid = state.user.studentId;
+    db.students = db.students.filter((s) => s.id !== sid);
+    Object.values(db.attendance).forEach((rec) => { delete rec[sid]; });
+    db.fos = db.fos.filter((f) => f.sid !== sid);
+    db.comps = db.comps.filter((c) => c.sid !== sid);
+    db.grads = db.grads.filter((g) => g.sid !== sid);
+    db.posts = db.posts.filter((p) => !(p.byKind === "student" && p.by === sid));
+    db.posts.forEach((p) => {
+      p.tags = (p.tags || []).filter((t) => t !== sid);
+      p.likes = (p.likes || []).filter((l) => l !== sid);
+      p.comments = (p.comments || []).filter((c) => c.by !== sid);
+    });
+    Object.assign(state, { user: null, sheet: null, screen: "welcome", view: "inicio", sel: null, email: "", password: "" });
+    persist(); render(); window.scrollTo(0, 0);
+    toast("Sua conta foi excluída. Oss!");
+    return;
   }
 
   if (kind === "zerar") {
