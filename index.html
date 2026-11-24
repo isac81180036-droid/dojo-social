@@ -1,4 +1,4 @@
-<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Dojo Social"><meta name="apple-mobile-web-app-status-bar-style" content="default"><meta name="theme-color" content="#F1EDE4"><link rel="apple-touch-icon" href="icon-180.png"><link rel="icon" type="image/png" href="icon-192.png"><link rel="manifest" href="manifest.webmanifest"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
 <title>Dojo Social</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -770,6 +770,9 @@ const SUPABASE_KEY = "sb_publishable_97DblFFMvEUrTruWpBT3PQ_4_BiWKnf";   // chav
 const DOJO_ID = "dojo-social";
 const CLOUD = !!(SUPABASE_URL && SUPABASE_KEY);
 
+/* Aparelho novo com o Supabase ligado: começa vazio (sem dados de exemplo) até baixar os dados do projeto */
+if (CLOUD && !(saved && saved.db)) db = { projects: [{ id: "p1", name: "Dojo Social", city: "", color: "#2B5CE6" }], staff: [], students: [], classes: [], attendance: {}, fos: [], comps: [], grads: [], posts: [], scales: {} };
+
 const sync = {
   base: saved && typeof saved.base === "string" ? saved.base : null, // última versão vinda do servidor
   version: (saved && saved.version) || 0,
@@ -882,7 +885,7 @@ async function pull() {
   if (!CLOUD || sync.busy || document.hidden) return;
   try {
     const r = await remoteGet("version");
-    if (!r) { sync.version = 0; sync.pending = true; await push(); return; }
+    if (!r) { if (!db.staff.length) db = seed(); sync.version = 0; sync.pending = true; await push(); return; }
     if (r.version !== sync.version && !sync.busy) {
       const full = await remoteGet("data,version");
       if (full && !sync.busy) { adopt(full); saveLocal(); safeRender(); }
@@ -1023,13 +1026,13 @@ const auth = {
       <div class="w-panel">
         <button class="wbtn light" data-a="goAuth" data-to="login">${icon("email", "")}Entrar com e-mail</button>
         <button class="wbtn dark" data-a="options">Outras opções</button>
-        <div class="w-demo" role="group" aria-label="Acessos de demonstração">
+        ${CLOUD ? "" : `<div class="w-demo" role="group" aria-label="Acessos de demonstração">
           <span>Testar como</span>
           <button data-a="demo" data-email="mestre@dojo.org">Mestre</button>
           <button data-a="demo" data-email="instrutor@dojo.org">Instrutor</button>
           <button data-a="demo" data-email="pedro@dojo.org">Monitor</button>
           <button data-a="demo" data-email="aluno@dojo.org">Aluno</button>
-        </div>
+        </div>`}
         <p class="w-terms">Ao entrar, você concorda com nossos <button data-toast="Termos de Serviço em breve.">Termos de Serviço</button>.</p>
       </div>
     </div>`,
@@ -1711,7 +1714,8 @@ views.mais = () => {
     ${extra.length ? group("Mais seções","", extra.map(([k, l]) => `<button class="row" data-a="nav" data-view="${k}"><span class="grow">${l}</span>${chev()}</button>`).join(""), "padding:0 16px") : ""}
     ${group("Dados pessoais", "", `
       <button class="row" data-a="me">${avat(u.name, (mePerson || {}).photo)}<span class="grow">${esc(u.name)}<small>${ROLE_LABEL[u.role]} · ${esc(project(myPid()).name)}</small></span>${chev()}</button>
-      ${!CLOUD || isMestre() ? `<button class="row" data-a="reset"><span class="grow">Restaurar dados de exemplo<small>${CLOUD ? "Apaga os dados de toda a equipe no Supabase" : "Apaga o que foi registrado neste navegador"}</small></span>${chev()}</button>` : ""}`, "padding:0 16px")}
+      ${!CLOUD ? `<button class="row" data-a="reset"><span class="grow">Restaurar dados de exemplo<small>Apaga o que foi registrado neste navegador</small></span>${chev()}</button>` : ""}`, "padding:0 16px")}
+    ${isMestre() ? group("Projeto", "", `<button class="row" data-a="zerar"><span class="grow">Começar do zero<small>Apaga os dados de exemplo e deixa só o seu projeto e você</small></span>${chev()}</button>`, "padding:0 16px") : ""}
     ${group("Sobre", "", `<button class="row" data-toast="Termos de Serviço em breve."><span class="grow">Termos de Serviço</span>${chev()}</button>`, "padding:0 16px")}
     <div class="brand-foot"><span class="wordmark">dojo social</span><b>Dojo Social 1.3.0 (protótipo)</b><span class="muted small">${cloudLabel()}</span></div>
     <button class="btn" data-a="logout">Sair</button>
@@ -1841,7 +1845,7 @@ function shell() {
       ${items.map(([k, l, ic]) => `<button class="nav ${activeView === k ? "on" : ""}" data-a="nav" data-view="${k}">${icon(ic, "")}${l}</button>`).join("")}
       <div style="flex:1"></div>
       ${darkSwitch("nav")}
-      ${!CLOUD || isMestre() ? `<button class="nav" data-a="reset">${icon("restore", "")}Restaurar exemplos</button>` : ""}
+      ${!CLOUD ? `<button class="nav" data-a="reset">${icon("restore", "")}Restaurar exemplos</button>` : ""}
       <button class="nav" data-a="logout">${icon("logout", "")}Sair</button>
     </aside>
     <main class="main">
@@ -1948,6 +1952,22 @@ const sheets = {
       <div class="row2">${fs("degrees", "Graus", [0, 1, 2, 3, 4].map((n) => opt(n, `${n}`, t ? t.degrees : 0)).join(""))}${fi("phone", "Telefone", t ? t.phone : "", "tel")}</div>
       ${fi("email", "E-mail de acesso", t ? t.email : "", "email", true)}
       <button class="btn" type="submit">${t ? "Salvar" : "Adicionar"}</button>
+    </form>`;
+  },
+
+  zerar: () => {
+    const pr = project(myPid()) || {};
+    const me = staffById(state.user.staffId) || {};
+    return `<form id="sheetForm" data-kind="zerar">
+      ${sheetHead("Começar do zero")}
+      <p class="muted" style="margin:-8px 0 18px;line-height:1.5">Apaga <b style="color:var(--ink)">todos</b> os dados de exemplo: alunos, equipe, aulas, chamadas, FO, campeonatos, mural e os outros projetos da rede. Fica só o seu projeto e você, como Mestre. ${CLOUD ? "Vale para todos os aparelhos." : ""}</p>
+      ${fi("pname", "Nome do projeto", pr.id === "p1" && pr.name === "Guardiões do Tatame" ? "" : pr.name || "", "text", true, 'placeholder="Ex.: Projeto Social Guerreiros do Tatame"')}
+      ${fi("pcity", "Cidade · UF", pr.city === "Macapá · AP" ? "" : pr.city || "", "text", false, 'placeholder="Ex.: Macapá · AP"')}
+      ${fi("mname", "Seu nome completo (Mestre)", me.email === "mestre@dojo.org" ? "" : me.name || "", "text", true)}
+      <div class="row2">${fs("mbelt", "Sua faixa", ADULT.map(([k, l]) => opt(k, l, me.belt || "preta")).join(""))}${fs("mdeg", "Graus", [0, 1, 2, 3, 4, 5, 6].map((n) => opt(n, `${n}`, me.degrees || 0)).join(""))}</div>
+      ${fi("memail", "Seu e-mail de acesso", me.email === "mestre@dojo.org" ? "" : me.email || "", "email", true)}
+      ${fi("confirma", 'Para confirmar, digite APAGAR', "", "text", true, 'autocapitalize="characters"')}
+      <button class="btn" type="submit" style="background:var(--abs-fill);color:#fff">Apagar exemplos e começar</button>
     </form>`;
   },
 
@@ -2172,7 +2192,7 @@ document.addEventListener("click", (e) => {
     case "options": openSheet({ kind: "opcoes" }); break;
     case "theme": setTheme(theme === "escuro" ? "claro" : "escuro"); render(); break;
     case "setTheme": if (v !== theme) { setTheme(v); render(); toast(v === "escuro" ? "Modo escuro ativado." : "Modo claro ativado."); } break;
-    case "demo": login(el.dataset.email); toast(`Entrou como ${ROLE_LABEL[state.user.role]}.`); break;
+    case "demo": if (CLOUD) break; login(el.dataset.email); toast(`Entrou como ${ROLE_LABEL[state.user.role]}.`); break;
     case "kid": state.isKid = !state.isKid; state.belt = "branca"; render(); break;
     case "pickBelt": state.belt = el.dataset.belt; render(); break;
     case "deg": state.degrees = Math.min(4, Math.max(0, state.degrees + Number(el.dataset.d))); render(); break;
@@ -2190,7 +2210,7 @@ document.addEventListener("click", (e) => {
     }
     case "logout": state.user = null; state.screen = "welcome"; state.sheet = null; persist(); render(); window.scrollTo(0, 0); break;
     case "reset":
-      if (CLOUD && !isMestre()) { toast("Só o Mestre pode restaurar os dados de exemplo."); break; }
+      if (CLOUD) { toast("Com o Supabase ligado, use Mais › Começar do zero."); break; }
       if (confirm(CLOUD ? "Restaurar os dados de exemplo? ATENÇÃO: isso apaga alunos, chamadas, FO e tudo o que a equipe registrou no Supabase, em todos os aparelhos." : "Restaurar os dados de exemplo? Tudo que foi registrado neste navegador será apagado.")) {
         const role = state.user.role; db = seed();
         const t = db.staff.find((x) => x.role === role);
@@ -2286,6 +2306,7 @@ document.addEventListener("click", (e) => {
 
     /* graduação */
     case "gfilter": state.gfilter = v; render(); break;
+    case "zerar": if (isMestre()) openSheet({ kind: "zerar" }); break;
     case "frole": state.frole = v; render(); break;
     case "grad": openSheet({ kind: "grad", id }); break;
 
@@ -2332,7 +2353,7 @@ document.addEventListener("submit", (e) => {
   if (id === "loginForm") {
     if (!/^\S+@\S+\.\S+$/.test(state.email)) return toast("Digite um e-mail válido, como nome@email.com.");
     if (state.password.length < 4) return toast("Digite sua senha (mínimo 4 caracteres).");
-    if (!login(state.email)) toast("Conta não encontrada. Use um acesso de demonstração ou crie seu perfil.");
+    if (!login(state.email)) toast(CLOUD ? (sync.online === null && !sync.version ? "Carregando os dados do projeto… tente de novo em instantes." : "Conta não encontrada. Confira o e-mail ou crie seu perfil.") : "Conta não encontrada. Use um acesso de demonstração ou crie seu perfil.");
     return;
   }
   if (id === "profileForm") {
@@ -2386,6 +2407,27 @@ document.addEventListener("submit", (e) => {
     const sid = isStaff() ? fd.sid : state.user.studentId;
     db.comps.push({ id: "m" + uid(), sid, event: fd.event.trim(), date: fd.date, category: fd.category.trim(), result: fd.result, photo: state.sheet.photo || "" });
     persist(); closeSheet(); toast("Campeonato registrado.");
+  }
+
+  if (kind === "zerar") {
+    if (!isMestre()) return toast("Só o Mestre pode fazer isso.");
+    if (fd.confirma.trim().toUpperCase() !== "APAGAR") return toast('Digite APAGAR para confirmar.');
+    const email = fd.memail.trim().toLowerCase();
+    if (!/^\S+@\S+\.\S+$/.test(email)) return toast("Digite um e-mail válido para o Mestre.");
+    if (!fd.pname.trim() || !fd.mname.trim()) return toast("Preencha o nome do projeto e o seu nome.");
+    const old = project(myPid()) || {};
+    const me = staffById(state.user.staffId) || {};
+    const pid = old.id || "p1", tid = me.id || "t" + uid();
+    db = {
+      projects: [{ id: pid, name: fd.pname.trim(), city: fd.pcity.trim(), color: old.color || "#2B5CE6" }],
+      staff: [{ id: tid, name: fd.mname.trim(), role: "mestre", belt: fd.mbelt, degrees: Number(fd.mdeg), email, phone: me.phone && me.email !== "mestre@dojo.org" ? me.phone : "", pid, photo: me.email !== "mestre@dojo.org" ? me.photo || "" : "" }],
+      students: [], classes: [], attendance: {}, fos: [], comps: [], grads: [], posts: [], scales: {}
+    };
+    state.user = { role: "mestre", staffId: tid, name: fd.mname.trim() };
+    state.sheet = null;
+    persist(); go("inicio");
+    toast("Pronto! Dados de exemplo apagados. Agora cadastre a equipe e os alunos.");
+    return;
   }
 
   if (kind === "staff") {
