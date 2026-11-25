@@ -2635,6 +2635,16 @@ const sheets = {
     </form>`;
   },
 
+  /* Pop-up: quem já tinha cadastro e ainda não criou senha (aparece ao tentar entrar) */
+  novaSenha: () => `<form id="sheetForm" data-kind="novaSenha">
+      ${sheetHead("Crie sua nova senha")}
+      <p class="muted" style="margin:-8px 0 16px;line-height:1.5">O Dojo Social agora usa <b style="color:var(--ink)">senha</b> para proteger os dados dos alunos. Se é a sua primeira vez entrando depois da atualização, crie sua senha abaixo. Você só faz isso <b style="color:var(--ink)">uma vez</b>.</p>
+      <div class="field"><span class="lbl">E-mail</span><div class="box disabled">${icon("email")}<input value="${esc(state.email)}" disabled></div></div>
+      ${passFields()}
+      <button class="btn" type="submit">Criar senha e entrar</button>
+      <button class="btn outline" type="button" data-a="closeSheet">Já tenho senha, digitei errado</button>
+    </form>`,
+
   zerar: () => {
     const pr = project(myPid()) || {};
     const me = staffById(state.user.staffId) || {};
@@ -2779,7 +2789,7 @@ function render(focusId) {
     app.className = "";
     app.innerHTML = shell();
   }
-  sheetRoot.innerHTML = state.sheet && (state.user || state.sheet.kind === "opcoes") ?`<div class="scrim" data-scrim><div class="sheet" role="dialog" aria-modal="true">${sheets[state.sheet.kind]()}</div></div>` : "";
+  sheetRoot.innerHTML = state.sheet && (state.user || state.sheet.kind === "opcoes" || state.sheet.kind === "novaSenha") ?`<div class="scrim" data-scrim><div class="sheet" role="dialog" aria-modal="true">${sheets[state.sheet.kind]()}</div></div>` : "";
   if (state.user && !isStaff() && !introOpen) setTimeout(maybeShowIntro, 400);
   if (CLOUD) hydrateVideos();
   if (focusId) {
@@ -3214,7 +3224,10 @@ document.addEventListener("submit", (e) => {
     if (CLOUD) {
       (async () => {
         try { await signIn(state.email, state.password); }
-        catch (e) { return toast(e.status === 400 ? "E-mail ou senha incorretos. Se você já tinha cadastro e ainda não criou senha, toque em “Primeiro acesso”." : (e.message || "Sem conexão com o servidor.")); }
+        catch (e) {
+          if (e.status === 400) { state.password2 = ""; return openSheet({ kind: "novaSenha" }); }
+          return toast(e.message || "Sem conexão com o servidor.");
+        }
         await afterAuth();
       })();
       return;
@@ -3321,6 +3334,25 @@ document.addEventListener("submit", (e) => {
   if (id !== "sheetForm") return;
   const kind = form.dataset.kind;
   const fd = Object.fromEntries(new FormData(form));
+
+  if (kind === "novaSenha") {
+    if (!passOk()) return;
+    const email = state.email.trim().toLowerCase();
+    (async () => {
+      if (session) setSession(null);
+      try { await signUp(email, state.password); }
+      catch (e) {
+        if (/already|registered|exists/i.test(e.message + " " + e.code)) {
+          state.sheet = null; render();
+          return toast("Este e-mail já tem senha e a senha digitada não confere. Esqueceu? Peça ao Professor para “Liberar novo acesso”.");
+        }
+        return toast(/password|weak/i.test(e.message) ? "Senha fraca. Use pelo menos 8 caracteres, misturando letras e números." : (e.message || "Sem conexão com o servidor."));
+      }
+      state.sheet = null;
+      if (await afterAuth()) toast("Senha criada! Use esta senha sempre que entrar. Oss!");
+    })();
+    return;
+  }
 
   if (kind === "fo") {
     const sh = state.sheet, note = sh.note.trim();
