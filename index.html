@@ -847,46 +847,189 @@ const themePicker = () => `<div class="themes" role="radiogroup" aria-label="Tem
    Em branco: o app funciona só neste navegador, como antes. */
 const SUPABASE_URL = "https://phpxdvphacfrkclqyazj.supabase.co";
 const SUPABASE_KEY = "sb_publishable_97DblFFMvEUrTruWpBT3PQ_4_BiWKnf";   // chave pública (publishable)
-const DOJO_ID = "dojo-social";
 const CLOUD = !!(SUPABASE_URL && SUPABASE_KEY);
 
-/* Aparelho novo com o Supabase ligado: começa vazio (sem dados de exemplo) até baixar os dados do projeto */
-if (CLOUD && !(saved && saved.db)) db = { projects: [{ id: "p1", name: "Dojo Social", city: "", color: "#2B5CE6" }], staff: [], students: [], classes: [], attendance: {}, fos: [], comps: [], grads: [], posts: [], scales: {} };
+/* ================= SEGURANÇA · LOGIN E DADOS NO SUPABASE =================
+   • Login de verdade (Supabase Auth). Sem login, o servidor não entrega nenhum dado.
+   • Equipe recebe só o próprio projeto; aluno recebe só os dados dele.
+   • Toda gravação passa por funções no servidor que conferem quem está pedindo. */
+const EMPTY_DB = () => ({ projects: [], staff: [], students: [], classes: [], attendance: {}, fos: [], comps: [], grads: [], posts: [], scales: {}, access: {}, introSeen: {} });
+const DATA_KEYS = ["staff", "students", "classes", "attendance", "fos", "comps", "grads", "scales", "access", "introSeen"];
+const OBJ_KEYS = ["attendance", "scales", "access", "introSeen"];
+const BASE = SUPABASE_URL.replace(/\/+$/, "");
+
+/* sessão (login) guardada neste aparelho */
+const AUTH_KEY = "dojo-social-sessao";
+let session = null;
+try { session = JSON.parse(localStorage.getItem(AUTH_KEY)); } catch (e) { session = null; }
+function setSession(s) { session = s; try { s ? localStorage.setItem(AUTH_KEY, JSON.stringify(s)) : localStorage.removeItem(AUTH_KEY); } catch (e) {} }
+
+/* cache antigo (do modelo sem login) ou sem sessão: começa vazio e pede login */
+if (CLOUD && (!session || !(saved && saved.secure))) { db = EMPTY_DB(); state.user = null; }
 
 const sync = {
-  base: saved && typeof saved.base === "string" ? saved.base : null, // última versão vinda do servidor
-  version: (saved && saved.version) || 0,
-  pending: !!(saved && saved.pending),                               // há alteração local ainda não enviada
-  busy: false, online: null, timer: null, needRender: false
+  base: saved && saved.secure && session ? saved.base : null,          // último estado do projeto vindo do servidor
+  version: (saved && saved.secure && session && saved.version) || 0,
+  pending: !!(saved && saved.secure && session && saved.pending),        // alteração da equipe ainda não enviada
+  kind: (saved && saved.secure && session && saved.kind) || null,        // "staff" | "student"
+  pid: (saved && saved.secure && session && saved.pid) || null,
+  pv: null, busy: false, online: null, timer: null, needRender: false
+};
+
+const projectData = () => {
+  const o = {};
+  DATA_KEYS.forEach((k) => { o[k] = k === "staff" ? (db.staff || []).filter((t) => !t.ext) : db[k] ?? (OBJ_KEYS.includes(k) ? {} : []); });
+  return o;
 };
 
 function saveLocal() {
-  try { localStorage.setItem(KEY, JSON.stringify(CLOUD ? { db, user: state.user, base: sync.base, version: sync.version, pending: sync.pending } : { db, user: state.user })); return true; }
-  catch (e) {
-    if (CLOUD) { try { localStorage.setItem(KEY, JSON.stringify({ user: state.user })); } catch (e2) {} return true; }
-    return false;
-  }
+  try {
+    localStorage.setItem(KEY, JSON.stringify(CLOUD ? { secure: 1, db, user: state.user, base: sync.base, version: sync.version, pending: sync.pending, kind: sync.kind, pid: sync.pid } : { db, user: state.user }));
+    return true;
+  } catch (e) { return CLOUD; }
 }
 
 function persist() {
-  if (CLOUD && JSON.stringify(db) !== sync.base) sync.pending = true;
+  if (CLOUD) {
+    if (sync.kind !== "staff") { saveLocal(); return; } // aluno grava pelas funções próprias (student_*, post_*)
+    if (JSON.stringify(projectData()) !== sync.base) sync.pending = true;
+  }
   if (!saveLocal()) toast("Não foi possível salvar neste navegador. Tente uma foto menor.");
   if (CLOUD && sync.pending) { clearTimeout(sync.timer); sync.timer = setTimeout(push, 400); }
 }
 
-async function api(path, opts = {}) {
+/* ---------- login (Supabase Auth, sem biblioteca) ---------- */
+async function authCall(path, body) {
+  const r = await fetch(`${BASE}/auth/v1/${path}`, { method: "POST", headers: { apikey: SUPABASE_KEY, "Content-Type": "application/json" }, body: JSON.stringify(body) });
+  const j = await r.json().catch(() => ({}));
+  if (!r.ok) { const e = new Error(j.msg || j.error_description || j.message || `Erro ${r.status}`); e.code = j.error_code || j.code || ""; e.status = r.status; throw e; }
+  return j;
+}
+const keepSession = (j) => setSession({ access_token: j.access_token, refresh_token: j.refresh_token, expires_at: Date.now() + ((j.expires_in || 3600) - 60) * 1000, email: String((j.user || {}).email || "").toLowerCase() });
+async function signIn(email, password) { keepSession(await authCall("token?grant_type=password", { email: email.trim().toLowerCase(), password })); }
+async function signUp(email, password) {
+  const j = await authCall("signup", { email: email.trim().toLowerCase(), password });
+  if (!j.access_token) throw Object.assign(new Error("O servidor pediu confirmação por e-mail. Avise o administrador do app."), { code: "confirm" });
+  keepSession(j);
+}
+let refreshing = null;
+async function accessToken() {
+  if (!session) return null;
+  if (Date.now() < session.expires_at) return session.access_token;
+  if (!refreshing) {
+    refreshing = authCall("token?grant_type=refresh_token", { refresh_token: session.refresh_token })
+      .then((j) => keepSession(j))
+      .catch((e) => { if (e.status === 400 || e.status === 401) forceLogout("Sua sessão expirou. Entre de novo."); throw e; })
+      .finally(() => { refreshing = null; });
+  }
+  await refreshing;
+  return session && session.access_token;
+}
+
+async function api(path, opts = {}, anon = false) {
   const headers = { apikey: SUPABASE_KEY, "Content-Type": "application/json" };
-  if (SUPABASE_KEY.startsWith("eyJ")) headers.Authorization = "Bearer " + SUPABASE_KEY;
-  const r = await fetch(SUPABASE_URL.replace(/\/+$/, "") + "/rest/v1/" + path, { ...opts, headers, cache: "no-store" });
+  const tok = anon ? null : await accessToken();
+  if (tok) headers.Authorization = "Bearer " + tok;
+  const r = await fetch(`${BASE}/rest/v1/${path}`, { ...opts, headers, cache: "no-store" });
   const text = await r.text();
-  if (!r.ok) throw new Error(`HTTP ${r.status}: ${text.slice(0, 200)}`);
+  if (!r.ok) {
+    let msg = text; try { const j = JSON.parse(text); msg = j.message || j.msg || text; } catch (e) {}
+    const e = new Error(msg); e.status = r.status; throw e;
+  }
   return text ? JSON.parse(text) : null;
 }
-const remoteGet = async (cols) => { const rows = await api(`dojo_state?id=eq.${encodeURIComponent(DOJO_ID)}&select=${cols}`); return (rows && rows[0]) || null; };
-const remoteSave = (data, version) => api("rpc/save_state", { method: "POST", body: JSON.stringify({ p_id: DOJO_ID, p_data: data, p_version: version }) });
+const rpc = (fn, args = {}, anon = false) => api(`rpc/${fn}`, { method: "POST", body: JSON.stringify(args) }, anon);
 
-/* Junta três versões: base (último sincronizado), local (este aparelho) e remota (servidor).
-   Listas com id são juntadas item a item; o que só um lado mudou, vale esse lado. */
+function resetSync() { Object.assign(sync, { base: null, version: 0, pending: false, kind: null, pid: null, pv: null, needRender: false }); }
+function forceLogout(msg) {
+  setSession(null); resetSync();
+  db = EMPTY_DB(); state.user = null; state.sheet = null; state.screen = "welcome";
+  try { localStorage.removeItem(KEY); } catch (e) {}
+  render(); window.scrollTo(0, 0);
+  if (msg) toast(msg);
+}
+
+/* projetos da rede (para o cadastro): só nome, cidade e professor */
+const mapProjects = (list) => (list || []).map((p) => ({ id: p.id, name: p.name, city: p.city || "", color: p.color || "#2B5CE6", head: p.head || null, count: p.students || 0 }));
+const extHeads = (projects, own) => projects.filter((p) => p.id !== own && p.head).map((p) => ({ id: "ext-" + p.id, pid: p.id, role: "mestre", name: p.head.name || "Professor", belt: p.head.belt, degrees: p.head.degrees, ext: true }));
+async function loadProjectList() {
+  try {
+    const projects = mapProjects(await rpc("list_projects", {}, !session));
+    if (!state.user) { db.projects = projects; db.staff = extHeads(projects, null); }
+    render();
+  } catch (e) { toast("Sem conexão para carregar os projetos."); }
+}
+
+/* aplica a resposta do servidor (get_data) */
+function applyServer(r) {
+  if (!r || !r.member) return false;
+  if (r.removed) { forceLogout("Sua conta não faz mais parte do projeto. Fale com o Professor."); return false; }
+  const own = r.project_id, projects = mapProjects(r.projects);
+  const remote = {};
+  DATA_KEYS.forEach((k) => { remote[k] = (r.data || {})[k] ?? (OBJ_KEYS.includes(k) ? {} : []); });
+  let data = remote;
+  if (r.kind === "staff" && sync.kind === "staff" && sync.pid === own && sync.pending && sync.base) {
+    const local = projectData();
+    if (JSON.stringify(local) !== sync.base) data = merge3(JSON.parse(sync.base), local, remote);
+  }
+  sync.base = JSON.stringify(remote); sync.version = r.version; sync.kind = r.kind; sync.pid = own;
+  db = Object.assign(EMPTY_DB(), data, { projects, posts: r.posts || [] });
+  db.staff = [...(data.staff || []), ...extHeads(projects, own)];
+  sync.pending = r.kind === "staff" && JSON.stringify(projectData()) !== sync.base;
+  if (r.kind === "staff") { const t = staffById(r.person_id); state.user = t ? { role: t.role, staffId: t.id, name: t.name, admin: !!r.admin } : null; }
+  else { const s = student(r.person_id); state.user = s ? { role: "aluno", studentId: s.id, name: fullName(s) } : null; }
+  saveLocal();
+  return true;
+}
+
+/* depois de entrar ou criar a senha: liga a conta à pessoa e baixa os dados */
+async function afterAuth() {
+  try {
+    let r = await rpc("get_data");
+    if (!r.member) { const c = await rpc("claim_account"); if (c && c.ok) r = await rpc("get_data"); }
+    if (!r.member) {
+      resetSync(); state.user = null; db.projects = mapProjects(r.projects); db.staff = extHeads(db.projects, null);
+      Object.assign(state, { screen: "tipo", password: "", password2: "", sheet: null });
+      render(); window.scrollTo(0, 0);
+      toast("Seu e-mail ainda não está em nenhum projeto. Escolha: aluno ou professor.");
+      return false;
+    }
+    resetSync();
+    applyServer(r);
+    Object.assign(state, { view: "inicio", sheet: null, password: "", password2: "", showPass: false, callDate: TODAY(), week: iso(mondayOf(today())) });
+    render(); window.scrollTo(0, 0);
+    markAccess();
+    return true;
+  } catch (e) { toast(e.message || "Sem conexão com o servidor."); return false; }
+}
+
+/* entra (ou cria a conta) para os cadastros novos */
+async function ensureSession(email, password) {
+  email = email.trim().toLowerCase();
+  if (session && session.email === email) return true;
+  if (session) setSession(null);
+  try { await signUp(email, password); return true; }
+  catch (e) {
+    if (/already|registered|exists/i.test(e.message + " " + e.code)) {
+      try { await signIn(email, password); return true; }
+      catch (e2) { toast("Este e-mail já tem senha. Entre pela tela de login (ou peça ao Professor para liberar um novo acesso)."); return false; }
+    }
+    toast(/password|senha|weak/i.test(e.message) ? "Senha fraca. Use pelo menos 8 caracteres, misturando letras e números." : e.message);
+    return false;
+  }
+}
+
+/* ações do aluno e do Mural: grava no servidor e baixa de novo */
+async function cloudAct(fn, args, okMsg) {
+  try {
+    await rpc(fn, args);
+    const r = await rpc("get_data"); applyServer(r); render();
+    if (okMsg) toast(okMsg);
+    return true;
+  } catch (e) { toast(e.message || "Não foi possível concluir. Confira a internet."); return false; }
+}
+
+/* ---------- junta três versões (base, este aparelho, servidor) ---------- */
 const isObj = (x) => !!x && typeof x === "object" && !Array.isArray(x);
 const same = (a, b) => JSON.stringify(a) === JSON.stringify(b);
 const idList = (a) => Array.isArray(a) && a.every((x) => isObj(x) && x.id != null);
@@ -922,15 +1065,6 @@ function merge3(b, l, r) {
   return l;
 }
 
-function adopt(remote) {
-  const remoteStr = JSON.stringify(remote.data);
-  if (sync.pending && sync.base && JSON.stringify(db) !== sync.base) db = merge3(JSON.parse(sync.base), db, remote.data);
-  else db = remote.data;
-  sync.base = remoteStr;
-  sync.version = remote.version;
-  sync.pending = JSON.stringify(db) !== remoteStr;
-}
-
 const typing = () => !!state.sheet || /^(INPUT|TEXTAREA|SELECT)$/.test((document.activeElement || {}).tagName || "");
 function safeRender() { if (typing()) sync.needRender = true; else { sync.needRender = false; render(); } }
 
@@ -943,41 +1077,80 @@ function setOnline(ok, err) {
 }
 
 async function push() {
-  if (!CLOUD || sync.busy) return;
+  if (!CLOUD || sync.busy || sync.kind !== "staff" || !session) return;
   sync.busy = true;
   try {
     for (let i = 0; i < 5 && sync.pending; i++) {
-      const str = JSON.stringify(db);
-      const v = await remoteSave(JSON.parse(str), sync.version);
-      if (v) { sync.base = str; sync.version = v; sync.pending = JSON.stringify(db) !== str; }
-      else {
-        const r = await remoteGet("data,version");
-        if (r) { adopt(r); safeRender(); } else sync.version = 0;
-      }
+      const payload = projectData(), str = JSON.stringify(payload);
+      const v = await rpc("save_project", { p_version: sync.version, p_data: payload });
+      if (v) { sync.base = str; sync.version = v; sync.pending = JSON.stringify(projectData()) !== str; }
+      else { const r = await rpc("get_data"); applyServer(r); safeRender(); }
     }
     setOnline(true);
-  } catch (e) { setOnline(false, e); }
+  } catch (e) {
+    if (e.status && e.status < 500 && e.status !== 401) {
+      // o servidor recusou (sem permissão): volta para o que está salvo lá
+      toast(e.message || "Alteração não permitida.");
+      sync.pending = false;
+      try { const r = await rpc("get_data"); applyServer(r); safeRender(); } catch (e2) {}
+    } else setOnline(false, e);
+  }
   sync.busy = false;
   saveLocal();
 }
 
 async function pull() {
-  if (!CLOUD || sync.busy || document.hidden) return;
+  if (!CLOUD || !session || sync.busy || document.hidden) return;
   try {
-    const r = await remoteGet("version");
-    if (!r) { if (!db.staff.length) db = seed(); sync.version = 0; sync.pending = true; await push(); return; }
-    if (r.version !== sync.version && !sync.busy) {
-      const full = await remoteGet("data,version");
-      if (full && !sync.busy) { adopt(full); saveLocal(); safeRender(); }
+    const v = await rpc("get_version");
+    if (!sync.kind || v.v !== sync.version || v.pv !== sync.pv) {
+      const r = await rpc("get_data");
+      if (sync.busy) return;
+      if (r.member) { applyServer(r); sync.pv = v.pv; safeRender(); }
     } else if (sync.needRender && !typing()) safeRender();
     setOnline(true);
     if (sync.pending) push();
-  } catch (e) { setOnline(false, e); }
+  } catch (e) {
+    if (e.status === 401) forceLogout("Sua sessão expirou. Entre de novo.");
+    else setOnline(false, e);
+  }
+}
+
+/* ---------- vídeos privados: link temporário (1 h) só para quem está logado ---------- */
+const signedVideos = {};
+async function videoUrl(path) {
+  if (!path) return "";
+  if (/^https:\/\//.test(path)) return path;
+  const c = signedVideos[path];
+  if (c && c.exp > Date.now()) return c.url;
+  const tok = await accessToken();
+  const r = await fetch(`${BASE}/storage/v1/object/sign/mural-videos/${path.split("/").map(encodeURIComponent).join("/")}`, {
+    method: "POST", headers: { apikey: SUPABASE_KEY, Authorization: "Bearer " + tok, "Content-Type": "application/json" }, body: JSON.stringify({ expiresIn: 3600 })
+  });
+  const j = await r.json().catch(() => ({}));
+  if (!r.ok || !j.signedURL) throw new Error("video");
+  const url = `${BASE}/storage/v1${j.signedURL}`;
+  signedVideos[path] = { url, exp: Date.now() + 50 * 60 * 1000 };
+  return url;
+}
+function hydrateVideos() {
+  document.querySelectorAll("video[data-vpath]").forEach((v) => {
+    if (v.getAttribute("src")) return;
+    videoUrl(v.dataset.vpath).then((u) => { if (u) v.src = u; }).catch(() => {});
+  });
 }
 
 /* Registro de acessos (para os Insights): por pessoa, último acesso + aberturas por dia (90 dias) */
 function markAccess() {
   if (!state.user) return;
+  if (CLOUD) {
+    if (!session) return;
+    let last = 0; try { last = Number(localStorage.getItem("dojo-social-ultimo-acesso")) || 0; } catch (e) {}
+    if (Date.now() - last < 20 * 60 * 1000) return;
+    try { localStorage.setItem("dojo-social-ultimo-acesso", String(Date.now())); } catch (e) {}
+    rpc("touch_access").catch(() => {});
+    return;
+  }
   const key = meKey();
   if (!key) return;
   db.access = db.access || {};
@@ -994,7 +1167,7 @@ function markAccess() {
 
 const cloudLabel = () => !CLOUD ? "Dados salvos só neste navegador"
   : sync.online === false ? "Sem conexão · salvo neste aparelho"
-  : sync.pending ? "Enviando para o Supabase…" : "Sincronizado com o Supabase";
+  : sync.pending ? "Enviando para o servidor…" : "Sincronizado e protegido por login";
 
 let toastTimer;
 function toast(msg) {
@@ -1185,6 +1358,7 @@ const auth = {
         <button class="btn" type="submit">Entrar</button>
         <button class="btn outline" type="button" data-toast="Digite o código enviado pelo seu professor.">${icon("key")}Entrar com código</button>
       </form>
+      ${CLOUD ? `<div class="signup"><span>Já tinha cadastro e ainda não tem senha?</span><button class="link" data-a="goAuth" data-to="primeiro">Primeiro acesso</button></div>` : ""}
       <div class="signup"><span>Não possui uma conta?</span><button class="link" data-a="goAuth" data-to="tipo">Criar conta</button></div>
       <p class="version">Versão 1.2.0</p>
     </div>`,
@@ -1204,6 +1378,7 @@ const auth = {
         ${field({ id: "birthDate", label: "Data de nascimento", ic: "cal", placeholder: "DD/MM/AAAA", value: state.birthDate, mode: "numeric" })}
         ${field({ id: "phone", label: "Telefone (opcional)", left: `<span class="ddi">${flag}+ 55 ${icon("drop", "i", "width:20px;height:20px;fill:var(--muted);margin-left:-4px")}</span>`, placeholder: "00 00000-0000", value: state.phone, mode: "tel" })}
         ${field({ id: "guardian", label: "Nome do responsável (opcional)", ic: "people", placeholder: "Nome do responsável", value: state.guardian })}
+        ${CLOUD && !(session && session.email === (state.email || "").trim().toLowerCase()) ? passFields() : ""}
         <button class="btn" type="submit" style="margin-top:8px">Continuar</button>
       </form>
       <div class="signup"><span>Já tem conta?</span><button class="link" data-a="goAuth" data-to="login">Entrar</button></div>
@@ -1246,6 +1421,20 @@ const auth = {
     </div>`;
   },
 
+  /* Primeiro acesso depois da atualização de segurança: cria a senha de quem já estava cadastrado */
+  primeiro: () => `
+    <div class="screen onb">
+      <div class="onb-top"><button class="sq-btn" data-a="goAuth" data-to="login" aria-label="Voltar">${icon("back", "")}</button></div>
+      <h1 class="big">Primeiro acesso</h1>
+      <p class="lead">Use o mesmo e-mail que o seu Professor cadastrou e crie a sua senha. Ela será pedida sempre que você entrar.</p>
+      <form id="primeiroForm" novalidate>
+        ${field({ id: "email", label: "E-mail", ic: "email", type: "email", placeholder: "seu@email.com", value: state.email })}
+        ${passFields()}
+        <button class="btn" type="submit">Criar senha e entrar</button>
+      </form>
+      <p class="hint" style="margin-top:18px">Esqueceu a senha ou alguém criou no seu lugar? Peça ao Professor responsável para <b>liberar um novo acesso</b> e faça o primeiro acesso de novo.</p>
+    </div>`,
+
   /* Criar conta: aluno ou mestre */
   tipo: () => `
     <div class="screen onb">
@@ -1277,6 +1466,7 @@ const auth = {
           <div class="field"><label class="lbl" for="mBelt">Sua faixa</label><div class="box"><select id="mBelt">${ADULT.map(([k, l]) => `<option value="${k}" ${state.mBelt === k ? "selected" : ""}>${l}</option>`).join("")}</select></div></div>
           <div class="field"><label class="lbl" for="mDeg">Graus</label><div class="box"><select id="mDeg">${[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((n) => `<option value="${n}" ${String(state.mDeg) === String(n) ? "selected" : ""}>${DEG_LABEL(n)}</option>`).join("")}</select></div></div>
         </div>
+        ${CLOUD && !(session && session.email === (state.mEmail || "").trim().toLowerCase()) ? passFields() : ""}
         <button class="btn" type="submit" style="margin-top:8px">Cadastrar meu projeto</button>
       </form>
       <div class="signup"><span>Já tem conta?</span><button class="link" data-a="goAuth" data-to="login">Entrar</button></div>
@@ -1320,6 +1510,18 @@ const auth = {
   }
 };
 
+/* campos de senha (criar conta / primeiro acesso) */
+function passFields() {
+  return `${field({ id: "password", label: "Crie uma senha", ic: "lock", type: state.showPass ? "text" : "password", placeholder: "Mínimo 8 caracteres", value: state.password,
+      right: `<button type="button" class="iconbtn" data-a="togglePass" aria-label="${state.showPass ? "Ocultar senha" : "Mostrar senha"}">${icon(state.showPass ? "eye" : "eyeOff")}</button>` })}
+    ${field({ id: "password2", label: "Repita a senha", ic: "lock", type: state.showPass ? "text" : "password", placeholder: "Digite de novo", value: state.password2 || "" })}`;
+}
+const passOk = () => {
+  if ((state.password || "").length < 8) { toast("A senha precisa ter pelo menos 8 caracteres."); return false; }
+  if (state.password !== state.password2) { toast("As duas senhas não são iguais."); return false; }
+  return true;
+};
+
 /* ================= PROJETOS: cadastro de Mestre e pedidos de entrada ================= */
 const PROJ_COLORS = ["#2B5CE6", "#16A34A", "#DB2777", "#EA580C", "#7C3AED", "#0891B2", "#CA8A04", "#DC2626"];
 const mestreOf = (pid) => db.staff.find((t) => t.pid === pid && t.role === "mestre");
@@ -1330,7 +1532,7 @@ function projectPicker(exclude) {
   const list = joinableProjects().filter((p) => p.id !== exclude).sort((a, b) => a.name.localeCompare(b.name));
   if (!list.length) return `<div class="panel">${empty("Nenhum projeto disponível", "Peça ao seu Professor para cadastrar o projeto no Dojo Social.")}</div>`;
   return `<div class="panel" style="padding:0 16px" role="radiogroup" aria-label="Projetos">${list.map((p) => {
-    const m = mestreOf(p.id), n = db.students.filter((s) => s.pid === p.id && s.active).length, on = state.reqPid === p.id;
+    const m = mestreOf(p.id), n = CLOUD ? p.count || 0 : db.students.filter((s) => s.pid === p.id && s.active).length, on = state.reqPid === p.id;
     return `<button type="button" class="row" role="radio" aria-checked="${on}" data-a="pickProj" data-v="${p.id}">
       <span class="av" style="background:${p.color};color:#FFFFFF">${esc(projInitials(p.name))}</span>
       <span class="grow">${esc(p.name)}<small>${p.city ? `${esc(p.city)} · ` : ""}${roleLabel(m)} ${esc(m.name.split(" ")[0])} · ${n} ${n === 1 ? "aluno" : "alunos"}</small></span>
@@ -1812,6 +2014,12 @@ function whenLabel(at) {
   return `${pad(d.getDate())}/${pad(d.getMonth() + 1)}`;
 }
 function authorOf(p) {
+  if (p._author) {
+    const a = p._author;
+    if (a.kind === "staff") { const t = staffById(p.by); return { name: t ? t.name : a.name, sub: roleLabel(t || { role: a.role, belt: a.belt, degrees: a.degrees }), photo: t ? t.photo : a.photo }; }
+    const s = student(p.by);
+    return s ? { name: fullName(s), sub: `Faixa ${beltOf(s)[1]}`, photo: s.photo } : { name: a.name || "Aluno", sub: "Aluno", photo: null };
+  }
   if (p.byKind === "staff") { const t = staffById(p.by); return t ? { name: t.name, sub: roleLabel(t), photo: t.photo } : { name: "Equipe", sub: "" }; }
   const s = student(p.by); return s ? { name: fullName(s), sub: `Faixa ${beltOf(s)[1]}`, photo: s.photo } : { name: "Aluno", sub: "" };
 }
@@ -1819,13 +2027,13 @@ function postCard(p) {
   const pr = project(p.pid), a = authorOf(p), me = meKey();
   const liked = p.likes.includes(me);
   const mine = p.by === me || (isMestre() && p.pid === myPid());
-  const people = p.tags.map(student).filter(Boolean);
-  const isVid = typeof p.video === "string" && p.video.startsWith("https://");
+  const people = (p._tags && p._tags.length ? p._tags.map((t) => student(t.id) || { id: t.id, first: t.nick, last: "", nick: t.nick, pid: t.pid, photo: null }) : (p.tags || []).map(student).filter(Boolean));
+  const isVid = typeof p.video === "string" && (p.video.startsWith("https://") || p.video.startsWith("treinos/"));
   const dur = p.dur ? `${Math.floor(p.dur / 60)}:${String(Math.round(p.dur % 60)).padStart(2, "0")}` : "";
   return `<article class="pc" style="--c:${pr.color}">
     <div class="pc-media ${isVid ? "is-video" : ""}">
       ${isVid
-        ? `<video class="pc-img" src="${esc(p.video)}" ${p.poster ? `poster="${p.poster}"` : ""} controls playsinline preload="none" aria-label="Vídeo do treino do projeto ${esc(pr.name)}"></video>`
+        ? `<video class="pc-img" data-vpath="${esc(p.video)}" ${p.poster ? `poster="${p.poster}"` : ""} controls playsinline preload="none" aria-label="Vídeo do treino do projeto ${esc(pr.name)}"></video>`
         : p.photo
         ? `<img class="pc-img" src="${p.photo}" alt="Foto do fim do treino do projeto ${esc(pr.name)}" loading="lazy">`
         : `<div class="pc-img ph"><span class="ph-b">${icon("camera", "")}</span><span>Sem foto</span></div>`}
@@ -1853,13 +2061,13 @@ function postCard(p) {
           return `<button class="tagchip" ${open ? `data-a="openStudent" data-id="${s.id}"` : "disabled"}><span class="dotmark" style="background:${pj.color}"></span>${esc(display(s))}${s.pid !== p.pid ? `<small>${esc(pj.name)}</small>` : ""}</button>`;
         }).join("")}</div>
       </div>` : ""}
-      ${p.comments.length ? `<div class="pc-com">${p.comments.slice(-2).map((c) => `<p><b>${esc(commentAuthor(c.by))}</b> ${esc(c.text)}</p>`).join("")}${p.comments.length > 2 ? `<button class="link small" data-a="comments" data-id="${p.id}">Ver os ${p.comments.length} comentários</button>` : ""}</div>` : ""}
+      ${p.comments.length ? `<div class="pc-com">${p.comments.slice(-2).map((c) => `<p><b>${esc(commentAuthor(c.by, p))}</b> ${esc(c.text)}</p>`).join("")}${p.comments.length > 2 ? `<button class="link small" data-a="comments" data-id="${p.id}">Ver os ${p.comments.length} comentários</button>` : ""}</div>` : ""}
     </div>
   </article>`;
 }
 const STOP = ["do", "da", "de", "dos", "das", "para", "e"];
 const projInitials = (n) => n.split(/\s+/).filter((w) => !STOP.includes(w.toLowerCase())).slice(0, 2).map((w) => w[0]).join("").toUpperCase();
-const commentAuthor = (id) => { const t = staffById(id); if (t) return t.name.split(" ")[0]; const s = student(id); return s ? display(s) : "Alguém"; };
+const commentAuthor = (id, p) => { const t = staffById(id); if (t && !t.ext) return t.name.split(" ")[0]; const s = student(id); if (s) return display(s); return (p && p._names && p._names[id]) || "Alguém"; };
 
 views.mural = () => {
   const list = db.posts.filter((p) => state.feed === "todos" || (state.feed === "videos" ? !!p.video : p.pid === state.feed)).sort((a, b) => b.at.localeCompare(a.at));
@@ -2358,6 +2566,7 @@ const sheets = {
       ${fs("social", "Situação social", SOCIAL.map((k) => opt(k, k, v("social", "CadÚnico"))).join(""))}
       <div class="row2">${fi("guardian", "Responsável", v("guardian"))}${fi("phone", "Telefone", v("phone"), "tel")}</div>
       <button class="btn" type="submit">${s ? "Salvar alterações" : "Cadastrar aluno"}</button>
+      ${s && CLOUD ? `<button class="btn outline" type="button" data-a="resetAccess" data-id="${s.id}">${icon("key")}Liberar novo acesso (esqueceu a senha)</button>` : ""}
       ${s ? `<button class="btn outline" type="button" data-a="archiveStudent" data-id="${s.id}" style="color:var(--abs)">Desativar aluno</button>` : ""}
     </form>`;
   },
@@ -2402,7 +2611,9 @@ const sheets = {
       <div class="row2">${fs("role", "Função", ["mestre", "instrutor", "monitor"].map((r) => opt(r, ROLE_LABEL[r], t ? t.role : "instrutor")).join(""))}${fs("belt", "Faixa", ADULT.map(([k, l]) => opt(k, l, t ? t.belt : "azul")).join(""))}</div>
       <div class="row2">${fs("degrees", "Graus", [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((n) => opt(n, DEG_LABEL(n), t ? t.degrees : 0)).join(""))}${fi("phone", "Telefone", t ? t.phone : "", "tel")}</div>
       ${fi("email", "E-mail de acesso", t ? t.email : "", "email", true)}
+      ${CLOUD && !t ? `<p class="hint" style="margin-top:-4px">Depois de adicionar, avise a pessoa para abrir o app e tocar em <b>Primeiro acesso</b> com este e-mail.</p>` : ""}
       <button class="btn" type="submit">${t ? "Salvar" : "Adicionar"}</button>
+      ${CLOUD && t && t.id !== state.user.staffId ? `<button class="btn outline" type="button" data-a="resetAccess" data-id="${t.id}">${icon("key")}Liberar novo acesso (esqueceu a senha)</button>` : ""}
     </form>`;
   },
 
@@ -2471,7 +2682,7 @@ const sheets = {
     return `<form id="sheetForm" data-kind="comments">
       ${sheetHead(`Comentários (${p.comments.length})`)}
       <div class="list" style="margin-bottom:8px">
-        ${p.comments.map((c) => `<div class="item"><span class="av">${initials(commentAuthor(c.by))}</span><div class="grow"><div class="nm">${esc(commentAuthor(c.by))}</div><div class="meta"><span>${esc(c.text)}</span></div><div class="meta small"><span>${whenLabel(c.at)}</span></div></div></div>`).join("") || empty("Nenhum comentário", "Seja o primeiro a incentivar a turma.")}
+        ${p.comments.map((c) => `<div class="item"><span class="av">${initials(commentAuthor(c.by, p))}</span><div class="grow"><div class="nm">${esc(commentAuthor(c.by, p))}</div><div class="meta"><span>${esc(c.text)}</span></div><div class="meta small"><span>${whenLabel(c.at)}</span></div></div></div>`).join("") || empty("Nenhum comentário", "Seja o primeiro a incentivar a turma.")}
       </div>
       <div class="notebox"><textarea id="commentText" maxlength="140" placeholder="Escreva um comentário" required>${esc(state.sheet.text)}</textarea></div>
       <button class="btn" type="submit" style="margin-top:12px">${icon("send")}Comentar</button>
@@ -2570,6 +2781,7 @@ function render(focusId) {
   }
   sheetRoot.innerHTML = state.sheet && (state.user || state.sheet.kind === "opcoes") ?`<div class="scrim" data-scrim><div class="sheet" role="dialog" aria-modal="true">${sheets[state.sheet.kind]()}</div></div>` : "";
   if (state.user && !isStaff() && !introOpen) setTimeout(maybeShowIntro, 400);
+  if (CLOUD) hydrateVideos();
   if (focusId) {
     const el = document.getElementById(focusId);
     if (el) { el.focus({ preventScroll: true }); if (el.setSelectionRange && el.type !== "email") { try { el.setSelectionRange(el.value.length, el.value.length); } catch (e) {} } }
@@ -2592,7 +2804,10 @@ function maybeShowIntro() {
 function markIntroSeen(sid) {
   if (!sid) return;
   db.introSeen = db.introSeen || {};
-  if (!db.introSeen[sid]) { db.introSeen[sid] = new Date().toISOString(); persist(); }
+  if (!db.introSeen[sid]) {
+    db.introSeen[sid] = new Date().toISOString();
+    if (CLOUD && !isStaff()) { saveLocal(); rpc("student_update", { p: { introSeen: true } }).catch(() => {}); } else persist();
+  }
 }
 function openIntro(sid, replay) {
   if (introOpen) return;
@@ -2641,7 +2856,7 @@ function login(email) {
 }
 
 /* ================= EVENTOS ================= */
-const bindAuth = { email: "email", password: "password", pEmail: "email", firstName: "firstName", lastName: "lastName", guardian: "guardian", nickname: "nickname", mProj: "mProj", mCity: "mCity", mName: "mName", mEmail: "mEmail", mBelt: "mBelt", mDeg: "mDeg" };
+const bindAuth = { email: "email", password: "password", password2: "password2", pEmail: "email", firstName: "firstName", lastName: "lastName", guardian: "guardian", nickname: "nickname", mProj: "mProj", mCity: "mCity", mName: "mName", mEmail: "mEmail", mBelt: "mBelt", mDeg: "mDeg" };
 
 document.addEventListener("input", (e) => {
   const t = e.target;
@@ -2667,6 +2882,7 @@ document.addEventListener("change", async (e) => {
       if (!person) return;
       person.photo = url;
       state.photoTarget = null;
+      if (CLOUD && kind === "student" && !isStaff()) { render(); rpc("student_update", { p: { photo: url } }).then(() => toast("Foto de perfil atualizada.")).catch((e) => toast(e.message || "Não foi possível salvar a foto.")); return; }
       persist(); render(); toast("Foto de perfil atualizada.");
     } catch (err) { toast("Não foi possível ler a imagem. Tente outra foto."); }
     return;
@@ -2722,7 +2938,8 @@ function videoInfo(file) {
 }
 
 /* Envia o vídeo para o Supabase Storage (bucket público mural-videos/treinos) com progresso */
-function uploadVideo(file, onProgress) {
+async function uploadVideo(file, onProgress) {
+  const tok = CLOUD ? await accessToken() : null;
   return new Promise((res, rej) => {
     const ext = ((file.name || "").split(".").pop() || "mp4").toLowerCase().replace(/[^a-z0-9]/g, "").slice(0, 4) || "mp4";
     const path = `treinos/${TODAY()}-${uid()}.${ext}`;
@@ -2730,12 +2947,13 @@ function uploadVideo(file, onProgress) {
     const xhr = new XMLHttpRequest();
     xhr.open("POST", `${base}/storage/v1/object/mural-videos/${path}`);
     xhr.setRequestHeader("apikey", SUPABASE_KEY);
-    if (SUPABASE_KEY.startsWith("eyJ")) xhr.setRequestHeader("Authorization", "Bearer " + SUPABASE_KEY);
+    if (tok) xhr.setRequestHeader("Authorization", "Bearer " + tok);
+    else if (SUPABASE_KEY.startsWith("eyJ")) xhr.setRequestHeader("Authorization", "Bearer " + SUPABASE_KEY);
     xhr.setRequestHeader("Content-Type", file.type || "video/mp4");
     xhr.setRequestHeader("x-upsert", "false");
     xhr.upload.onprogress = (e) => { if (e.lengthComputable) onProgress(Math.round((e.loaded * 100) / e.total)); };
     xhr.onload = () => {
-      if (xhr.status < 300) return res(`${base}/storage/v1/object/public/mural-videos/${path}`);
+      if (xhr.status < 300) return res(CLOUD ? path : `${base}/storage/v1/object/public/mural-videos/${path}`);
       const msg = xhr.responseText || "";
       rej(new Error(xhr.status === 413 || /size/i.test(msg) ? "Vídeo grande demais para o servidor (máx. 50 MB)."
         : /mime/i.test(msg) ? "Formato de vídeo não aceito. Use MP4 ou MOV."
@@ -2805,7 +3023,15 @@ document.addEventListener("click", (e) => {
       document.getElementById("avatarFile").click();
       break;
     }
-    case "logout": state.user = null; state.screen = "welcome"; state.sheet = null; persist(); render(); window.scrollTo(0, 0); break;
+    case "logout":
+      if (CLOUD) { forceLogout(); break; }
+      state.user = null; state.screen = "welcome"; state.sheet = null; persist(); render(); window.scrollTo(0, 0); break;
+    case "resetAccess": {
+      const who = staffById(id) || student(id);
+      if (!who || !confirm(`Liberar novo acesso para ${who.name || fullName(who)}?\n\nA senha atual dessa pessoa deixa de funcionar. Ela entra em “Primeiro acesso” e cria uma senha nova.`)) break;
+      rpc("reset_access", { p_person: id }).then((r) => toast(r && r.had_login ? "Pronto! A pessoa já pode fazer o Primeiro acesso de novo." : "Essa pessoa ainda não tinha criado senha: ela pode fazer o Primeiro acesso.")).catch((e) => toast(e.message || "Não foi possível liberar."));
+      break;
+    }
     case "reset":
       if (CLOUD) { toast("Com o Supabase ligado, use Mais › Começar do zero."); break; }
       if (confirm(CLOUD ? "Restaurar os dados de exemplo? ATENÇÃO: isso apaga alunos, chamadas, FO e tudo o que a equipe registrou no Supabase, em todos os aparelhos." : "Restaurar os dados de exemplo? Tudo que foi registrado neste navegador será apagado.")) {
@@ -2911,6 +3137,7 @@ document.addEventListener("click", (e) => {
     case "reRequest": {
       const s = pendingOf();
       if (!s || !state.reqPid || state.reqPid === s.pid || !mestreOf(state.reqPid)) break;
+      if (CLOUD) { const nm = project(state.reqPid).name; cloudAct("student_rerequest", { p_pid: state.reqPid }, `Pedido enviado para ${nm}.`); break; }
       Object.assign(s, { pid: state.reqPid, req: "pendente", reqAt: new Date().toISOString(), active: false });
       persist(); render(); toast(`Pedido enviado para ${project(s.pid).name}.`);
       break;
@@ -2937,7 +3164,10 @@ document.addEventListener("click", (e) => {
     /* campeonatos */
     case "newComp": openSheet({ kind: "comp", sid: id || "", photo: "" }); break;
     case "delComp":
-      if (confirm("Excluir este campeonato?")) { db.comps = db.comps.filter((c) => c.id !== id); persist(); render(); toast("Campeonato excluído."); }
+      if (confirm("Excluir este campeonato?")) {
+        if (CLOUD && !isStaff()) { cloudAct("student_del_comp", { p_id: id }, "Campeonato excluído."); break; }
+        db.comps = db.comps.filter((c) => c.id !== id); persist(); render(); toast("Campeonato excluído.");
+      }
       break;
 
     /* mural */
@@ -2955,11 +3185,15 @@ document.addEventListener("click", (e) => {
       const p = db.posts.find((x) => x.id === id), me = meKey();
       const i = p.likes.indexOf(me);
       if (i >= 0) p.likes.splice(i, 1); else p.likes.push(me);
+      if (CLOUD) { render(); rpc("post_like", { p_id: id }).catch((e) => toast(e.message || "Sem conexão.")); break; }
       persist(); render(); break;
     }
     case "comments": openSheet({ kind: "comments", id, text: "" }); break;
     case "delPost":
-      if (confirm("Excluir esta publicação do mural?")) { db.posts = db.posts.filter((p) => p.id !== id); persist(); render(); toast("Publicação excluída."); }
+      if (confirm("Excluir esta publicação do mural?")) {
+        if (CLOUD) { cloudAct("post_delete", { p_id: id }, "Publicação excluída."); break; }
+        db.posts = db.posts.filter((p) => p.id !== id); persist(); render(); toast("Publicação excluída.");
+      }
       break;
 
     /* equipe */
@@ -2977,6 +3211,14 @@ document.addEventListener("submit", (e) => {
   if (id === "loginForm") {
     if (!/^\S+@\S+\.\S+$/.test(state.email)) return toast("Digite um e-mail válido, como nome@email.com.");
     if (state.password.length < 4) return toast("Digite sua senha (mínimo 4 caracteres).");
+    if (CLOUD) {
+      (async () => {
+        try { await signIn(state.email, state.password); }
+        catch (e) { return toast(e.status === 400 ? "E-mail ou senha incorretos. Se você já tinha cadastro e ainda não criou senha, toque em “Primeiro acesso”." : (e.message || "Sem conexão com o servidor.")); }
+        await afterAuth();
+      })();
+      return;
+    }
     if (sha256(state.email.trim().toLowerCase()) === ADMIN_HASH) {
       if (CLOUD && !sync.version) return toast("Carregando os dados do projeto… tente de novo em instantes.");
       const first = !db.admin;
@@ -2994,22 +3236,49 @@ document.addEventListener("submit", (e) => {
     if (!login(state.email)) toast(CLOUD ? (sync.online === null && !sync.version ? "Carregando os dados do projeto… tente de novo em instantes." : "Conta não encontrada. Confira o e-mail ou crie seu perfil.") : "Conta não encontrada. Use um acesso de demonstração ou crie seu perfil.");
     return;
   }
+  if (id === "primeiroForm") {
+    if (!/^\S+@\S+\.\S+$/.test(state.email)) return toast("Digite um e-mail válido.");
+    if (!passOk()) return;
+    (async () => {
+      if (session) setSession(null);
+      try { await signUp(state.email, state.password); }
+      catch (e) {
+        if (/already|registered|exists/i.test(e.message + " " + e.code)) return toast("Este e-mail já tem senha. Entre pela tela de login. Esqueceu? Peça ao Professor para liberar um novo acesso.");
+        return toast(/password|weak/i.test(e.message) ? "Senha fraca. Use pelo menos 8 caracteres, misturando letras e números." : (e.message || "Sem conexão com o servidor."));
+      }
+      await afterAuth();
+    })();
+    return;
+  }
   if (id === "profileForm") {
     if (!/^\S+@\S+\.\S+$/.test(state.email)) return toast("Digite um e-mail válido.");
     if (db.students.some((s) => (s.email || "").toLowerCase() === state.email.toLowerCase()) || db.staff.some((s) => s.email.toLowerCase() === state.email.toLowerCase())) return toast("Este e-mail já tem conta. Volte e entre.");
     if (!state.firstName.trim() || !state.lastName.trim()) return toast("Preencha nome e sobrenome.");
     if (state.birthDate.length < 10) return toast("Preencha a data de nascimento no formato DD/MM/AAAA.");
+    if (CLOUD && !(session && session.email === state.email.trim().toLowerCase()) && !passOk()) return;
     if (!state.nickname) state.nickname = state.lastName.trim();
     state.screen = "warrior"; render(); window.scrollTo(0, 0); return;
   }
   if (id === "warriorForm") {
     if (!state.nickname.trim()) return toast("Escolha um nome de guerra.");
     if (state.lastGrad.length < 10) return toast("Preencha a data da última graduação (DD/MM/AAAA).");
-    state.screen = "projeto"; render(); window.scrollTo(0, 0); return;
+    state.screen = "projeto"; render(); window.scrollTo(0, 0);
+    if (CLOUD) loadProjectList();
+    return;
   }
   /* Aluno escolheu o projeto: o pedido fica pendente até o Mestre daquele projeto aceitar */
   if (id === "projetoForm") {
-    if (CLOUD && !sync.version) return toast("Carregando os projetos… tente de novo em instantes.");
+    if (CLOUD) {
+      if (!state.reqPid || !mestreOf(state.reqPid)) return toast("Toque no projeto em que você treina.");
+      (async () => {
+        if (!(await ensureSession(state.email, state.password))) return;
+        try {
+          await rpc("request_join", { p_pid: state.reqPid, p_student: { first: state.firstName.trim(), last: state.lastName.trim(), nick: state.nickname.trim(), birth: brToIso(state.birthDate), kid: state.isKid, belt: state.belt, degrees: state.degrees, lastGrad: brToIso(state.lastGrad), guardian: state.guardian, phone: state.phone } });
+        } catch (e) { return toast(e.message || "Não foi possível enviar o pedido."); }
+        if (await afterAuth()) toast("Pedido enviado! Agora é só aguardar o Professor aceitar.");
+      })();
+      return;
+    }
     if (!state.reqPid || !mestreOf(state.reqPid)) return toast("Toque no projeto em que você treina.");
     if (emailTaken(state.email)) return toast("Este e-mail já tem conta. Volte e entre.");
     const s = { id: "s" + uid(), pid: state.reqPid, first: state.firstName.trim(), last: state.lastName.trim(), nick: state.nickname.trim(), birth: brToIso(state.birthDate), kid: state.isKid, belt: state.belt, degrees: state.degrees, lastGrad: brToIso(state.lastGrad), joined: TODAY(), kimono: "", school: "", social: "", guardian: state.guardian, phone: state.phone, email: state.email.trim(), active: false, req: "pendente", reqAt: new Date().toISOString() };
@@ -3018,9 +3287,23 @@ document.addEventListener("submit", (e) => {
   }
   /* Mestre cadastra o projeto dele e entra como Mestre */
   if (id === "mestreForm") {
-    if (CLOUD && !sync.version) return toast("Carregando os dados… tente de novo em instantes.");
     const name = state.mProj.trim().replace(/\s+/g, " "), email = state.mEmail.trim().toLowerCase();
     if (name.length < 3) return toast("Digite o nome do projeto.");
+    if (CLOUD) {
+      if (state.mName.trim().split(/\s+/).length < 2) return toast("Digite seu nome e sobrenome.");
+      if (!/^\S+@\S+\.\S+$/.test(email)) return toast("Digite um e-mail válido.");
+      if (!(session && session.email === email) && !passOk()) return;
+      (async () => {
+        if (!(await ensureSession(email, state.password))) return;
+        const used = new Set((db.projects || []).map((p) => p.color));
+        try {
+          await rpc("create_project", { p_name: name, p_city: state.mCity.trim(), p_color: PROJ_COLORS.find((c) => !used.has(c)) || PROJ_COLORS[0],
+            p_person: { name: state.mName.trim().replace(/\s+/g, " "), belt: state.mBelt || "preta", degrees: Number(state.mDeg) || 0, phone: state.phone || "" } });
+        } catch (e) { return toast(e.message || "Não foi possível cadastrar o projeto."); }
+        if (await afterAuth()) toast(`“${name}” cadastrado! Os alunos já podem pedir para entrar.`);
+      })();
+      return;
+    }
     if (db.projects.some((p) => p.name.trim().toLowerCase() === name.toLowerCase())) return toast("Já existe um projeto com esse nome. Se ele é seu, entre com o e-mail do Professor.");
     if (state.mName.trim().split(/\s+/).length < 2) return toast("Digite seu nome e sobrenome.");
     if (!/^\S+@\S+\.\S+$/.test(email)) return toast("Digite um e-mail válido.");
@@ -3067,6 +3350,7 @@ document.addEventListener("submit", (e) => {
 
   if (kind === "comp") {
     const sid = isStaff() ? fd.sid : state.user.studentId;
+    if (CLOUD && !isStaff()) { const photo = state.sheet.photo || ""; state.sheet = null; cloudAct("student_add_comp", { p: { event: fd.event.trim(), date: fd.date, category: fd.category.trim(), result: fd.result, photo } }, "Campeonato registrado."); return; }
     db.comps.push({ id: "m" + uid(), sid, event: fd.event.trim(), date: fd.date, category: fd.category.trim(), result: fd.result, photo: state.sheet.photo || "" });
     persist(); closeSheet(); toast("Campeonato registrado.");
   }
@@ -3074,6 +3358,11 @@ document.addEventListener("submit", (e) => {
   if (kind === "excluirConta") {
     if (!state.user || isStaff()) return;
     if (fd.confirma.trim().toUpperCase() !== "EXCLUIR") return toast("Digite EXCLUIR para confirmar.");
+    if (CLOUD) {
+      state.sheet = null;
+      rpc("student_delete_account").then(() => forceLogout("Sua conta foi excluída. Oss!")).catch((e) => toast(e.message || "Não foi possível excluir agora. Tente com internet."));
+      return;
+    }
     const sid = state.user.studentId;
     db.students = db.students.filter((s) => s.id !== sid);
     Object.values(db.attendance).forEach((rec) => { delete rec[sid]; });
@@ -3136,7 +3425,15 @@ document.addEventListener("submit", (e) => {
       uploadVideo(sh.videoFile, (pct) => {
         const b = bar(); if (b) { b.hidden = false; b.firstElementChild.style.width = pct + "%"; }
         const s = document.getElementById("postSubmit"); if (s) s.textContent = `Enviando vídeo… ${pct}%`;
-      }).then((url) => {
+      }).then(async (url) => {
+        if (CLOUD) {
+          await rpc("post_create", { p: { caption, tags: sh.tags, video: url, poster: sh.poster || "", dur: Math.round(sh.videoDur || 0) } });
+          if (sh.videoUrl) URL.revokeObjectURL(sh.videoUrl);
+          state.sheet = null; state.feed = "todos";
+          const r = await rpc("get_data"); applyServer(r); go("mural");
+          toast("Vídeo publicado no mural! As famílias já podem assistir.");
+          return;
+        }
         db.posts.push({ id: "n" + uid(), pid: myPid(), by: meKey(), byKind: "staff", photo: "", video: url, poster: sh.poster || "", dur: Math.round(sh.videoDur || 0), caption, tags: sh.tags, at: new Date().toISOString(), likes: [], comments: [] });
         if (sh.videoUrl) URL.revokeObjectURL(sh.videoUrl);
         persist(); state.sheet = null; state.feed = "todos"; go("mural");
@@ -3147,6 +3444,11 @@ document.addEventListener("submit", (e) => {
       });
       return;
     }
+    if (CLOUD) {
+      state.sheet = null; state.feed = "todos";
+      cloudAct("post_create", { p: { caption, tags: sh.tags, photo: sh.photo || "" } }, sh.photo ? "Publicado no mural!" : "Publicado sem foto.").then(() => go("mural"));
+      return;
+    }
     db.posts.push({ id: "n" + uid(), pid: myPid(), by: meKey(), byKind: isStaff() ? "staff" : "student", photo: sh.photo || "", caption, tags: sh.tags, at: new Date().toISOString(), likes: [], comments: [] });
     persist(); state.sheet = null; state.feed = "todos"; go("mural");
     toast(sh.photo ? "Publicado no mural!" : "Publicado sem foto. Você pode excluir e postar de novo com a imagem.");
@@ -3155,6 +3457,7 @@ document.addEventListener("submit", (e) => {
   if (kind === "comments") {
     const text = (state.sheet.text || "").trim();
     if (text.length < 2) return toast("Escreva um comentário.");
+    if (CLOUD) { const pid = state.sheet.id; state.sheet = null; cloudAct("post_comment", { p_id: pid, p_text: text }, "Comentário publicado."); return; }
     db.posts.find((p) => p.id === state.sheet.id).comments.push({ id: "k" + uid(), by: meKey(), text, at: new Date().toISOString() });
     persist(); closeSheet(); toast("Comentário publicado.");
   }

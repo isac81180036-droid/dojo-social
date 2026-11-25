@@ -2,7 +2,7 @@
    - Sempre busca a versão mais nova na internet (as atualizações chegam na hora).
    - Sem internet, abre a última versão guardada no aparelho.
    - Supabase, fontes e vídeos vão direto pela rede (não ficam guardados aqui). */
-const CACHE = "dojo-social-v1";
+const CACHE = "dojo-social-v2";
 const CORE = ["./", "./index.html", "./manifest.webmanifest", "./icon-180.png", "./icon-192.png", "./icon-512.png", "./icon-maskable-512.png"];
 
 self.addEventListener("install", (e) => {
