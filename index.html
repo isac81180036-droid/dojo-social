@@ -1483,7 +1483,7 @@ function inicioAluno() {
   if (!s) return empty("Perfil não encontrado", "Fale com o seu professor.");
   const g = gradStatus(s), pres = attendancePct(s), fo = foBalance(s);
   const tIso = TODAY();
-  const next = db.classes.filter((c) => c.date >= tIso && fits(s, c)).sort((a, b) => (a.date + a.time).localeCompare(b.date + b.time)).slice(0, 3);
+  const next = db.classes.filter((c) => c.pid === s.pid && c.date >= tIso && fits(s, c)).sort((a, b) => (a.date + a.time).localeCompare(b.date + b.time)).slice(0, 3);
   const myFo = db.fos.filter((f) => f.sid === s.id).sort((a, b) => b.date.localeCompare(a.date)).slice(0, 5);
   return `
   <div class="stack">
@@ -1930,7 +1930,7 @@ function compItem(c, showStudent = true) {
 
 views.campeonatos = () => {
   const mine = !isStaff();
-  const list = db.comps.filter((c) => !mine || c.sid === state.user.studentId).sort((a, b) => b.date.localeCompare(a.date));
+  const list = db.comps.filter((c) => (mine ? c.sid === state.user.studentId : (student(c.sid) || {}).pid === myPid())).sort((a, b) => b.date.localeCompare(a.date));
   const tally = (r) => list.filter((c) => c.result === r).length;
   return `<div class="stack">
     <div class="kpis">
@@ -1944,7 +1944,7 @@ views.campeonatos = () => {
 views.equipe = () => {
   if (!isMestre()) return empty("Acesso restrito", "Somente o Professor responsável gerencia a equipe.");
   const order = { mestre: 0, instrutor: 1, monitor: 2 };
-  const list = [...db.staff].sort((a, b) => order[a.role] - order[b.role] || a.name.localeCompare(b.name));
+  const list = db.staff.filter((t) => t.pid === myPid()).sort((a, b) => order[a.role] - order[b.role] || a.name.localeCompare(b.name));
   return `<div class="stack">
     <div class="sec-h" style="margin:0"><span class="muted small">${list.length} pessoas na equipe técnica</span><button class="btn sm" data-a="newStaff">${icon("plus")}Novo membro</button></div>
     <div class="panel" style="padding:4px 12px"><div class="list">
@@ -2772,6 +2772,13 @@ document.addEventListener("click", (e) => {
   if (!el) return;
   if (el.dataset.toast) { toast(el.dataset.toast); return; }
   const a = el.dataset.a, id = el.dataset.id, v = el.dataset.v;
+  /* cada projeto só mexe nos próprios alunos, aulas e equipe */
+  if (state.user && isStaff() && id) {
+    const sOther = ["fo", "openStudent", "editStudent", "archiveStudent", "grad", "aceitar", "recusar"].includes(a) && student(id) && student(id).pid !== myPid();
+    const tOther = a === "editStaff" && staffById(id) && staffById(id).pid !== myPid();
+    const cOther = ["openClass", "delClass", "call"].includes(a) && db.classes.some((c) => c.id === id && c.pid !== myPid());
+    if (sOther || tOther || cOther) { toast("Isso pertence a outro projeto."); return; }
+  }
   if (state.user && isStaff() && !canTeach() && ["call", "fo", "newClass", "newClassOn", "copyWeek", "goWeek", "grad", "mark", "allPresent"].includes(a)) { toast(TEACH_ONLY); return; }
 
   switch (a) {
@@ -2888,7 +2895,7 @@ document.addEventListener("click", (e) => {
       break;
     case "copyWeek": {
       const prevMon = iso(addDays(parse(state.week), -7)), prevSun = iso(addDays(parse(state.week), -1));
-      const src = db.classes.filter((c) => c.date >= prevMon && c.date <= prevSun);
+      const src = db.classes.filter((c) => c.pid === myPid() && c.date >= prevMon && c.date <= prevSun);
       src.forEach((c) => { const date = iso(addDays(parse(c.date), 7)); db.classes.push({ ...c, id: "c" + uid(), date, technique: "A definir" }); });
       persist(); render(); toast(`${src.length} aulas copiadas. Defina a técnica de cada dia.`); break;
     }
