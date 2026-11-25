@@ -449,6 +449,44 @@
   .rail-item:last-child { border-bottom: 0; }
   .rail-item .nm { font-size: 15px; }
 
+  /* Insights (módulo de computador) */
+  @media (min-width: 900px) { .main.wide { max-width: 1440px; } }
+  .ins-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+  .ins-head p { margin: 0; color: var(--muted); font-size: 14px; }
+  .ins-kpis { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1px; background: var(--line); border-radius: 22px; overflow: hidden; }
+  @media (min-width: 700px) { .ins-kpis { grid-template-columns: repeat(3, 1fr); } }
+  @media (min-width: 1100px) { .ins-kpis { grid-template-columns: repeat(5, 1fr); } }
+  .ins-kpis .kpi small { color: var(--muted); font-size: 12px; font-weight: 600; }
+  .ins-grid { display: grid; gap: 22px; grid-template-columns: minmax(0, 1fr); align-items: start; }
+  @media (min-width: 1000px) { .ins-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  @media (min-width: 1300px) { .ins-grid.three { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+  .ins-n { margin: 10px 0 0; color: var(--muted); font-size: 12.5px; line-height: 1.45; }
+  .vbars { display: flex; align-items: flex-end; gap: 2px; height: 150px; border-bottom: 1px solid var(--line); }
+  .vbars .col { flex: 1; height: 100%; display: flex; flex-direction: column; justify-content: flex-end; outline-offset: 2px; border-radius: 4px; }
+  .vbars .col i { display: block; min-height: 2px; background: var(--ink-2); border-radius: 4px 4px 0 0; }
+  .vbars .col.nil i { background: var(--surface-2); }
+  .vbars .col:hover i, .vbars .col:focus-visible i { background: var(--ink); }
+  .vlabels { display: flex; gap: 2px; margin-top: 6px; }
+  .vlabels span { flex: 1; text-align: center; font-size: 11px; color: var(--muted); font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .dvg { display: flex; gap: 6px; height: 170px; }
+  .dvg .col { flex: 1; display: grid; grid-template-rows: 1fr 1fr; border-radius: 4px; }
+  .dvg .up { display: flex; align-items: flex-end; border-bottom: 1px solid var(--muted); }
+  .dvg .dn { display: flex; align-items: flex-start; }
+  .dvg .up i, .dvg .dn i { display: block; width: 100%; }
+  .dvg .up i { background: var(--pos-fill); border-radius: 4px 4px 0 0; }
+  .dvg .dn i { background: var(--neg-fill); border-radius: 0 0 4px 4px; }
+  .hb { display: grid; grid-template-columns: minmax(90px, 34%) 1fr 52px; gap: 10px; align-items: center; padding: 7px 0; font-size: 14px; }
+  .hb > span:first-child { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--ink-2); }
+  .hb .trk { height: 12px; background: var(--surface-2); border-radius: 0 4px 4px 0; overflow: hidden; }
+  .hb .trk i { display: block; height: 100%; background: var(--ink-2); border-radius: 0 4px 4px 0; }
+  .hb b { text-align: right; font-variant-numeric: tabular-nums; }
+  .sw8 { display: inline-block; width: 10px; height: 10px; border-radius: 3px; box-shadow: inset 0 0 0 1px var(--belt-edge); margin-right: 6px; vertical-align: -1px; }
+  .ins-mini { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+  .ins-mini div { background: var(--ground); border-radius: 16px; padding: 12px; }
+  .ins-mini b { display: block; font-family: "Bricolage Grotesque", "Figtree", system-ui, sans-serif; font-size: 26px; font-weight: 800; font-variant-numeric: tabular-nums; }
+  .ins-mini span { font-size: 12px; color: var(--muted); font-weight: 600; }
+  #tip { position: fixed; z-index: 60; pointer-events: none; background: var(--ink); color: var(--ground); font-size: 13px; font-weight: 600; padding: 6px 10px; border-radius: 10px; box-shadow: var(--shadow); white-space: nowrap; }
+
   /* Agenda */
   .wk-head { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; justify-content: space-between; }
   .wk-nav { display: flex; align-items: center; gap: 4px; background: var(--surface); border-radius: 18px; padding: 6px; }
@@ -538,6 +576,7 @@
 <script>
 /* ================= ÍCONES ================= */
 const P = {
+  chart: "M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z",
   email: "M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z",
   lock: "M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z",
   eye: "M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z",
@@ -742,7 +781,7 @@ const state = {
   firstName: "", lastName: "", birthDate: "", phone: "", guardian: "",
   nickname: "", isKid: false, belt: "branca", degrees: 0, lastGrad: "",
   callDate: TODAY(), callClass: null, q: "", aud: "Todos", sel: null, tab: "fo",
-  week: iso(mondayOf(today())), gfilter: "elegivel", from: "alunos", feed: "todos", frole: null
+  week: iso(mondayOf(today())), gfilter: "elegivel", from: "alunos", feed: "todos", frole: null, iper: 30
 };
 
 /* Tema: claro (padrão, branco amarelado) ou escuro, escolhido pela pessoa e lembrado neste navegador */
@@ -895,6 +934,23 @@ async function pull() {
   } catch (e) { setOnline(false, e); }
 }
 
+/* Registro de acessos (para os Insights): por pessoa, último acesso + aberturas por dia (90 dias) */
+function markAccess() {
+  if (!state.user) return;
+  const key = meKey();
+  if (!key) return;
+  db.access = db.access || {};
+  const rec = db.access[key] || (db.access[key] = { last: null, d: {} });
+  const now = new Date();
+  if (rec.last && now - new Date(rec.last) < 20 * 60 * 1000) return;
+  rec.last = now.toISOString();
+  const day = TODAY();
+  rec.d[day] = (rec.d[day] || 0) + 1;
+  const cut = iso(addDays(today(), -90));
+  Object.keys(rec.d).forEach((k) => { if (k < cut) delete rec.d[k]; });
+  persist();
+}
+
 const cloudLabel = () => !CLOUD ? "Dados salvos só neste navegador"
   : sync.online === false ? "Sem conexão · salvo neste aparelho"
   : sync.pending ? "Enviando para o Supabase…" : "Sincronizado com o Supabase";
@@ -959,9 +1015,9 @@ const myStudents = () => db.students.filter((s) => s.pid === myPid());
 
 function navItems() {
   if (!isStaff()) return [["inicio", "Início", "home"], ["mural", "Mural", "grid"], ["agenda", "Agenda", "scale"], ["campeonatos", "Campeonatos", "trophy"]];
-  const items = [["inicio", "Início", "home"], ["chamada", "Chamada", "roll"], ["agenda", "Agenda", "scale"], ["mural", "Mural", "grid"], ["alunos", "Alunos", "people"], ["graduacao", "Graduação", "belt"], ["campeonatos", "Campeonatos", "trophy"], ["funcoes", "Funções", "hand"]];
+  const items = [["inicio", "Início", "home"], ["chamada", "Chamada", "roll"], ["agenda", "Agenda", "scale"], ["mural", "Mural", "grid"], ["alunos", "Alunos", "people"], ["graduacao", "Graduação", "belt"], ["campeonatos", "Campeonatos", "trophy"], ["insights", "Insights", "chart"], ["funcoes", "Funções", "hand"]];
   if (isMestre()) items.push(["equipe", "Equipe", "staff"]);
-  return canTeach() ? items : items.filter(([k]) => k !== "chamada" && k !== "graduacao");
+  return canTeach() ? items : items.filter(([k]) => k !== "chamada" && k !== "graduacao" && k !== "insights");
 }
 
 /* ================= AUTENTICAÇÃO (telas do login) ================= */
@@ -1724,6 +1780,201 @@ views.mais = () => {
   </div>`;
 };
 
+/* ================= INSIGHTS (módulo de computador) ================= */
+function relTime(isoStr) {
+  if (!isoStr) return "nunca";
+  const min = Math.round((Date.now() - new Date(isoStr)) / 60000);
+  if (min < 2) return "agora";
+  if (min < 60) return `há ${min} min`;
+  const h = Math.round(min / 60);
+  if (h < 24) return `há ${h} h`;
+  const d = Math.round(h / 24);
+  return d === 1 ? "ontem" : `há ${d} dias`;
+}
+const pctOf = (a, b) => (b ? Math.round((a * 100) / b) : 0);
+const hbars = (rows, max, fmt = (v) => v) => rows.map(([label, v, tip, color]) => `<div class="hb" data-tip="${esc(tip || `${label}: ${fmt(v)}`)}" tabindex="0"><span>${label}</span><span class="trk"><i style="width:${max ? Math.max(v > 0 ? 2 : 0, (v * 100) / max) : 0}%;${color ? `background:${color}` : ""}"></i></span><b>${fmt(v)}</b></div>`).join("");
+const insGroup = (title, aside, body, note = "") => group(title, aside, body + (note ? `<p class="ins-n">${note}</p>` : ""));
+
+views.insights = () => {
+  if (!canTeach()) return empty("Acesso restrito", TEACH_ONLY);
+  const P = state.iper || 30, tIso = TODAY(), from = iso(addDays(today(), -P));
+  const pid = myPid();
+  const students = myStudents().filter((s) => s.active);
+  const staff = db.staff.filter((t) => t.pid === pid);
+  const acc = db.access || {};
+  const people = [
+    ...staff.map((t) => ({ key: t.id, name: t.name, full: t.name, role: ROLE_LABEL[t.role], photo: t.photo, sid: null })),
+    ...students.map((s) => ({ key: s.id, name: `${display(s)} · ${fullName(s)}`, full: fullName(s), role: "Aluno", photo: s.photo, sid: s.id }))
+  ];
+  const daysIn = (k) => Object.keys((acc[k] || {}).d || {}).filter((d) => d >= from).length;
+  const activeP = people.filter((p) => daysIn(p.key) > 0);
+  const today_ = people.filter((p) => ((acc[p.key] || {}).d || {})[tIso]);
+  const seen = people.filter((p) => (acc[p.key] || {}).last).sort((a, b) => acc[b.key].last.localeCompare(acc[a.key].last));
+  const cut14 = iso(addDays(today(), -14));
+  const sumidos = students.filter((s) => { const l = (acc[s.id] || {}).last; return !l || l.slice(0, 10) < cut14; });
+
+  const classes = db.classes.filter((c) => c.pid === pid && c.date >= from && c.date <= tIso);
+  const done = classes.filter((c) => db.attendance[c.id] && Object.keys(db.attendance[c.id]).length);
+  const pending = classes.filter((c) => !done.includes(c) && c.date < tIso).sort((a, b) => b.date.localeCompare(a.date));
+  const presOf = new Map(students.map((s) => [s.id, attendancePct(s, P)]));
+  const countOf = (s) => done.filter((c) => s.id in db.attendance[c.id]).length;
+  const presVals = [...presOf.values()].filter((v) => v !== null);
+  const avgPres = presVals.length ? Math.round(presVals.reduce((a, b) => a + b, 0) / presVals.length) : null;
+
+  const fosP = db.fos.filter((f) => f.date >= from && students.some((s) => s.id === f.sid));
+  const foPos = fosP.filter((f) => f.type === "+").length, foNeg = fosP.length - foPos;
+  const netOf = (sid) => fosP.filter((f) => f.sid === sid).reduce((a, f) => a + (f.type === "+" ? 1 : -1), 0);
+  const medalsOf = (sid) => db.comps.filter((c) => c.sid === sid && c.result !== "participacao").length;
+  const grads = students.map((s) => [s, gradStatus(s)]).filter(([, g]) => g);
+  const eleg = grads.filter(([, g]) => g.status === "elegivel");
+  const novos = students.filter((s) => s.joined >= from).sort((a, b) => b.joined.localeCompare(a.joined));
+
+  /* 1–10 · KPIs */
+  const kpi = (label, value, sub, cls = "") => `<div class="kpi"><span>${label}</span><b class="${cls}">${value}</b><small>${sub}</small></div>`;
+  const kpis = `<div class="ins-kpis">
+    ${kpi("Entraram hoje", today_.length, `de ${people.length} pessoas`)}
+    ${kpi(`Ativos em ${P} dias`, activeP.length, `${pctOf(activeP.length, people.length)}% da equipe e alunos`)}
+    ${kpi("Presença média", avgPres === null ? "—" : avgPres + "%", `alunos ativos · ${P} dias`)}
+    ${kpi("Chamadas feitas", `${pctOf(done.length, classes.length)}%`, `${done.length} de ${classes.length} aulas`)}
+    ${kpi("Chamadas pendentes", pending.length, "aulas passadas sem chamada", pending.length ? "neg" : "")}
+    ${kpi("FO positivos", foPos, `em ${P} dias`, "pos")}
+    ${kpi("FO negativos", foNeg, `em ${P} dias`, "neg")}
+    ${kpi("Prontos p/ graduar", eleg.length, `${grads.filter(([, g]) => g.status === "quase").length} quase lá`)}
+    ${kpi("Alunos ativos", students.length, `${students.filter((s) => s.kid).length} infantil · ${students.filter((s) => !s.kid).length} adulto`)}
+    ${kpi("Novos alunos", novos.length, `cadastrados em ${P} dias`)}
+  </div>`;
+
+  /* 11 · Quem entrou no app */
+  const roleCls = (r) => (r === "Mestre" ? "blue" : r === "Aluno" ? "" : "pos");
+  const entrou = seen.length ? `<div class="list">${seen.slice(0, 8).map((p) => `<div class="item" style="padding:10px 0">${avat(p.full, p.photo)}<div class="grow"><div class="nm">${esc(p.name)}</div><div class="meta"><span class="pill ${roleCls(p.role)}" style="height:22px;font-size:12px">${p.role}</span><span>${daysIn(p.key)}d ativos</span></div></div><span class="muted small" style="white-space:nowrap">${relTime(acc[p.key].last)}</span></div>`).join("")}</div>${seen.length > 8 ? `<p class="ins-n">E mais ${seen.length - 8} pessoas.</p>` : ""}`
+    : empty("Ninguém registrado ainda", "Os acessos começam a ser contados a partir desta versão do app.");
+
+  /* 12 · Acessos por dia (14 dias) */
+  const days14 = Array.from({ length: 14 }, (_, i) => iso(addDays(today(), i - 13)));
+  const perDay = days14.map((d) => people.filter((p) => ((acc[p.key] || {}).d || {})[d]).length);
+  const maxDay = Math.max(1, ...perDay);
+  const acessosDia = `<div class="vbars" role="img" aria-label="Pessoas que entraram por dia: ${days14.map((d, i) => `${brShort(d)} ${perDay[i]}`).join(", ")}">
+      ${perDay.map((v, i) => `<span class="col ${v ? "" : "nil"}" tabindex="0" data-tip="${DOW[parse(days14[i]).getDay()].slice(0, 3)} ${brShort(days14[i])} · ${v} ${v === 1 ? "pessoa" : "pessoas"}"><i style="height:${(v * 100) / maxDay}%"></i></span>`).join("")}
+    </div><div class="vlabels">${days14.map((d, i) => `<span>${i % 2 === 1 || i === 13 ? brShort(d).slice(0, 5) : ""}</span>`).join("")}</div>`;
+
+  /* 13 · Destaques (melhor desempenho) */
+  const scored = students.map((s) => {
+    const pr = presOf.get(s.id), net = netOf(s.id), med = medalsOf(s.id);
+    const score = Math.round(0.6 * (pr || 0) + 0.3 * Math.max(0, Math.min(100, 50 + net * 10)) + 0.1 * Math.min(100, med * 50));
+    return { s, pr, net, med, score, n: countOf(s) };
+  }).filter((x) => x.n >= 2).sort((a, b) => b.score - a.score);
+  const destaques = scored.length ? `<div class="list">${scored.slice(0, 6).map((x, i) => studentRow(x.s, `<span style="text-align:right;white-space:nowrap"><span class="pill ${i < 3 ? "blue" : ""}">${i + 1}º · ${x.score} pts</span><span class="meta" style="justify-content:flex-end">${x.pr === null ? "—" : x.pr + "%"} pres. · FO ${x.net > 0 ? "+" : ""}${x.net}${x.med ? ` · ${x.med} 🥇` : ""}</span></span>`)).join("")}</div>`
+    : empty("Ainda sem dados suficientes", "Precisa de pelo menos 2 chamadas por aluno no período.");
+
+  /* 14 · Ranking de presença */
+  const presRank = students.map((s) => [s, presOf.get(s.id), countOf(s)]).filter(([, p, n]) => p !== null && n >= 3).sort((a, b) => b[1] - a[1]);
+  const rankPres = presRank.length ? hbars(presRank.slice(0, 8).map(([s, p, n]) => [esc(display(s)), p, `${display(s)}: ${p}% de presença (${n} chamadas)`]), 100, (v) => v + "%") : empty("Sem chamadas suficientes", "Aparece quando houver 3 ou mais chamadas por aluno.");
+
+  /* 15 · Risco de evasão */
+  const risco = students.map((s) => {
+    const mine = done.filter((c) => s.id in db.attendance[c.id]).sort((a, b) => b.date.localeCompare(a.date));
+    const last3 = mine.slice(0, 3).every((c) => db.attendance[c.id][s.id] !== "P") && mine.length >= 3;
+    const pr = presOf.get(s.id);
+    const why = last3 ? "faltou as 3 últimas aulas" : pr !== null && mine.length >= 3 && pr < 50 ? `presença de ${pr}%` : "";
+    return [s, why, pr];
+  }).filter(([, w]) => w).sort((a, b) => (a[2] ?? 0) - (b[2] ?? 0));
+  const riscoHtml = risco.length ? `<div class="list">${risco.slice(0, 8).map(([s, why]) => studentRow(s, `<span class="pill warn">${why}</span>`)).join("")}</div>` : empty("Ninguém em risco", `Ninguém faltou as 3 últimas aulas nem está abaixo de 50% em ${P} dias.`);
+
+  /* 16 · FO por semana (8 semanas) */
+  const wk0 = mondayOf(today());
+  const weeks = Array.from({ length: 8 }, (_, i) => iso(addDays(wk0, (i - 7) * 7)));
+  const wkData = weeks.map((w) => { const end = iso(addDays(parse(w), 6)); const f = db.fos.filter((x) => x.date >= w && x.date <= end && students.some((s) => s.id === x.sid)); return [f.filter((x) => x.type === "+").length, f.filter((x) => x.type === "-").length]; });
+  const maxW = Math.max(1, ...wkData.flat());
+  const foSemana = `<div class="legend" style="margin-bottom:10px"><span><span class="dotmark" style="background:var(--pos-fill)"></span>FO+ (acima da linha)</span><span><span class="dotmark" style="background:var(--neg-fill)"></span>FO− (abaixo da linha)</span></div>
+    <div class="dvg" role="img" aria-label="FO por semana: ${weeks.map((w, i) => `${brShort(w)} +${wkData[i][0]} −${wkData[i][1]}`).join(", ")}">
+      ${wkData.map(([p, n], i) => `<span class="col" tabindex="0" data-tip="Semana de ${brShort(weeks[i])} · FO+ ${p} · FO− ${n}"><span class="up"><i style="height:${(p * 100) / maxW}%"></i></span><span class="dn"><i style="height:${(n * 100) / maxW}%"></i></span></span>`).join("")}
+    </div><div class="vlabels" style="gap:6px">${weeks.map((w) => `<span>${brShort(w).slice(0, 5)}</span>`).join("")}</div>`;
+
+  /* 17 · Atenção comportamental */
+  const atencao = students.map((s) => [s, fosP.filter((f) => f.sid === s.id && f.type === "-")]).filter(([, l]) => l.length >= 2).sort((a, b) => b[1].length - a[1].length);
+  const atencaoHtml = atencao.length ? `<div class="list">${atencao.slice(0, 8).map(([s, l]) => studentRow(s, `<span class="pill neg">${l.length} FO−</span>`)).join("")}</div>` : empty("Nenhum caso", `Ninguém recebeu 2 ou mais FO− em ${P} dias.`);
+
+  /* 18 · Categorias de FO */
+  const cats = [...FO_CATS["+"].map(([k, l]) => ["+", k, l]), ...FO_CATS["-"].map(([k, l]) => ["-", k, l])].map(([t, k, l]) => [`${t === "+" ? "+" : "−"} ${l}`, fosP.filter((f) => f.type === t && f.cat === k).length, "", t === "+" ? "var(--pos-fill)" : "var(--neg-fill)"]);
+  const maxCat = Math.max(1, ...cats.map((c) => c[1]));
+  const catHtml = fosP.length ? hbars(cats.sort((a, b) => b[1] - a[1]), maxCat) : empty("Sem FO no período", "");
+
+  /* 19 · Presença por dia da semana */
+  const dowRows = [1, 2, 3, 4, 5, 6, 0].map((d) => { const cs = done.filter((c) => parse(c.date).getDay() === d); const pres = cs.reduce((a, c) => a + Object.values(db.attendance[c.id]).filter((v) => v === "P").length, 0); return [DOW[d], cs.length ? Math.round(pres / cs.length) : 0, `${DOW[d]}: média de ${cs.length ? (pres / cs.length).toFixed(1).replace(".", ",") : 0} presentes por aula (${cs.length} aulas)`, null, cs.length]; }).filter((r) => r[4]);
+  const dowHtml = dowRows.length ? hbars(dowRows, Math.max(1, ...dowRows.map((r) => r[1]))) : empty("Sem chamadas no período", "");
+
+  /* 20 · Infantil x Adulto */
+  const grp = (kid) => { const l = students.filter((s) => !!s.kid === kid); const v = l.map((s) => presOf.get(s.id)).filter((x) => x !== null); return [l.length, v.length ? Math.round(v.reduce((a, b) => a + b, 0) / v.length) : null]; };
+  const [nK, pK] = grp(true), [nA, pA] = grp(false);
+  const turmas = hbars([["Infantil", pK ?? 0, `Infantil: ${nK} alunos · presença média ${pK ?? "—"}%`], ["Adulto", pA ?? 0, `Adulto: ${nA} alunos · presença média ${pA ?? "—"}%`]], 100, (v) => v + "%");
+
+  /* 21 · Chamadas pendentes + quem mais fez chamada */
+  const pendHtml = pending.length ? `<div class="list">${pending.slice(0, 6).map((c) => `<button class="item" data-a="call" data-id="${c.id}"><div class="grow"><div class="nm">${DOW[parse(c.date).getDay()]} ${brShort(c.date)} · ${c.time}</div><div class="meta"><span class="pill">${c.aud}</span><span>${esc(staffName(c.instructor))}</span></div></div><span class="pill warn">Fazer chamada</span>${chev()}</button>`).join("")}</div>` : empty("Tudo em dia", "Todas as aulas do período têm chamada.");
+  const byInstr = staff.map((t) => [esc(t.name.split(" ")[0]), done.filter((c) => c.instructor === t.id).length, `${t.name}: ${done.filter((c) => c.instructor === t.id).length} aulas com chamada`]).filter((r) => r[1]).sort((a, b) => b[1] - a[1]);
+
+  /* 22 · Equipe que mais registra FO */
+  const byAuthor = staff.map((t) => [esc(t.name.split(" ")[0]), fosP.filter((f) => f.author === t.id).length, `${t.name}: ${fosP.filter((f) => f.author === t.id).length} FO registrados em ${P} dias`]).filter((r) => r[1]).sort((a, b) => b[1] - a[1]);
+
+  /* 23 · Faixas */
+  const beltRows = (kid) => (kid ? KIDS : ADULT).map(([k, l, c]) => [`<span class="sw8" style="background:${c}"></span>${l}`, students.filter((s) => !!s.kid === kid && s.belt === k).length, `${kid ? "Infantil" : "Adulto"} · faixa ${l}: ${students.filter((s) => !!s.kid === kid && s.belt === k).length} alunos`]);
+  const maxB = Math.max(1, ...beltRows(true).map((r) => r[1]), ...beltRows(false).map((r) => r[1]));
+
+  /* 24 · Graduação */
+  const gradHtml = `<div class="ins-mini"><div><b class="pos" style="color:var(--pos)">${eleg.length}</b><span>Elegíveis</span></div><div><b>${grads.filter(([, g]) => g.status === "quase").length}</b><span>Quase lá</span></div><div><b>${grads.filter(([, g]) => g.status === "progresso").length}</b><span>Em progresso</span></div></div>
+    ${eleg.length ? `<div class="list" style="margin-top:8px">${eleg.slice(0, 4).map(([s, g]) => studentRow(s, `<span class="pill pos">${g.label}</span>`)).join("")}</div>` : ""}`;
+
+  /* 25 · Campeonatos */
+  const compsP = db.comps.filter((c) => students.some((s) => s.id === c.sid));
+  const medalists = students.map((s) => [s, medalsOf(s.id)]).filter(([, m]) => m).sort((a, b) => b[1] - a[1]);
+  const compHtml = `${hbars(Object.entries(RESULTS).map(([k, [l, c]]) => [`<span class="sw8" style="background:${c}"></span>${l}`, compsP.filter((x) => x.result === k).length, `${l}: ${compsP.filter((x) => x.result === k).length}`]), Math.max(1, ...Object.keys(RESULTS).map((k) => compsP.filter((x) => x.result === k).length)))}
+    ${medalists.length ? `<div class="list" style="margin-top:6px">${medalists.slice(0, 3).map(([s, m]) => studentRow(s, `<span class="pill blue">${m} ${m === 1 ? "medalha" : "medalhas"}</span>`)).join("")}</div>` : ""}`;
+
+  /* 26 · Mural */
+  const postsP = db.posts.filter((p) => p.pid === pid && (p.at || "").slice(0, 10) >= from);
+  const top = [...postsP].sort((a, b) => (b.likes || []).length - (a.likes || []).length)[0];
+  const muralHtml = `<div class="ins-mini"><div><b>${postsP.length}</b><span>Posts</span></div><div><b>${postsP.reduce((a, p) => a + (p.likes || []).length, 0)}</b><span>Oss (curtidas)</span></div><div><b>${postsP.reduce((a, p) => a + (p.comments || []).length, 0)}</b><span>Comentários</span></div></div>
+    ${top ? `<p class="ins-n" style="font-size:14px;color:var(--ink-2)"><b>Mais curtido:</b> “${esc(top.caption.slice(0, 90))}${top.caption.length > 90 ? "…" : ""}” · ${(top.likes || []).length} Oss</p>` : ""}`;
+
+  /* 27 · Aniversariantes do mês */
+  const mNow = today().getMonth();
+  const aniv = students.filter((s) => s.birth && parse(s.birth).getMonth() === mNow).sort((a, b) => parse(a.birth).getDate() - parse(b.birth).getDate());
+  const anivHtml = aniv.length ? `<div class="list">${aniv.map((s) => studentRow(s, `<span class="pill blue">dia ${parse(s.birth).getDate()} · ${ageOf(s.birth) + (parse(s.birth).getDate() > today().getDate() ? 1 : 0)} anos</span>`)).join("")}</div>` : empty("Ninguém faz aniversário este mês", "");
+
+  /* 28 · Sumidos do app */
+  const sumHtml = sumidos.length ? `<div class="list">${sumidos.slice(0, 8).map((s) => studentRow(s, `<span class="muted small" style="white-space:nowrap">${relTime((acc[s.id] || {}).last)}</span>`)).join("")}</div>${sumidos.length > 8 ? `<p class="ins-n">E mais ${sumidos.length - 8} alunos.</p>` : ""}` : empty("Todos entraram recentemente", "");
+
+  return `<div class="stack">
+    <div class="ins-head">
+      <p>Visão geral do projeto <b style="color:var(--ink)">${esc(project(pid).name)}</b> · atualizado ${relTime(new Date().toISOString())}</p>
+      <div class="chips" role="group" aria-label="Período">${[7, 30, 90].map((d) => `<button class="chip ${P === d ? "on" : ""}" data-a="iper" data-v="${d}">${d} dias</button>`).join("")}</div>
+    </div>
+    ${kpis}
+    <div class="ins-grid three">
+      ${insGroup("Quem entrou no app", `<span class="muted small">${seen.length} pessoas</span>`, entrou, "Conta cada pessoa no máximo uma vez a cada 20 minutos.")}
+      ${insGroup("Acessos por dia · 14 dias", "", acessosDia, "Pessoas diferentes que abriram o app em cada dia.")}
+      ${insGroup("Sem entrar há 14+ dias", `<span class="pill warn">${sumidos.length}</span>`, sumHtml, "Alunos que não abrem o app há duas semanas ou nunca abriram.")}
+    </div>
+    <div class="ins-grid">
+      ${insGroup("Destaques do período", "", destaques, "Pontuação = 60% presença + 30% comportamento (saldo de FO) + 10% medalhas.")}
+      ${insGroup("Risco de evasão", `<span class="pill warn">${risco.length}</span>`, riscoHtml, "Faltou as 3 últimas aulas ou tem presença abaixo de 50%.")}
+      ${insGroup("Ranking de presença", "", rankPres)}
+      ${insGroup("FO por semana · 8 semanas", "", foSemana)}
+      ${insGroup("Atenção comportamental", `<span class="pill neg">${atencao.length}</span>`, atencaoHtml, "Alunos com 2 ou mais FO− no período.")}
+      ${insGroup("Motivos de FO", "", catHtml)}
+      ${insGroup("Presentes por dia da semana", "", dowHtml, "Média de alunos presentes por aula em cada dia.")}
+      ${insGroup("Presença: Infantil × Adulto", "", turmas)}
+      ${insGroup("Chamadas pendentes", `<span class="pill ${pending.length ? "warn" : "pos"}">${pending.length}</span>`, pendHtml)}
+      ${insGroup("Equipe: chamadas e FO", "", `<div class="lbl" style="margin:0 0 4px">Aulas com chamada, por instrutor</div>${byInstr.length ? hbars(byInstr, Math.max(...byInstr.map((r) => r[1]))) : `<p class="muted small">Nenhuma ainda.</p>`}<div class="lbl" style="margin:14px 0 4px">FO registrados, por pessoa</div>${byAuthor.length ? hbars(byAuthor, Math.max(...byAuthor.map((r) => r[1]))) : `<p class="muted small">Nenhum ainda.</p>`}`)}
+      ${insGroup("Graduação", "", gradHtml)}
+      ${insGroup("Faixas do projeto", "", `<div class="lbl" style="margin:0 0 4px">Infantil</div>${hbars(beltRows(true), maxB)}<div class="lbl" style="margin:14px 0 4px">Adulto</div>${hbars(beltRows(false), maxB)}`)}
+      ${insGroup("Campeonatos", "", compHtml)}
+      ${insGroup(`Mural · ${P} dias`, "", muralHtml)}
+      ${insGroup("Novos alunos", `<span class="pill blue">${novos.length}</span>`, novos.length ? `<div class="list">${novos.slice(0, 6).map((s) => studentRow(s, `<span class="muted small">${br(s.joined)}</span>`)).join("")}</div>` : empty("Nenhum cadastro novo", `Ninguém se cadastrou nos últimos ${P} dias.`))}
+      ${insGroup("Aniversariantes do mês", `<span class="pill blue">${aniv.length}</span>`, anivHtml)}
+    </div>
+  </div>`;
+};
+
 /* ================= FUNÇÕES DA EQUIPE (quem faz o quê) ================= */
 const FUNCOES = {
   mestre: {
@@ -1831,7 +2082,7 @@ views.funcoes = () => {
   </div>`;
 };
 
-const TITLES = { inicio: "Início", chamada: "Chamada", mural: "Mural do tatame", alunos: "Alunos", aluno: "Ficha do aluno", agenda: "Agenda e escala", graduacao: "Graduação", campeonatos: "Campeonatos", funcoes: "Funções da equipe", equipe: "Equipe técnica", mais: "Mais" };
+const TITLES = { insights: "Insights", inicio: "Início", chamada: "Chamada", mural: "Mural do tatame", alunos: "Alunos", aluno: "Ficha do aluno", agenda: "Agenda e escala", graduacao: "Graduação", campeonatos: "Campeonatos", funcoes: "Funções da equipe", equipe: "Equipe técnica", mais: "Mais" };
 
 function shell() {
   const items = navItems();
@@ -1850,7 +2101,7 @@ function shell() {
       ${!CLOUD ? `<button class="nav" data-a="reset">${icon("restore", "")}Restaurar exemplos</button>` : ""}
       <button class="nav" data-a="logout">${icon("logout", "")}Sair</button>
     </aside>
-    <main class="main">
+    <main class="main ${state.view === "insights" ? "wide" : ""}">
       <header class="top">
         <div class="l">${back}</div>
         <h1>${title}</h1>
@@ -2133,6 +2384,7 @@ function login(email) {
   }
   Object.assign(state, { view: "inicio", sheet: null, password: "", showPass: false, callDate: TODAY(), week: iso(mondayOf(today())) });
   persist();
+  markAccess();
   render(); window.scrollTo(0, 0);
   return true;
 }
@@ -2329,6 +2581,7 @@ document.addEventListener("click", (e) => {
     case "zerar": if (isMestre()) openSheet({ kind: "zerar" }); break;
     case "excluirConta": if (state.user && !isStaff()) openSheet({ kind: "excluirConta" }); break;
     case "frole": state.frole = v; render(); break;
+    case "iper": state.iper = Number(v); render(); break;
     case "grad": openSheet({ kind: "grad", id }); break;
 
     /* campeonatos */
@@ -2442,6 +2695,7 @@ document.addEventListener("submit", (e) => {
     db.fos = db.fos.filter((f) => f.sid !== sid);
     db.comps = db.comps.filter((c) => c.sid !== sid);
     db.grads = db.grads.filter((g) => g.sid !== sid);
+    if (db.access) delete db.access[sid];
     db.posts = db.posts.filter((p) => !(p.byKind === "student" && p.by === sid));
     db.posts.forEach((p) => {
       p.tags = (p.tags || []).filter((t) => t !== sid);
@@ -2466,7 +2720,7 @@ document.addEventListener("submit", (e) => {
     db = {
       projects: [{ id: pid, name: fd.pname.trim(), city: fd.pcity.trim(), color: old.color || "#2B5CE6" }],
       staff: [{ id: tid, name: fd.mname.trim(), role: "mestre", belt: fd.mbelt, degrees: Number(fd.mdeg), email, phone: me.phone && me.email !== "mestre@dojo.org" ? me.phone : "", pid, photo: me.email !== "mestre@dojo.org" ? me.photo || "" : "" }],
-      students: [], classes: [], attendance: {}, fos: [], comps: [], grads: [], posts: [], scales: {}
+      students: [], classes: [], attendance: {}, fos: [], comps: [], grads: [], posts: [], scales: {}, access: {}
     };
     state.user = { role: "mestre", staffId: tid, name: fd.mname.trim() };
     state.sheet = null;
@@ -2510,6 +2764,23 @@ document.addEventListener("submit", (e) => {
 });
 
 render();
+
+/* Acessos: registra ao abrir o app e ao voltar para ele */
+setTimeout(markAccess, 1500);
+document.addEventListener("visibilitychange", () => { if (!document.hidden) markAccess(); });
+
+/* Dica flutuante dos gráficos (passar o mouse ou focar com o teclado) */
+(function () {
+  const tip = document.createElement("div");
+  tip.id = "tip"; tip.hidden = true; tip.setAttribute("role", "tooltip");
+  document.body.appendChild(tip);
+  const show = (el, x, y) => { tip.textContent = el.dataset.tip; tip.hidden = false; const w = tip.offsetWidth; tip.style.left = Math.max(8, Math.min(innerWidth - w - 8, x - w / 2)) + "px"; tip.style.top = Math.max(8, y - tip.offsetHeight - 12) + "px"; };
+  document.addEventListener("mouseover", (e) => { const el = e.target.closest && e.target.closest("[data-tip]"); if (el) show(el, e.clientX, e.clientY); else tip.hidden = true; });
+  document.addEventListener("mousemove", (e) => { const el = e.target.closest && e.target.closest("[data-tip]"); if (el) show(el, e.clientX, e.clientY); });
+  document.addEventListener("focusin", (e) => { const el = e.target.closest && e.target.closest("[data-tip]"); if (el) { const r = el.getBoundingClientRect(); show(el, r.left + r.width / 2, r.top); } });
+  document.addEventListener("focusout", () => { tip.hidden = true; });
+  document.addEventListener("scroll", () => { tip.hidden = true; }, true);
+})();
 
 /* Sincronização: busca ao abrir, a cada 8 s com o app aberto, ao voltar para a aba e quando a internet volta */
 if (CLOUD) {
