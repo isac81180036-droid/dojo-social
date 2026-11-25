@@ -667,7 +667,7 @@ const ADULT = [["branca", "Branca", "#F4F4F5"], ["azul", "Azul", "#1E40AF"], ["r
 const KIDS = [["branca", "Branca", "#F4F4F5"], ["cinza", "Cinza", "#6B7280"], ["amarela", "Amarela", "#EAB308"], ["laranja", "Laranja", "#EA580C"], ["verde", "Verde", "#15803D"]];
 const FO_CATS = { "+": [["elogio", "Elogio"], ["disciplina", "Disciplina"], ["tecnica", "Técnica"]], "-": [["atraso", "Atraso"], ["desrespeito", "Falta de respeito"], ["desatencao", "Desatenção"]] };
 const CAT_LABEL = Object.fromEntries([...FO_CATS["+"], ...FO_CATS["-"]]);
-const ROLE_LABEL = { mestre: "Mestre", instrutor: "Instrutor", monitor: "Monitor", aluno: "Aluno" };
+const ROLE_LABEL = { mestre: "Professor", instrutor: "Instrutor", monitor: "Monitor", aluno: "Aluno" };
 const AUD = { Adulto: "Adulto", Infantil: "Infantil", Todos: "Todos" };
 const KIMONO = ["M0", "M1", "M2", "M3", "M4", "A0", "A1", "A2", "A3", "A4", "A5"];
 const SCHOOL = ["Matriculado", "Não matriculado", "Concluído"];
@@ -687,14 +687,29 @@ const uid = () => "x" + Date.now().toString(36) + Math.random().toString(36).sli
 const display = (s) => s.nick || s.first;
 const fullName = (s) => `${s.first} ${s.last}`;
 
+/* Faixa preta com 7º–10º grau (IBJJF/CBJJ): coral vermelha e preta (7º), coral vermelha e branca (8º), vermelha (9º e 10º) */
+function beltLook(p) {
+  const b = beltOf(p), d = Number(p.degrees) || 0;
+  if (b[0] === "preta" && !p.kid && d >= 9) return { name: "Vermelha", bg: "#B91C1C", high: true };
+  if (b[0] === "preta" && !p.kid && d === 8) return { name: "Coral vermelha e branca", bg: "repeating-linear-gradient(90deg, #C62828 0 6px, #F4F4F5 6px 12px)", high: true };
+  if (b[0] === "preta" && !p.kid && d === 7) return { name: "Coral vermelha e preta", bg: "repeating-linear-gradient(90deg, #C62828 0 6px, #111111 6px 12px)", high: true };
+  return { name: b[1], bg: b[2], high: false, preta: b[0] === "preta" };
+}
+const degBars = (p, look) => (look.high ? "" : [0, 1, 2, 3].map((i) => `<i class="${i < p.degrees ? "on" : ""}"></i>`).join(""));
 function beltMini(p) {
-  const b = beltOf(p);
-  return `<span class="mb" style="--c:${b[2]}" title="Faixa ${b[1]} · ${p.degrees} grau(s)"><span class="tip ${b[0] === "preta" ? "red" : ""}">${[0, 1, 2, 3].map((i) => `<i class="${i < p.degrees ? "on" : ""}"></i>`).join("")}</span></span>`;
+  const l = beltLook(p);
+  return `<span class="mb" style="--c:${l.bg}" title="Faixa ${l.name} · ${p.degrees} grau(s)">${l.high ? "" : `<span class="tip ${l.preta ? "red" : ""}">${degBars(p, l)}</span>`}</span>`;
 }
 function beltBig(p) {
-  const b = beltOf(p);
-  return `<div class="bigbelt" style="--c:${b[2]}" aria-label="Faixa ${b[1]}, ${p.degrees} graus"><div class="tip ${b[0] === "preta" ? "red" : ""}">${[0, 1, 2, 3].map((i) => `<i class="${i < p.degrees ? "on" : ""}"></i>`).join("")}</div></div>`;
+  const l = beltLook(p);
+  return `<div class="bigbelt" style="--c:${l.bg}" aria-label="Faixa ${l.name}, ${p.degrees} graus">${l.high ? "" : `<div class="tip ${l.preta ? "red" : ""}">${degBars(p, l)}</div>`}</div>`;
 }
+/* Título pela graduação: faixa preta 1º–6º = Professor · coral 7º–8º = Mestre · vermelha 9º–10º = Grande Mestre */
+function gradTitle(p) { if (!p || p.belt !== "preta") return null; const d = Number(p.degrees) || 0; return d >= 9 ? "Grande Mestre" : d >= 7 ? "Mestre" : null; }
+const roleLabel = (t) => (!t ? "" : gradTitle(t) || ROLE_LABEL[t.role] || "");
+const userLabel = (u) => (u.admin ? "Admin global" : u.staffId && staffById(u.staffId) ? roleLabel(staffById(u.staffId)) : ROLE_LABEL[u.role]);
+const headTitle = (pid) => { const m = db.staff.find((t) => t.pid === pid && t.role === "mestre"); return m ? roleLabel(m) : "Professor"; };
+const DEG_LABEL = (n) => (n <= 6 ? `${n}` : n <= 8 ? `${n} · coral (Mestre)` : `${n} · vermelha (Grande Mestre)`);
 
 /* ================= DADOS DE EXEMPLO ================= */
 function mulberry32(a) { return function () { a |= 0; a = (a + 0x6d2b79f5) | 0; let t = Math.imul(a ^ (a >>> 15), 1 | a); t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t; return ((t ^ (t >>> 14)) >>> 0) / 4294967296; }; }
@@ -1071,7 +1086,7 @@ function sha256(text) {
 
 /* Chamada, FO, montar a grade e painel de graduação: só Mestre e Instrutor (Monitor não) */
 const canTeach = () => !!state.user && (state.user.role === "mestre" || state.user.role === "instrutor");
-const TEACH_ONLY = "Só o Mestre e o Instrutor podem fazer isso.";
+const TEACH_ONLY = "Só o Professor e o Instrutor podem fazer isso.";
 const myPid = () => { const u = state.user; if (!u) return ""; const p = isStaff() ? staffById(u.staffId) : student(u.studentId); return p ? p.pid : ""; };
 const meKey = () => (isStaff() ? state.user.staffId : state.user.studentId);
 const myStudents = () => db.students.filter((s) => s.pid === myPid());
@@ -1148,7 +1163,7 @@ const auth = {
         <button class="wbtn dark" data-a="options">Outras opções</button>
         ${CLOUD ? "" : `<div class="w-demo" role="group" aria-label="Acessos de demonstração">
           <span>Testar como</span>
-          <button data-a="demo" data-email="mestre@dojo.org">Mestre</button>
+          <button data-a="demo" data-email="mestre@dojo.org">Professor</button>
           <button data-a="demo" data-email="instrutor@dojo.org">Instrutor</button>
           <button data-a="demo" data-email="pedro@dojo.org">Monitor</button>
           <button data-a="demo" data-email="aluno@dojo.org">Aluno</button>
@@ -1239,7 +1254,7 @@ const auth = {
       <p class="lead">Como você vai usar o Dojo Social?</p>
       <div class="stack" style="gap:12px">
         <button class="switch-row" style="margin:0" data-a="goAuth" data-to="profile"><span class="bdg">${icon("person")}</span><span class="grow">Sou aluno<small>Ou responsável por um aluno. Escolha o projeto em que treina e peça para entrar.</small></span>${chev()}</button>
-        <button class="switch-row" style="margin:0" data-a="goAuth" data-to="mestre"><span class="bdg">${icon("belt")}</span><span class="grow">Sou mestre de um projeto<small>Cadastre seu projeto social e aprove os alunos que pedirem para entrar.</small></span>${chev()}</button>
+        <button class="switch-row" style="margin:0" data-a="goAuth" data-to="mestre"><span class="bdg">${icon("belt")}</span><span class="grow">Sou professor de um projeto<small>Cadastre seu projeto social e aprove os alunos que pedirem para entrar.</small></span>${chev()}</button>
       </div>
       <div class="signup"><span>Já tem conta?</span><button class="link" data-a="goAuth" data-to="login">Entrar</button></div>
     </div>`,
@@ -1249,7 +1264,7 @@ const auth = {
     <div class="screen onb">
       <div class="onb-top"><button class="sq-btn" data-a="goAuth" data-to="tipo" aria-label="Voltar">${icon("back", "")}</button></div>
       <h1 class="big">Cadastre seu projeto</h1>
-      <p class="lead">Você será o Mestre do projeto. Os alunos vão encontrar o projeto no cadastro e pedir para entrar, e você aceita ou recusa.</p>
+      <p class="lead">Você será o Professor responsável pelo projeto. Os alunos vão encontrar o projeto no cadastro e pedir para entrar, e você aceita ou recusa.</p>
       <form id="mestreForm" novalidate>
         <h2>Projeto</h2>
         ${field({ id: "mProj", label: "Nome do projeto", ic: "grid", placeholder: "Ex.: Guerreiros do Tatame", value: state.mProj })}
@@ -1260,7 +1275,7 @@ const auth = {
         ${field({ id: "phone", label: "Telefone (opcional)", left: `<span class="ddi">${flag}+ 55</span>`, placeholder: "00 00000-0000", value: state.phone, mode: "tel" })}
         <div class="row2">
           <div class="field"><label class="lbl" for="mBelt">Sua faixa</label><div class="box"><select id="mBelt">${ADULT.map(([k, l]) => `<option value="${k}" ${state.mBelt === k ? "selected" : ""}>${l}</option>`).join("")}</select></div></div>
-          <div class="field"><label class="lbl" for="mDeg">Graus</label><div class="box"><select id="mDeg">${[0, 1, 2, 3, 4, 5, 6].map((n) => `<option value="${n}" ${String(state.mDeg) === String(n) ? "selected" : ""}>${n}</option>`).join("")}</select></div></div>
+          <div class="field"><label class="lbl" for="mDeg">Graus</label><div class="box"><select id="mDeg">${[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((n) => `<option value="${n}" ${String(state.mDeg) === String(n) ? "selected" : ""}>${DEG_LABEL(n)}</option>`).join("")}</select></div></div>
         </div>
         <button class="btn" type="submit" style="margin-top:8px">Cadastrar meu projeto</button>
       </form>
@@ -1275,7 +1290,7 @@ const auth = {
         <div class="steps" role="img" aria-label="Etapa 3 de 3"><span class="on"></span><span class="on"></span><span class="on"></span></div>
       </div>
       <h1 class="big">Escolha seu projeto</h1>
-      <p class="lead">Toque no projeto em que você treina. O Mestre recebe seu pedido e aprova sua entrada.</p>
+      <p class="lead">Toque no projeto em que você treina. O Professor recebe seu pedido e aprova sua entrada.</p>
       <form id="projetoForm" novalidate>
         ${projectPicker()}
         <button class="btn" type="submit" style="margin-top:18px" ${state.reqPid ? "" : "disabled"}>Solicitar entrada</button>
@@ -1292,13 +1307,13 @@ const auth = {
       <div class="hello" style="margin-bottom:22px">
         <span class="eyebrow">${icon(refused ? "close" : "hand", "i", "width:18px;height:18px")}${refused ? "Pedido não aceito" : "Pedido enviado"}</span>
         <h2>${refused ? "Escolha outro projeto" : `Oss, ${esc(display(s))}!`}</h2>
-        <p>${refused ? `O Mestre de <b>${esc(p.name || "")}</b> não aceitou o pedido.` : `Seu pedido para entrar em <b>${esc(p.name || "")}</b> está com ${m ? `o Mestre ${esc(m.name.split(" ")[0])}` : "o Mestre"}.`}</p>
+        <p>${refused ? `O ${headTitle(s.pid)} de <b>${esc(p.name || "")}</b> não aceitou o pedido.` : `Seu pedido para entrar em <b>${esc(p.name || "")}</b> está com ${m ? `o ${roleLabel(m)} ${esc(m.name.split(" ")[0])}` : "o Professor"}.`}</p>
       </div>
       ${refused
         ? `<p class="lead" style="margin-top:0">Se você treina em outro projeto, escolha abaixo e peça para entrar.</p>
            ${projectPicker(s.pid)}
            <button class="btn" data-a="reRequest" style="margin-top:18px" ${state.reqPid && state.reqPid !== s.pid ? "" : "disabled"}>Pedir para entrar</button>`
-        : `<p class="lead" style="margin-top:0">Assim que o Mestre aceitar, o app abre para você sozinho. Pode fechar e voltar depois.</p>
+        : `<p class="lead" style="margin-top:0">Assim que o Professor aceitar, o app abre para você sozinho. Pode fechar e voltar depois.</p>
            <button class="btn" data-a="refreshReq">${icon("restore")}Atualizar</button>`}
       <button class="btn outline" data-a="logout">Sair</button>
     </div>`;
@@ -1313,12 +1328,12 @@ const emailTaken = (e) => { e = (e || "").trim().toLowerCase(); return db.studen
 const pendingOf = () => { if (!state.user || isStaff()) return null; const s = student(state.user.studentId); return s && s.req ? s : null; };
 function projectPicker(exclude) {
   const list = joinableProjects().filter((p) => p.id !== exclude).sort((a, b) => a.name.localeCompare(b.name));
-  if (!list.length) return `<div class="panel">${empty("Nenhum projeto disponível", "Peça ao seu Mestre para cadastrar o projeto no Dojo Social.")}</div>`;
+  if (!list.length) return `<div class="panel">${empty("Nenhum projeto disponível", "Peça ao seu Professor para cadastrar o projeto no Dojo Social.")}</div>`;
   return `<div class="panel" style="padding:0 16px" role="radiogroup" aria-label="Projetos">${list.map((p) => {
     const m = mestreOf(p.id), n = db.students.filter((s) => s.pid === p.id && s.active).length, on = state.reqPid === p.id;
     return `<button type="button" class="row" role="radio" aria-checked="${on}" data-a="pickProj" data-v="${p.id}">
       <span class="av" style="background:${p.color};color:#FFFFFF">${esc(projInitials(p.name))}</span>
-      <span class="grow">${esc(p.name)}<small>${p.city ? `${esc(p.city)} · ` : ""}Mestre ${esc(m.name.split(" ")[0])} · ${n} ${n === 1 ? "aluno" : "alunos"}</small></span>
+      <span class="grow">${esc(p.name)}<small>${p.city ? `${esc(p.city)} · ` : ""}${roleLabel(m)} ${esc(m.name.split(" ")[0])} · ${n} ${n === 1 ? "aluno" : "alunos"}</small></span>
       <span class="pick ${on ? "on" : ""}" aria-hidden="true">${on ? icon("check", "") : ""}</span>
     </button>`;
   }).join("")}</div>`;
@@ -1437,8 +1452,8 @@ function inicioStaff() {
     <div class="grid-2">
       ${canTeach() ? group("Prontos para graduar", `<button class="link small" data-a="nav" data-view="graduacao">Ver painel</button>`,
         `<div class="list">${eligible.length ? eligible.slice(0, 4).map(([s, g]) => studentRow(s, `<span class="pill pos">${g.label}</span>`)).join("") : empty("Ninguém elegível agora", "Os critérios são presença, saldo de FO e tempo de faixa.")}</div>`, "padding:4px 16px") : ""}
-      ${group("FO recentes", me ? `<span class="muted small">${esc(ROLE_LABEL[me.role])}</span>` : "",
-        `<div class="list">${recent.map((f) => foItem(f)).join("") || empty("Nenhum FO ainda", canTeach() ? "Registre pela chamada." : "O Mestre e o Instrutor registram os FO.")}</div>`, "padding:4px 16px")}
+      ${group("FO recentes", me ? `<span class="muted small">${esc(roleLabel(me))}</span>` : "",
+        `<div class="list">${recent.map((f) => foItem(f)).join("") || empty("Nenhum FO ainda", canTeach() ? "Registre pela chamada." : "O Professor e o Instrutor registram os FO.")}</div>`, "padding:4px 16px")}
     </div>
   </div>`;
 }
@@ -1465,7 +1480,7 @@ function escalaBanner(nextWeek) {
 
 function inicioAluno() {
   const s = student(state.user.studentId);
-  if (!s) return empty("Perfil não encontrado", "Fale com o seu mestre.");
+  if (!s) return empty("Perfil não encontrado", "Fale com o seu professor.");
   const g = gradStatus(s), pres = attendancePct(s), fo = foBalance(s);
   const tIso = TODAY();
   const next = db.classes.filter((c) => c.date >= tIso && fits(s, c)).sort((a, b) => (a.date + a.time).localeCompare(b.date + b.time)).slice(0, 3);
@@ -1658,7 +1673,7 @@ function escalaCard(c) {
           <button class="btn sm outline" data-a="editClass" data-id="${c.id}">${icon("edit")}Editar aula</button>
         </div>`
       : !sc.published
-      ? `<p class="muted small" style="margin:10px 0 0">Escala ainda não publicada pelo mestre.</p>`
+      ? `<p class="muted small" style="margin:10px 0 0">Escala ainda não publicada pelo professor.</p>`
       : `<div class="esc-choice">
           <button class="ans yes ${mineAnswer === "sim" ? "on" : ""}" data-a="resp" data-id="${c.id}" data-v="sim" aria-pressed="${mineAnswer === "sim"}">${icon("check", "")}Posso dar</button>
           <button class="ans no ${mineAnswer === "nao" ? "on" : ""}" data-a="resp" data-id="${c.id}" data-v="nao" aria-pressed="${mineAnswer === "nao"}">${icon("close", "")}Não posso</button>
@@ -1751,7 +1766,7 @@ views.agenda = () => {
       ? `<div><div class="sec-h"><h2>Grade da semana</h2><span class="muted small">${canTeach() ? "Toque na aula para escalar" : isStaff() ? "Toque na aula para se voluntariar" : "Aulas da sua turma"}</span></div><div class="wk">${days.join("")}</div></div>`
       : `<div class="panel">${empty("Grade ainda não publicada", "A grade da semana é montada pela equipe às sextas-feiras.")}</div>`}
 
-    ${isStaff() && !weekClasses.length ? `<div class="panel">${empty("Semana vazia", canTeach() ? "Toda sexta-feira, monte a grade da semana seguinte." : "O Mestre e o Instrutor montam a grade às sextas-feiras.", prevHas && canTeach() ? `<button class="btn sm" data-a="copyWeek">${icon("copy")}Copiar semana anterior</button>` : "")}</div>` : ""}
+    ${isStaff() && !weekClasses.length ? `<div class="panel">${empty("Semana vazia", canTeach() ? "Toda sexta-feira, monte a grade da semana seguinte." : "O Professor e o Instrutor montam a grade às sextas-feiras.", prevHas && canTeach() ? `<button class="btn sm" data-a="copyWeek">${icon("copy")}Copiar semana anterior</button>` : "")}</div>` : ""}
   </div>`;
 };
 
@@ -1780,7 +1795,7 @@ views.graduacao = () => {
         ${isMestre() ? `<button class="btn sm ${g.status === "elegivel" ? "" : "outline"}" data-a="grad" data-id="${s.id}">Graduar</button>` : ""}
       </div>`).join("") || empty("Ninguém nesta lista", "Troque o filtro acima.")}
     </div></div>
-    ${!isMestre() ? `<p class="muted small center" style="margin:0">Somente o Mestre aprova graduações.</p>` : ""}
+    ${!isMestre() ? `<p class="muted small center" style="margin:0">Somente o Professor responsável aprova graduações.</p>` : ""}
   </div>`;
 };
 
@@ -1797,7 +1812,7 @@ function whenLabel(at) {
   return `${pad(d.getDate())}/${pad(d.getMonth() + 1)}`;
 }
 function authorOf(p) {
-  if (p.byKind === "staff") { const t = staffById(p.by); return t ? { name: t.name, sub: ROLE_LABEL[t.role], photo: t.photo } : { name: "Equipe", sub: "" }; }
+  if (p.byKind === "staff") { const t = staffById(p.by); return t ? { name: t.name, sub: roleLabel(t), photo: t.photo } : { name: "Equipe", sub: "" }; }
   const s = student(p.by); return s ? { name: fullName(s), sub: `Faixa ${beltOf(s)[1]}`, photo: s.photo } : { name: "Aluno", sub: "" };
 }
 function postCard(p) {
@@ -1927,7 +1942,7 @@ views.campeonatos = () => {
 };
 
 views.equipe = () => {
-  if (!isMestre()) return empty("Acesso restrito", "Somente o Mestre gerencia a equipe.");
+  if (!isMestre()) return empty("Acesso restrito", "Somente o Professor responsável gerencia a equipe.");
   const order = { mestre: 0, instrutor: 1, monitor: 2 };
   const list = [...db.staff].sort((a, b) => order[a.role] - order[b.role] || a.name.localeCompare(b.name));
   return `<div class="stack">
@@ -1936,7 +1951,7 @@ views.equipe = () => {
       ${list.map((t) => `<div class="item">
         ${avat(t.name, t.photo)}
         <div class="grow"><div class="nm">${esc(t.name)}</div><div class="meta">${beltMini({ belt: t.belt, degrees: t.degrees, kid: false })}<span>${esc(t.email || "")}</span></div></div>
-        <span class="pill ${t.role === "mestre" ? "blue" : ""}">${ROLE_LABEL[t.role]}</span>
+        <span class="pill ${t.role === "mestre" ? "blue" : ""}">${roleLabel(t)}</span>
         <button class="iconbtn" data-a="editStaff" data-id="${t.id}" aria-label="Editar ${esc(t.name)}">${icon("edit", "i", "width:20px;height:20px")}</button>
       </div>`).join("")}
     </div></div>
@@ -1951,7 +1966,7 @@ views.mais = () => {
     ${group("Aparência", "", themePicker())}
     ${extra.length ? group("Mais seções","", extra.map(([k, l]) => `<button class="row" data-a="nav" data-view="${k}"><span class="grow">${l}</span>${chev()}</button>`).join(""), "padding:0 16px") : ""}
     ${group("Dados pessoais", "", `
-      <button class="row" data-a="me">${avat(u.name, (mePerson || {}).photo)}<span class="grow">${esc(u.name)}<small>${u.admin ? "Admin global" : ROLE_LABEL[u.role]} · ${esc(project(myPid()).name)}</small></span>${chev()}</button>
+      <button class="row" data-a="me">${avat(u.name, (mePerson || {}).photo)}<span class="grow">${esc(u.name)}<small>${userLabel(u)} · ${esc(project(myPid()).name)}</small></span>${chev()}</button>
       ${!CLOUD ? `<button class="row" data-a="reset"><span class="grow">Restaurar dados de exemplo<small>Apaga o que foi registrado neste navegador</small></span>${chev()}</button>` : ""}
       ${!isStaff() ? `<button class="row" data-a="excluirConta" style="color:var(--abs)"><span class="grow">Excluir minha conta<small>Apaga seu perfil e todos os seus dados do projeto</small></span>${chev()}</button>` : ""}`, "padding:0 16px")}
     ${isMestre() && db.projects.length <= 1 ? group("Projeto", "", `<button class="row" data-a="zerar"><span class="grow">Começar do zero<small>Apaga os dados de exemplo e deixa só o seu projeto e você</small></span>${chev()}</button>`, "padding:0 16px") : ""}
@@ -1985,7 +2000,7 @@ views.insights = () => {
   const staff = db.staff.filter((t) => t.pid === pid);
   const acc = db.access || {};
   const people = [
-    ...staff.map((t) => ({ key: t.id, name: t.name, full: t.name, role: ROLE_LABEL[t.role], photo: t.photo, sid: null })),
+    ...staff.map((t) => ({ key: t.id, name: t.name, full: t.name, role: roleLabel(t), photo: t.photo, sid: null })),
     ...students.map((s) => ({ key: s.id, name: `${display(s)} · ${fullName(s)}`, full: fullName(s), role: "Aluno", photo: s.photo, sid: s.id }))
   ];
   const daysIn = (k) => Object.keys((acc[k] || {}).d || {}).filter((d) => d >= from).length;
@@ -2027,7 +2042,7 @@ views.insights = () => {
   </div>`;
 
   /* 11 · Quem entrou no app */
-  const roleCls = (r) => (r === "Mestre" ? "blue" : r === "Aluno" ? "" : "pos");
+  const roleCls = (r) => (["Professor", "Mestre", "Grande Mestre"].includes(r) ? "blue" : r === "Aluno" ? "" : "pos");
   const entrou = seen.length ? `<div class="list">${seen.slice(0, 8).map((p) => `<div class="item" style="padding:10px 0">${avat(p.full, p.photo)}<div class="grow"><div class="nm">${esc(p.name)}</div><div class="meta"><span class="pill ${roleCls(p.role)}" style="height:22px;font-size:12px">${p.role}</span><span>${daysIn(p.key)}d ativos</span></div></div><span class="muted small" style="white-space:nowrap">${relTime(acc[p.key].last)}</span></div>`).join("")}</div>${seen.length > 8 ? `<p class="ins-n">E mais ${seen.length - 8} pessoas.</p>` : ""}`
     : empty("Ninguém registrado ainda", "Os acessos começam a ser contados a partir desta versão do app.");
 
@@ -2161,7 +2176,7 @@ views.insights = () => {
 const FUNCOES = {
   mestre: {
     resumo: "Responsável técnico e pedagógico pelo projeto",
-    quem: "Faixa preta à frente do projeto. Responde pela turma, pela equipe e pelo projeto diante das famílias e dos apoiadores.",
+    quem: "Faixa preta à frente do projeto. Responde pela turma, pela equipe e pelo projeto diante das famílias e dos apoiadores. Pela graduação, é chamado de Professor até o 6º grau da faixa preta, Mestre na faixa coral (7º e 8º grau) e Grande Mestre na faixa vermelha (9º e 10º).",
     deveres: [
       ["Linha técnica", "Define o currículo de cada turma e o que se ensina em cada faixa."],
       ["Graduação", "Aprova graus e trocas de faixa, com base no painel (presença, saldo de FO e tempo)."],
@@ -2176,13 +2191,13 @@ const FUNCOES = {
   },
   instrutor: {
     resumo: "Conduz as aulas e acompanha a evolução da turma",
-    quem: "Professor graduado que dá as aulas da semana. Responde ao Mestre e orienta os monitores.",
+    quem: "Professor graduado que dá as aulas da semana. Responde ao Professor responsável e orienta os monitores.",
     deveres: [
       ["Dar a aula", "Planeja e conduz aquecimento, técnica do dia, drills e treino."],
       ["Chamada", "Faz a chamada no início de toda aula. Sem chamada, a aula não conta na presença."],
       ["Fatos Observados", "Registra FO+ e FO−, sempre com justificativa curta."],
       ["Grade da semana", "Toda sexta revisa a próxima semana e preenche a técnica de cada aula."],
-      ["Indicar para graduar", "Acompanha a evolução e avisa o Mestre de quem está pronto."],
+      ["Indicar para graduar", "Acompanha a evolução e avisa o Professor responsável de quem está pronto."],
       ["Campeonatos", "Prepara e inscreve os alunos, acompanha nos eventos e registra os resultados."],
       ["Segurança no tatame", "Forma pares por idade e tamanho, cobra higiene e kimono completo."],
       ["Monitores", "Orienta e supervisiona os monitores durante a aula."],
@@ -2236,7 +2251,7 @@ views.funcoes = () => {
     </div>
 
     <div class="hello">
-      <span class="eyebrow">${icon("hand", "i", "width:18px;height:18px")}${r === "mestre" ? "1º na hierarquia" : r === "instrutor" ? "Responde ao Mestre" : "Responde ao Instrutor"}</span>
+      <span class="eyebrow">${icon("hand", "i", "width:18px;height:18px")}${r === "mestre" ? "1º na hierarquia" : r === "instrutor" ? "Responde ao Professor" : "Responde ao Instrutor"}</span>
       <h2>${ROLE_LABEL[r]}</h2>
       <p>${f.resumo}</p>
     </div>
@@ -2252,7 +2267,7 @@ views.funcoes = () => {
         ${group("No app pode", "", `<div class="tagrow">${f.app.map((x) => `<span class="pill blue" style="height:32px;padding:0 12px;font-size:14px">${x}</span>`).join("")}</div>`)}
         ${group(`Quem é ${ROLE_LABEL[r].toLowerCase()} hoje`, `<span class="muted small">${people.length}</span>`, people.length
           ? `<div class="list">${people.map((t) => `<div class="item">${avat(t.name, t.photo)}<div class="grow"><div class="nm">${esc(t.name)}</div><div class="meta">${beltMini({ belt: t.belt, degrees: t.degrees, kid: false })}<span>${esc(t.phone || "")}</span></div></div></div>`).join("")}</div>`
-          : empty("Ninguém nesta função", isMestre() ? "Cadastre pela aba Equipe." : "O Mestre cadastra a equipe."), "padding:4px 16px")}
+          : empty("Ninguém nesta função", isMestre() ? "Cadastre pela aba Equipe." : "O Professor responsável cadastra a equipe."), "padding:4px 16px")}
       </div>
     </div>
 
@@ -2287,7 +2302,7 @@ function shell() {
       <header class="top">
         <div class="l">${back}</div>
         <h1>${title}</h1>
-        <div class="r"><button class="who" data-a="me" aria-label="Abrir meu perfil">${avat(u.name, (mePerson || {}).photo)}<span class="who-t"><b>${esc(u.name.split(" ")[0])}</b><small>${u.admin ? "Admin global" : ROLE_LABEL[u.role]}</small></span></button></div>
+        <div class="r"><button class="who" data-a="me" aria-label="Abrir meu perfil">${avat(u.name, (mePerson || {}).photo)}<span class="who-t"><b>${esc(u.name.split(" ")[0])}</b><small>${userLabel(u)}</small></span></button></div>
       </header>
       <div class="screen">${views[state.view]()}</div>
     </main>
@@ -2350,7 +2365,7 @@ const sheets = {
     const c = state.sheet.id ? db.classes.find((x) => x.id === state.sheet.id) : null;
     const defDate = c ? c.date : state.sheet.date || (state.week <= TODAY() && TODAY() <= iso(addDays(parse(state.week), 6)) ? TODAY() : state.week);
     const cur = c ? c.instructor : state.user.staffId;
-    const instructors = opt("", "Vaga aberta (voluntariado)", cur) + db.staff.filter((t) => t.pid === myPid()).map((t) => opt(t.id, `${t.name} · ${ROLE_LABEL[t.role]}`, cur)).join("");
+    const instructors = opt("", "Vaga aberta (voluntariado)", cur) + db.staff.filter((t) => t.pid === myPid()).map((t) => opt(t.id, `${t.name} · ${roleLabel(t)}`, cur)).join("");
     return `<form id="sheetForm" data-kind="klass">
       ${sheetHead(c ? "Editar aula" : "Nova aula")}
       <div class="row2">${fi("date", "Dia", defDate, "date", true)}${fi("time", "Horário", c ? c.time : "18:30", "time", true)}</div>
@@ -2384,7 +2399,7 @@ const sheets = {
       ${sheetHead(t ? "Editar membro" : "Novo membro da equipe")}
       ${fi("name", "Nome completo", t ? t.name : "", "text", true)}
       <div class="row2">${fs("role", "Função", ["mestre", "instrutor", "monitor"].map((r) => opt(r, ROLE_LABEL[r], t ? t.role : "instrutor")).join(""))}${fs("belt", "Faixa", ADULT.map(([k, l]) => opt(k, l, t ? t.belt : "azul")).join(""))}</div>
-      <div class="row2">${fs("degrees", "Graus", [0, 1, 2, 3, 4].map((n) => opt(n, `${n}`, t ? t.degrees : 0)).join(""))}${fi("phone", "Telefone", t ? t.phone : "", "tel")}</div>
+      <div class="row2">${fs("degrees", "Graus", [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((n) => opt(n, DEG_LABEL(n), t ? t.degrees : 0)).join(""))}${fi("phone", "Telefone", t ? t.phone : "", "tel")}</div>
       ${fi("email", "E-mail de acesso", t ? t.email : "", "email", true)}
       <button class="btn" type="submit">${t ? "Salvar" : "Adicionar"}</button>
     </form>`;
@@ -2413,10 +2428,10 @@ const sheets = {
     const me = staffById(state.user.staffId) || {};
     return `<form id="sheetForm" data-kind="zerar">
       ${sheetHead("Começar do zero")}
-      <p class="muted" style="margin:-8px 0 18px;line-height:1.5">Apaga <b style="color:var(--ink)">todos</b> os dados de exemplo: alunos, equipe, aulas, chamadas, FO, campeonatos, mural e os outros projetos da rede. Fica só o seu projeto e você, como Mestre. ${CLOUD ? "Vale para todos os aparelhos." : ""}</p>
+      <p class="muted" style="margin:-8px 0 18px;line-height:1.5">Apaga <b style="color:var(--ink)">todos</b> os dados de exemplo: alunos, equipe, aulas, chamadas, FO, campeonatos, mural e os outros projetos da rede. Fica só o seu projeto e você, como Professor responsável. ${CLOUD ? "Vale para todos os aparelhos." : ""}</p>
       ${fi("pname", "Nome do projeto", pr.id === "p1" && pr.name === "Guardiões do Tatame" ? "" : pr.name || "", "text", true, 'placeholder="Ex.: Projeto Social Guerreiros do Tatame"')}
       ${fi("pcity", "Cidade · UF", pr.city === "Macapá · AP" ? "" : pr.city || "", "text", false, 'placeholder="Ex.: Macapá · AP"')}
-      ${fi("mname", "Seu nome completo (Mestre)", me.email === "mestre@dojo.org" ? "" : me.name || "", "text", true)}
+      ${fi("mname", "Seu nome completo (Professor responsável)", me.email === "mestre@dojo.org" ? "" : me.name || "", "text", true)}
       <div class="row2">${fs("mbelt", "Sua faixa", ADULT.map(([k, l]) => opt(k, l, me.belt || "preta")).join(""))}${fs("mdeg", "Graus", [0, 1, 2, 3, 4, 5, 6].map((n) => opt(n, `${n}`, me.degrees || 0)).join(""))}</div>
       ${fi("memail", "Seu e-mail de acesso", me.email === "mestre@dojo.org" ? "" : me.email || "", "email", true)}
       ${fi("confirma", 'Para confirmar, digite APAGAR', "", "text", true, 'autocapitalize="characters"')}
@@ -2495,7 +2510,7 @@ const sheets = {
         <span class="avwrap">${avat(t.name, t.photo, "lg")}<button class="campin" data-a="pickPhoto" data-kind="staff" data-id="${t.id}" aria-label="Trocar foto de perfil">${icon("camera", "")}</button></span>
         <div class="grow">
           <h2 style="margin:0 0 4px;font-size:20px">${esc(t.name)}</h2>
-          <div class="meta"><span class="pill blue">${ROLE_LABEL[t.role]}</span>${beltMini({ belt: t.belt, degrees: t.degrees, kid: false })}<span>Faixa ${ADULT.find((b) => b[0] === t.belt)[1]}</span></div>
+          <div class="meta"><span class="pill blue">${roleLabel(t)}</span>${beltMini({ belt: t.belt, degrees: t.degrees, kid: false })}<span>Faixa ${beltLook({ belt: t.belt, degrees: t.degrees, kid: false }).name}</span></div>
           <div class="meta"><span class="dotmark" style="background:${pr.color}"></span><span>${esc(pr.name)} · ${esc(pr.city)}</span></div>
         </div>
       </div>
@@ -2516,7 +2531,7 @@ const sheets = {
     <div class="panel" style="padding:0 16px">
       <button class="row" data-a="goAuth" data-to="login">${icon("email")}<span class="grow">Entrar com e-mail</span>${chev()}</button>
       <button class="row" data-toast="Digite o código enviado pelo seu professor.">${icon("key")}<span class="grow">Entrar com código<small>Enviado pelo seu professor</small></span>${chev()}</button>
-      <button class="row" data-a="goAuth" data-to="tipo">${icon("person")}<span class="grow">Criar conta<small>Aluno novo ou Mestre cadastrando o projeto</small></span>${chev()}</button>
+      <button class="row" data-a="goAuth" data-to="tipo">${icon("person")}<span class="grow">Criar conta<small>Aluno novo ou Professor cadastrando o projeto</small></span>${chev()}</button>
       ${darkSwitch()}
     </div>
   </div>`,
@@ -2766,7 +2781,7 @@ document.addEventListener("click", (e) => {
     case "options": openSheet({ kind: "opcoes" }); break;
     case "theme": setTheme(theme === "escuro" ? "claro" : "escuro"); render(); break;
     case "setTheme": if (v !== theme) { setTheme(v); render(); toast(v === "escuro" ? "Modo escuro ativado." : "Modo claro ativado."); } break;
-    case "demo": if (CLOUD) break; login(el.dataset.email); toast(`Entrou como ${ROLE_LABEL[state.user.role]}.`); break;
+    case "demo": if (CLOUD) break; login(el.dataset.email); toast(`Entrou como ${userLabel(state.user)}.`); break;
     case "kid": state.isKid = !state.isKid; state.belt = "branca"; render(); break;
     case "pickBelt": state.belt = el.dataset.belt; render(); break;
     case "deg": state.degrees = Math.min(4, Math.max(0, state.degrees + Number(el.dataset.d))); render(); break;
@@ -2884,7 +2899,7 @@ document.addEventListener("click", (e) => {
     case "excluirConta": if (state.user && !isStaff()) openSheet({ kind: "excluirConta" }); break;
     case "introReplay": openIntro(null, true); break;
     case "pickProj": state.reqPid = v; render(); break;
-    case "refreshReq": pull(); toast("Conferindo se o Mestre já respondeu…"); break;
+    case "refreshReq": pull(); toast("Conferindo se o Professor já respondeu…"); break;
     case "reRequest": {
       const s = pendingOf();
       if (!s || !state.reqPid || state.reqPid === s.pid || !mestreOf(state.reqPid)) break;
@@ -2991,21 +3006,21 @@ document.addEventListener("submit", (e) => {
     if (emailTaken(state.email)) return toast("Este e-mail já tem conta. Volte e entre.");
     const s = { id: "s" + uid(), pid: state.reqPid, first: state.firstName.trim(), last: state.lastName.trim(), nick: state.nickname.trim(), birth: brToIso(state.birthDate), kid: state.isKid, belt: state.belt, degrees: state.degrees, lastGrad: brToIso(state.lastGrad), joined: TODAY(), kimono: "", school: "", social: "", guardian: state.guardian, phone: state.phone, email: state.email.trim(), active: false, req: "pendente", reqAt: new Date().toISOString() };
     db.students.push(s);
-    login(s.email); toast("Pedido enviado! Agora é só aguardar o Mestre aceitar."); return;
+    login(s.email); toast("Pedido enviado! Agora é só aguardar o Professor aceitar."); return;
   }
   /* Mestre cadastra o projeto dele e entra como Mestre */
   if (id === "mestreForm") {
     if (CLOUD && !sync.version) return toast("Carregando os dados… tente de novo em instantes.");
     const name = state.mProj.trim().replace(/\s+/g, " "), email = state.mEmail.trim().toLowerCase();
     if (name.length < 3) return toast("Digite o nome do projeto.");
-    if (db.projects.some((p) => p.name.trim().toLowerCase() === name.toLowerCase())) return toast("Já existe um projeto com esse nome. Se ele é seu, entre com o e-mail do Mestre.");
+    if (db.projects.some((p) => p.name.trim().toLowerCase() === name.toLowerCase())) return toast("Já existe um projeto com esse nome. Se ele é seu, entre com o e-mail do Professor.");
     if (state.mName.trim().split(/\s+/).length < 2) return toast("Digite seu nome e sobrenome.");
     if (!/^\S+@\S+\.\S+$/.test(email)) return toast("Digite um e-mail válido.");
     if (emailTaken(email)) return toast("Este e-mail já tem conta. Volte e entre.");
     const used = new Set(db.projects.map((p) => p.color));
     const pid = "p" + uid();
     db.projects.push({ id: pid, name, city: state.mCity.trim(), color: PROJ_COLORS.find((c) => !used.has(c)) || PROJ_COLORS[db.projects.length % PROJ_COLORS.length] });
-    db.staff.push({ id: "t" + uid(), pid, name: state.mName.trim().replace(/\s+/g, " "), role: "mestre", belt: state.mBelt || "preta", degrees: Number(state.mDeg) || 0, email, phone: state.phone || "" });
+    db.staff.push({ id: "t" + uid(), pid, name: state.mName.trim().replace(/\s+/g, " "), role: "mestre", belt: state.mBelt || "preta", degrees: Math.min((state.mBelt || "preta") === "preta" ? 10 : 4, Number(state.mDeg) || 0), email, phone: state.phone || "" });
     login(email);
     toast(`“${name}” cadastrado! Os alunos já podem pedir para entrar.`);
     return;
@@ -3072,10 +3087,10 @@ document.addEventListener("submit", (e) => {
   }
 
   if (kind === "zerar") {
-    if (!isMestre()) return toast("Só o Mestre pode fazer isso.");
+    if (!isMestre()) return toast("Só o Professor responsável pode fazer isso.");
     if (fd.confirma.trim().toUpperCase() !== "APAGAR") return toast('Digite APAGAR para confirmar.');
     const email = fd.memail.trim().toLowerCase();
-    if (!/^\S+@\S+\.\S+$/.test(email)) return toast("Digite um e-mail válido para o Mestre.");
+    if (!/^\S+@\S+\.\S+$/.test(email)) return toast("Digite um e-mail válido para o Professor.");
     if (!fd.pname.trim() || !fd.mname.trim()) return toast("Preencha o nome do projeto e o seu nome.");
     const old = project(myPid()) || {};
     const me = staffById(state.user.staffId) || {};
@@ -3093,7 +3108,7 @@ document.addEventListener("submit", (e) => {
   }
 
   if (kind === "staff") {
-    const data = { name: fd.name.trim(), role: fd.role, belt: fd.belt, degrees: Number(fd.degrees), phone: fd.phone.trim(), email: fd.email.trim() };
+    const data = { name: fd.name.trim(), role: fd.role, belt: fd.belt, degrees: Math.min(fd.belt === "preta" ? 10 : 4, Number(fd.degrees) || 0), phone: fd.phone.trim(), email: fd.email.trim() };
     if (state.sheet.id) {
       Object.assign(staffById(state.sheet.id), data);
       if (state.user.staffId === state.sheet.id) Object.assign(state.user, { role: data.role, name: data.name });
