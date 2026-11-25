@@ -204,6 +204,36 @@
   #s9 .tg { left: 0; right: 0; top: 690px; text-align: center; font-size: 36px; font-weight: 600; color: var(--deep); letter-spacing: .01em; }
   #s9 .url { left: 0; right: 0; top: 960px; text-align: center; font-size: 22px; font-weight: 600; color: rgba(42, 27, 54, .75); letter-spacing: .06em; text-transform: uppercase; }
 
+  /* ===== versão vertical (celular, 1080×1920) ===== */
+  #stage.v { width: 1080px; height: 1920px; }
+  #stage.v #bg1 { left: 420px; top: -520px; }
+  #stage.v #bg2 { left: -300px; top: 1560px; }
+  #stage.v .kw { left: 70px; font-size: 90px; }
+  #stage.v #k1 { top: 640px !important; } #stage.v #k2 { top: 780px !important; } #stage.v #k3 { top: 920px !important; }
+  #stage.v #s2 .abre { top: 790px; }
+  #stage.v #s2 .word { top: 850px; font-size: 176px; }
+  #stage.v #coin { left: 435px !important; top: 1240px !important; }
+  #stage.v #s3cap, #stage.v #s4cap, #stage.v #famcap { left: 70px !important; top: 130px !important; width: 940px !important; }
+  #stage.v .cap { font-size: 84px; }
+  #stage.v #famcap .cap { font-size: 80px !important; margin-top: 22px !important; }
+  #stage.v .sub { font-size: 31px !important; max-width: none !important; margin-top: 22px !important; }
+  #stage.v .steps3 { margin-top: 30px; gap: 12px; }
+  #stage.v .st3 { font-size: 31px; }
+  #stage.v #ph3, #stage.v #ph4, #stage.v #ph5 { left: 325px !important; top: 780px !important; }
+  #stage.v #s5 .mid { top: 860px; }
+  #stage.v #s5 .mid .cap { font-size: 84px; }
+  #stage.v #s5 .rot { font-size: 40px; }
+  #stage.v #s6 > div:first-child { left: 70px !important; top: 360px !important; }
+  #stage.v #beltwrap { left: 160px !important; top: 1100px !important; }
+  #stage.v #s7cap { top: 170px !important; padding: 0 60px; }
+  #stage.v #s7cap .cap { font-size: 84px !important; }
+  #stage.v #monwrap { left: -80px !important; top: 640px !important; }
+  #stage.v #s8 .line { top: 720px; flex-wrap: wrap; white-space: normal; padding: 0 70px; row-gap: 18px; column-gap: 22px; font-size: 92px; }
+  #stage.v #s9 .mk { top: 610px; }
+  #stage.v #s9 .wd { top: 840px; font-size: 150px; }
+  #stage.v #s9 .tg { top: 1040px; font-size: 32px; padding: 0 60px; line-height: 1.5; }
+  #stage.v #s9 .url { top: 1760px; font-size: 22px; }
+
   /* barra de progresso fina (como no original) */
   #prog { position: absolute; left: 0; bottom: 0; height: 8px; background: var(--lilac-ink); opacity: .85; }
 
@@ -229,7 +259,7 @@
 
   <!-- S2 · a marca -->
   <section class="scene" id="s2">
-    <div class="abs abre" id="abre">Abre o</div>
+    <div class="abs abre" id="abre">Chegou o</div>
     <div class="abs word bri" id="word">dojo social</div>
     <div class="abs coin" id="coin" style="left:250px;top:700px"><svg viewBox="0 0 76 64"><use href="#knot"/></svg></div>
   </section>
@@ -394,6 +424,8 @@
   </defs>
 </svg>
 
+<audio id="vo" src="trilha-final.m4a" preload="auto"></audio>
+<div aria-hidden="true" style="position:absolute;left:-9999px;top:0;opacity:0;pointer-events:none"><span style="font-family:Figtree;font-weight:400">Aa Çã 0</span><span style="font-family:Figtree;font-weight:500">Aa Çã 0</span><span style="font-family:Figtree;font-weight:600">Aa Çã 0</span><span style="font-family:Figtree;font-weight:700">Aa Çã 0</span><span style="font-family:Figtree;font-weight:800">Aa Çã 0</span><span style="font-family:'Bricolage Grotesque';font-weight:700">Aa Çã 0</span><span style="font-family:'Bricolage Grotesque';font-weight:800">Aa Çã 0</span></div>
 <div id="ui"><button id="play">▶ Play</button><input id="scrub" type="range" min="0" max="1000" value="0"><span id="clock">0,0 s</span><button id="full">Tela cheia</button></div>
 
 <script>
@@ -441,7 +473,25 @@ const P = {
   hand: "M13 5.5V2.5c0-.83-.67-1.5-1.5-1.5S10 1.67 10 2.5v9.2L7.7 10.5c-.6-.4-1.4-.3-1.9.2-.5.5-.5 1.3 0 1.8l4.6 5.3c.6.7 1.5 1.1 2.4 1.1h4.7c1.7 0 3.1-1.3 3.4-3l.7-4.4c.2-1.2-.6-2.3-1.8-2.5l-6.8-1.2V5.5z",
   moon: "M12 3a9 9 0 1 0 9 9c0-.46-.04-.92-.1-1.36a5.39 5.39 0 0 1-4.4 2.26 5.4 5.4 0 0 1-3.14-9.8c-.44-.06-.9-.1-1.36-.1z"
 };
-const DURATION = 45;
+/* Sincronia com a narração: tempo real (T) -> tempo de desenho das cenas (D). Pontos [D, T]. */
+const WARP = [[0,0],[0.15,0.25],[0.75,1.75],[1.35,3.3],[2.35,4.6],[3.25,5.2],[4.0,5.6],[4.45,6.05],[7.6,9.0],[17.8,19.2],[18.45,20.3],[18.5,23.15],[19.4,25.1],[20.95,26.05],[21.15,26.25],[24.9,29.0],[25.9,29.95],[29.6,33.65],[31.3,35.6],[34.1,38.2],[38.4,42.4],[41.6,45.0],[42.15,45.55],[45.0,48.5]];
+const DURATION = WARP[WARP.length - 1][1];
+const QS = new URLSearchParams(location.search);
+const V = QS.has("v") || (!QS.has("h") && innerHeight > innerWidth * 1.05);
+const SW = V ? 1080 : 1920, SH = V ? 1920 : 1080;
+if (V) document.getElementById("stage").classList.add("v");
+const ORBC = V ? [540, 960, 450, 760] : [960, 520, 760, 360];
+const MON_S = V ? 0.82 : 1;
+const PH_S = V ? 1.2 : 1;
+const DESIGN_END = WARP[WARP.length - 1][0];
+function designAt(T) {
+  for (let i = 1; i < WARP.length; i++) {
+    const [d0, t0] = WARP[i - 1], [d1, t1] = WARP[i];
+    if (T <= t1) return d0 + (d1 - d0) * Math.max(0, (T - t0) / (t1 - t0));
+  }
+  return DESIGN_END;
+}
+let REAL = 0;
 const $ = (id) => document.getElementById(id);
 const icon = (n) => `<svg class="i" viewBox="0 0 24 24"><path d="${P[n]}"/></svg>`;
 
@@ -510,7 +560,7 @@ const SC = [
   }],
   ["s3", 7.6, 13.2, (t) => {
     const ph = eOut5(prog(t, 7.6, 8.5)), out = eInOut(prog(t, 12.6, 13.2));
-    css($("ph3"), { transform: `translate(${out * 700}px, ${lerp(900, 0, ph)}px) rotate(${lerp(6, 0, ph) + out * 8}deg)` });
+    css($("ph3"), { transform: `translate(${out * 700}px, ${lerp(900, 0, ph)}px) rotate(${lerp(6, 0, ph) + out * 8}deg) scale(${PH_S})` });
     const c = eOut(prog(t, 7.9, 8.6));
     css($("s3cap"), { opacity: c * (1 - out), transform: `translateX(${lerp(-60, 0, c) - out * 120}px)` });
     let marked = 0, pres = 0;
@@ -526,7 +576,7 @@ const SC = [
   }],
   ["s4", 13.1, 17.9, (t) => {
     const ph = eOut5(prog(t, 13.1, 13.9)), out = eIn(prog(t, 17.4, 17.9));
-    css($("ph4"), { transform: `translate(${lerp(-700, 0, ph)}px, ${out * 40}px) scale(${1 - out * 0.06})`, opacity: 1 - out });
+    css($("ph4"), { transform: `translate(${lerp(-700, 0, ph)}px, ${out * 40}px) scale(${PH_S * (1 - out * 0.06)})`, opacity: 1 - out });
     const c = eOut(prog(t, 13.5, 14.2));
     css($("s4cap"), { opacity: c * (1 - out), transform: `translateX(${lerp(60, 0, c)}px)` });
     const sh = eOut5(prog(t, 13.8, 14.4)) * (1 - eInOut(prog(t, 16.6, 16.95)));
@@ -544,7 +594,7 @@ const SC = [
   }],
   ["s4b", 17.8, 24.9, (t) => {
     const ph = eOut5(prog(t, 17.8, 18.6)), out = eIn(prog(t, 24.35, 24.9));
-    css($("ph5"), { transform: `translate(${lerp(700, 0, ph) + out * 60}px, ${out * 30}px) rotate(${lerp(-6, 0, ph)}deg) scale(${1 - out * 0.05})`, opacity: 1 - out });
+    css($("ph5"), { transform: `translate(${lerp(700, 0, ph) + out * 60}px, ${out * 30 + Math.sin(REAL * 1.4) * 7}px) rotate(${lerp(-6, 0, ph)}deg) scale(${PH_S * (1 - out * 0.05)})`, opacity: 1 - out });
     const c = eOut(prog(t, 17.95, 18.6));
     css($("famcap"), { opacity: c * (1 - out), transform: `translateX(${lerp(-60, 0, c) - out * 80}px)` });
     css($("famtag"), { transform: `scale(${lerp(0.6, 1, eBack(prog(t, 18.0, 18.5)))})` });
@@ -584,8 +634,8 @@ const SC = [
   ["s5", 17.8, 22.6, (t) => {
     const lt = t - 17.8, inn = eOut(prog(t, 17.8, 18.7)), out = eIn(prog(t, 22.1, 22.6));
     ORB.forEach((_, i) => {
-      const ang = (i / ORB.length) * Math.PI * 2 + lt * 0.22, rx = 760 * lerp(0.6, 1, inn), ry = 360 * lerp(0.6, 1, inn);
-      const x = 960 + Math.cos(ang) * rx - 56, y = 520 + Math.sin(ang) * ry - 56;
+      const ang = (i / ORB.length) * Math.PI * 2 + lt * 0.22, rx = ORBC[2] * lerp(0.6, 1, inn), ry = ORBC[3] * lerp(0.6, 1, inn);
+      const x = ORBC[0] + Math.cos(ang) * rx - 56, y = ORBC[1] + Math.sin(ang) * ry - 56;
       const d = eBack(prog(t, 17.85 + i * 0.06, 18.45 + i * 0.06));
       css($("o" + i), { left: x + "px", top: y + "px", opacity: clamp(d * 1.4) * (1 - out), transform: `scale(${lerp(0.3, 1, clamp(d)) * (1 + out * 0.4)}) rotate(${Math.sin(lt + i) * 6}deg)` });
     });
@@ -609,7 +659,7 @@ const SC = [
   }],
   ["s7", 27.0, 31.4, (t) => {
     const m = eOut5(prog(t, 27.0, 27.9)), out = eIn(prog(t, 30.9, 31.4));
-    css($("monwrap"), { transform: `translateY(${lerp(700, 0, m)}px) scale(${lerp(0.92, 1, m) * (1 - out * 0.04)})`, opacity: 1 - out });
+    css($("monwrap"), { transform: `translateY(${lerp(700, 0, m)}px) scale(${MON_S * lerp(0.92, 1, m) * (1 - out * 0.04)})`, opacity: 1 - out });
     const c = eOut(prog(t, 27.3, 27.9));
     css($("s7cap"), { opacity: c * (1 - out), transform: `translateY(${lerp(-30, 0, c)}px)` });
     KP.forEach(([, v, suf], i) => { $("kv" + i).textContent = fmt(v * eOut5(prog(t, 27.8 + i * 0.12, 29.2 + i * 0.12))) + (suf || ""); });
@@ -637,23 +687,24 @@ const SC = [
   }],
 ];
 
-function seek(t) {
-  t = clamp(t, 0, DURATION);
+function seek(T) {
+  T = clamp(T, 0, DURATION); REAL = T;
+  const t = designAt(T);
   SC.forEach(([id, a, b, draw]) => {
     const sh = SHIFT[id] || 0, tt = t - sh, el = $(id), on = tt >= a && tt < b;
     el.style.display = on ? "block" : "none";
     if (on) draw(tt);
   });
-  css($("bg1"), { transform: `translate(${Math.sin(t * 0.35) * 60}px, ${Math.cos(t * 0.3) * 40}px)`, opacity: t > DURATION - 3.5 ? 0 : 0.55 });
-  css($("bg2"), { transform: `translate(${Math.cos(t * 0.28) * 70}px, ${Math.sin(t * 0.33) * 30}px)`, opacity: t > DURATION - 3.5 ? 0 : 0.7 });
-  $("prog").style.width = (t / DURATION) * 100 + "%";
-  $("prog").style.opacity = t > DURATION - 3.5 ? 0 : 0.85;
-  return t;
+  css($("bg1"), { transform: `translate(${Math.sin(T * 0.35) * 60}px, ${Math.cos(T * 0.3) * 40}px)`, opacity: t > DESIGN_END - 3.5 ? 0 : 0.55 });
+  css($("bg2"), { transform: `translate(${Math.cos(T * 0.28) * 70}px, ${Math.sin(T * 0.33) * 30}px)`, opacity: t > DESIGN_END - 3.5 ? 0 : 0.7 });
+  $("prog").style.width = (T / DURATION) * 100 + "%";
+  $("prog").style.opacity = t > DESIGN_END - 3.5 ? 0 : 0.85;
+  return T;
 }
 window.seek = seek; window.DURATION = DURATION;
 
 /* ---------- encaixe na tela ---------- */
-function fit() { const s = Math.min(innerWidth / 1920, innerHeight / 1080); $("stage").style.transform = `translate(-50%, -50%) scale(${s})`; }
+function fit() { const s = Math.min(innerWidth / SW, innerHeight / SH); $("stage").style.transform = `translate(-50%, -50%) scale(${s})`; }
 addEventListener("resize", fit); fit();
 
 /* ---------- pré-visualização ---------- */
@@ -661,14 +712,23 @@ const render = new URLSearchParams(location.search).has("render");
 if (render) document.body.classList.add("render");
 let cur = 0, playing = false, last = 0;
 function loop(ts) {
-  if (playing) { cur += (ts - last) / 1000; if (cur >= DURATION) { cur = DURATION; playing = false; $("play").textContent = "↺ De novo"; } }
+  if (playing) {
+    cur = !vo.paused && !vo.ended && vo.currentTime > 0 ? vo.currentTime : cur + (ts - last) / 1000;
+    if (cur >= DURATION) { cur = DURATION; playing = false; vo.pause(); $("play").textContent = "↺ De novo"; }
+  }
   last = ts; seek(cur);
   $("scrub").value = (cur / DURATION) * 1000; $("clock").textContent = cur.toFixed(1).replace(".", ",") + " s";
   requestAnimationFrame(loop);
 }
-function toggle() { if (cur >= DURATION) cur = 0; playing = !playing; $("play").textContent = playing ? "❚❚ Pausar" : "▶ Play"; }
+const vo = $("vo");
+function toggle() {
+  if (cur >= DURATION) cur = 0;
+  playing = !playing;
+  $("play").textContent = playing ? "❚❚ Pausar" : "▶ Play";
+  if (playing) { try { vo.currentTime = cur; vo.play().catch(() => {}); } catch (e) {} } else vo.pause();
+}
 $("play").onclick = toggle;
-$("scrub").oninput = (e) => { cur = (e.target.value / 1000) * DURATION; };
+$("scrub").oninput = (e) => { cur = (e.target.value / 1000) * DURATION; try { vo.currentTime = cur; } catch (e) {} };
 $("full").onclick = () => (document.fullscreenElement ? document.exitFullscreen() : document.documentElement.requestFullscreen());
 addEventListener("keydown", (e) => { if (e.code === "Space") { e.preventDefault(); toggle(); } if (e.key === "f") $("full").click(); });
 let idleT; addEventListener("mousemove", () => { document.body.classList.remove("idle"); clearTimeout(idleT); idleT = setTimeout(() => playing && document.body.classList.add("idle"), 1800); });
