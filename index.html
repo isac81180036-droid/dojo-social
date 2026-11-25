@@ -383,6 +383,10 @@
   @media (min-width: 700px) { .pc-media { aspect-ratio: 5 / 4; } }
   .pc-media::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 62%; background: linear-gradient(to top, rgba(12, 10, 8, .84), rgba(12, 10, 8, 0)); pointer-events: none; z-index: 1; }
   .pc-img { position: absolute; inset: 0; width: 100%; height: 100%; max-width: 100%; object-fit: cover; }
+  .pick { width: 28px; height: 28px; border-radius: 50%; box-shadow: inset 0 0 0 2px var(--faint); display: grid; place-items: center; flex: none; }
+  .pick.on { background: var(--btn); color: var(--btn-ink); box-shadow: none; }
+  .pick svg { width: 18px; height: 18px; fill: currentColor; }
+  .row[role="radio"][aria-checked="true"] .grow { font-weight: 700; }
   .pc-media.is-video { background: #000; }
   .pc-media.is-video::after { display: none; }
   .pc-media.is-video .pc-img { object-fit: contain; }
@@ -802,7 +806,8 @@ const state = {
   firstName: "", lastName: "", birthDate: "", phone: "", guardian: "",
   nickname: "", isKid: false, belt: "branca", degrees: 0, lastGrad: "",
   callDate: TODAY(), callClass: null, q: "", aud: "Todos", sel: null, tab: "fo",
-  week: iso(mondayOf(today())), gfilter: "elegivel", from: "alunos", feed: "todos", frole: null, iper: 30
+  week: iso(mondayOf(today())), gfilter: "elegivel", from: "alunos", feed: "todos", frole: null, iper: 30,
+  reqPid: null, mProj: "", mCity: "", mName: "", mEmail: "", mBelt: "preta", mDeg: 0
 };
 
 /* Tema: claro (padrão, branco amarelado) ou escuro, escolhido pela pessoa e lembrado neste navegador */
@@ -1165,15 +1170,15 @@ const auth = {
         <button class="btn" type="submit">Entrar</button>
         <button class="btn outline" type="button" data-toast="Digite o código enviado pelo seu professor.">${icon("key")}Entrar com código</button>
       </form>
-      <div class="signup"><span>Não possui uma conta?</span><button class="link" data-a="goAuth" data-to="profile">Crie seu perfil</button></div>
+      <div class="signup"><span>Não possui uma conta?</span><button class="link" data-a="goAuth" data-to="tipo">Criar conta</button></div>
       <p class="version">Versão 1.2.0</p>
     </div>`,
 
   profile: () => `
     <div class="screen onb">
       <div class="onb-top">
-        <button class="sq-btn" data-a="goAuth" data-to="welcome" aria-label="Voltar">${icon("back", "")}</button>
-        <div class="steps" role="img" aria-label="Etapa 1 de 2"><span class="on"></span><span></span></div>
+        <button class="sq-btn" data-a="goAuth" data-to="tipo" aria-label="Voltar">${icon("back", "")}</button>
+        <div class="steps" role="img" aria-label="Etapa 1 de 3"><span class="on"></span><span></span><span></span></div>
       </div>
       <h1 class="big">Complete seu perfil</h1>
       <p class="lead">Preencha as informações abaixo para continuar.</p>
@@ -1195,7 +1200,7 @@ const auth = {
     <div class="screen onb">
       <div class="onb-top">
         <button class="sq-btn" data-a="goAuth" data-to="profile" aria-label="Voltar">${icon("back", "")}</button>
-        <div class="steps" role="img" aria-label="Etapa 2 de 2"><span class="on"></span><span class="on"></span></div>
+        <div class="steps" role="img" aria-label="Etapa 2 de 3"><span class="on"></span><span class="on"></span><span></span></div>
       </div>
       <h1 class="big">Perfil de guerreiro</h1>
       <p class="lead">Vamos configurar seu perfil de guerreiro. Precisamos de alguns dados básicos para iniciar sua jornada.</p>
@@ -1224,8 +1229,115 @@ const auth = {
         <button class="btn" type="submit" style="margin-top:18px">Continuar</button>
       </form>
     </div>`;
+  },
+
+  /* Criar conta: aluno ou mestre */
+  tipo: () => `
+    <div class="screen onb">
+      <div class="onb-top"><button class="sq-btn" data-a="goAuth" data-to="welcome" aria-label="Voltar">${icon("back", "")}</button></div>
+      <h1 class="big">Criar conta</h1>
+      <p class="lead">Como você vai usar o Dojo Social?</p>
+      <div class="stack" style="gap:12px">
+        <button class="switch-row" style="margin:0" data-a="goAuth" data-to="profile"><span class="bdg">${icon("person")}</span><span class="grow">Sou aluno<small>Ou responsável por um aluno. Escolha o projeto em que treina e peça para entrar.</small></span>${chev()}</button>
+        <button class="switch-row" style="margin:0" data-a="goAuth" data-to="mestre"><span class="bdg">${icon("belt")}</span><span class="grow">Sou mestre de um projeto<small>Cadastre seu projeto social e aprove os alunos que pedirem para entrar.</small></span>${chev()}</button>
+      </div>
+      <div class="signup"><span>Já tem conta?</span><button class="link" data-a="goAuth" data-to="login">Entrar</button></div>
+    </div>`,
+
+  /* Mestre cadastra o próprio projeto */
+  mestre: () => `
+    <div class="screen onb">
+      <div class="onb-top"><button class="sq-btn" data-a="goAuth" data-to="tipo" aria-label="Voltar">${icon("back", "")}</button></div>
+      <h1 class="big">Cadastre seu projeto</h1>
+      <p class="lead">Você será o Mestre do projeto. Os alunos vão encontrar o projeto no cadastro e pedir para entrar, e você aceita ou recusa.</p>
+      <form id="mestreForm" novalidate>
+        <h2>Projeto</h2>
+        ${field({ id: "mProj", label: "Nome do projeto", ic: "grid", placeholder: "Ex.: Guerreiros do Tatame", value: state.mProj })}
+        ${field({ id: "mCity", label: "Cidade · UF", ic: "home", placeholder: "Ex.: Macapá · AP", value: state.mCity })}
+        <h2 style="margin-top:8px">Seus dados</h2>
+        ${field({ id: "mName", label: "Nome completo", ic: "person", placeholder: "Seu nome e sobrenome", value: state.mName })}
+        ${field({ id: "mEmail", label: "E-mail de acesso", ic: "email", type: "email", placeholder: "seu@email.com", value: state.mEmail })}
+        ${field({ id: "phone", label: "Telefone (opcional)", left: `<span class="ddi">${flag}+ 55</span>`, placeholder: "00 00000-0000", value: state.phone, mode: "tel" })}
+        <div class="row2">
+          <div class="field"><label class="lbl" for="mBelt">Sua faixa</label><div class="box"><select id="mBelt">${ADULT.map(([k, l]) => `<option value="${k}" ${state.mBelt === k ? "selected" : ""}>${l}</option>`).join("")}</select></div></div>
+          <div class="field"><label class="lbl" for="mDeg">Graus</label><div class="box"><select id="mDeg">${[0, 1, 2, 3, 4, 5, 6].map((n) => `<option value="${n}" ${String(state.mDeg) === String(n) ? "selected" : ""}>${n}</option>`).join("")}</select></div></div>
+        </div>
+        <button class="btn" type="submit" style="margin-top:8px">Cadastrar meu projeto</button>
+      </form>
+      <div class="signup"><span>Já tem conta?</span><button class="link" data-a="goAuth" data-to="login">Entrar</button></div>
+    </div>`,
+
+  /* Aluno: etapa 3, escolher o projeto e pedir para entrar */
+  projeto: () => `
+    <div class="screen onb">
+      <div class="onb-top">
+        <button class="sq-btn" data-a="goAuth" data-to="warrior" aria-label="Voltar">${icon("back", "")}</button>
+        <div class="steps" role="img" aria-label="Etapa 3 de 3"><span class="on"></span><span class="on"></span><span class="on"></span></div>
+      </div>
+      <h1 class="big">Escolha seu projeto</h1>
+      <p class="lead">Toque no projeto em que você treina. O Mestre recebe seu pedido e aprova sua entrada.</p>
+      <form id="projetoForm" novalidate>
+        ${projectPicker()}
+        <button class="btn" type="submit" style="margin-top:18px" ${state.reqPid ? "" : "disabled"}>Solicitar entrada</button>
+      </form>
+    </div>`,
+
+  /* Aluno esperando o Mestre (ou pedido recusado) */
+  aguardando: () => {
+    const s = student(state.user.studentId) || {}, p = project(s.pid) || {}, m = mestreOf(s.pid);
+    const refused = s.req === "recusado";
+    return `
+    <div class="screen onb">
+      <div class="onb-top">${logo("sm")}</div>
+      <div class="hello" style="margin-bottom:22px">
+        <span class="eyebrow">${icon(refused ? "close" : "hand", "i", "width:18px;height:18px")}${refused ? "Pedido não aceito" : "Pedido enviado"}</span>
+        <h2>${refused ? "Escolha outro projeto" : `Oss, ${esc(display(s))}!`}</h2>
+        <p>${refused ? `O Mestre de <b>${esc(p.name || "")}</b> não aceitou o pedido.` : `Seu pedido para entrar em <b>${esc(p.name || "")}</b> está com ${m ? `o Mestre ${esc(m.name.split(" ")[0])}` : "o Mestre"}.`}</p>
+      </div>
+      ${refused
+        ? `<p class="lead" style="margin-top:0">Se você treina em outro projeto, escolha abaixo e peça para entrar.</p>
+           ${projectPicker(s.pid)}
+           <button class="btn" data-a="reRequest" style="margin-top:18px" ${state.reqPid && state.reqPid !== s.pid ? "" : "disabled"}>Pedir para entrar</button>`
+        : `<p class="lead" style="margin-top:0">Assim que o Mestre aceitar, o app abre para você sozinho. Pode fechar e voltar depois.</p>
+           <button class="btn" data-a="refreshReq">${icon("restore")}Atualizar</button>`}
+      <button class="btn outline" data-a="logout">Sair</button>
+    </div>`;
   }
 };
+
+/* ================= PROJETOS: cadastro de Mestre e pedidos de entrada ================= */
+const PROJ_COLORS = ["#2B5CE6", "#16A34A", "#DB2777", "#EA580C", "#7C3AED", "#0891B2", "#CA8A04", "#DC2626"];
+const mestreOf = (pid) => db.staff.find((t) => t.pid === pid && t.role === "mestre");
+const joinableProjects = () => db.projects.filter((p) => mestreOf(p.id));
+const emailTaken = (e) => { e = (e || "").trim().toLowerCase(); return db.students.some((s) => (s.email || "").toLowerCase() === e) || db.staff.some((t) => (t.email || "").toLowerCase() === e); };
+const pendingOf = () => { if (!state.user || isStaff()) return null; const s = student(state.user.studentId); return s && s.req ? s : null; };
+function projectPicker(exclude) {
+  const list = joinableProjects().filter((p) => p.id !== exclude).sort((a, b) => a.name.localeCompare(b.name));
+  if (!list.length) return `<div class="panel">${empty("Nenhum projeto disponível", "Peça ao seu Mestre para cadastrar o projeto no Dojo Social.")}</div>`;
+  return `<div class="panel" style="padding:0 16px" role="radiogroup" aria-label="Projetos">${list.map((p) => {
+    const m = mestreOf(p.id), n = db.students.filter((s) => s.pid === p.id && s.active).length, on = state.reqPid === p.id;
+    return `<button type="button" class="row" role="radio" aria-checked="${on}" data-a="pickProj" data-v="${p.id}">
+      <span class="av" style="background:${p.color};color:#FFFFFF">${esc(projInitials(p.name))}</span>
+      <span class="grow">${esc(p.name)}<small>${p.city ? `${esc(p.city)} · ` : ""}Mestre ${esc(m.name.split(" ")[0])} · ${n} ${n === 1 ? "aluno" : "alunos"}</small></span>
+      <span class="pick ${on ? "on" : ""}" aria-hidden="true">${on ? icon("check", "") : ""}</span>
+    </button>`;
+  }).join("")}</div>`;
+}
+function pedidosGroup() {
+  if (!isMestre()) return "";
+  const reqs = db.students.filter((s) => s.pid === myPid() && s.req === "pendente").sort((a, b) => (a.reqAt || "").localeCompare(b.reqAt || ""));
+  if (!reqs.length) return "";
+  return group("Pedidos para entrar", `<span class="pill warn">${reqs.length}</span>`, `<div class="list">${reqs.map((s) => `<div class="item" style="flex-wrap:wrap">
+      ${avat(fullName(s), s.photo)}
+      <div class="grow"><div class="nm">${esc(display(s))} <span class="muted" style="font-weight:400">· ${esc(fullName(s))}</span></div>
+        <div class="meta">${beltMini(s)}<span>${beltOf(s)[1]}${s.kid ? " · infantil" : ""}${s.birth ? ` · ${ageOf(s.birth)} anos` : ""}</span>${s.guardian ? `<span>Resp.: ${esc(s.guardian)}</span>` : ""}${s.phone ? `<span>${esc(s.phone)}</span>` : ""}</div>
+        ${s.reqAt ? `<div class="meta">Pediu ${whenLabel(s.reqAt)}</div>` : ""}</div>
+      <div class="row2" style="width:100%;margin-top:6px">
+        <button class="btn sm" style="width:100%" data-a="aceitar" data-id="${s.id}">${icon("check")}Aceitar</button>
+        <button class="btn sm outline" style="width:100%;color:var(--abs)" data-a="recusar" data-id="${s.id}">${icon("close")}Recusar</button>
+      </div>
+    </div>`).join("")}</div>`, "padding:4px 16px");
+}
 
 /* ================= COMPONENTES DO PAINEL ================= */
 function foItem(f, showStudent = true) {
@@ -1295,6 +1407,7 @@ function inicioStaff() {
       <h2>Oss, ${esc(firstName)}.</h2>
       <p>${DOW[t.getDay()]}, ${t.getDate()} de ${MON[t.getMonth()]}</p>
     </div>
+    ${pedidosGroup()}
     ${escalaBanner(nextMonIso)}
     ${nextWeekEmpty && canTeach() ? `<div class="banner">${badge("cal")}<div class="grow"><b>${t.getDay() === 5 ? "Hoje é sexta: monte a grade da próxima semana" : "Grade da próxima semana ainda não foi criada"}</b><span class="muted small">Semana de ${brShort(nextMonIso)} a ${brShort(nextSun)} · prazo: sexta, ${brShort(friday)}</span></div><button class="btn sm" data-a="goWeek" data-week="${nextMonIso}">Montar grade</button></div>` : ""}
 
@@ -1450,6 +1563,7 @@ views.alunos = () => {
     .filter((s) => !q || `${fullName(s)} ${s.nick}`.toLowerCase().includes(q))
     .sort((a, b) => display(a).localeCompare(display(b)));
   return `<div class="stack">
+    ${pedidosGroup()}
     <div class="box search">${icon("search")}<input id="q" placeholder="Buscar aluno" value="${esc(state.q)}" autocomplete="off" aria-label="Buscar aluno"></div>
     <div class="sec-h" style="margin:0;flex-wrap:wrap">
       <div class="chips">${["Todos", "Adulto", "Infantil"].map((f) => `<button class="chip ${state.aud === f ? "on" : ""}" data-a="aud" data-v="${f}">${f}</button>`).join("")}</div>
@@ -1840,7 +1954,7 @@ views.mais = () => {
       <button class="row" data-a="me">${avat(u.name, (mePerson || {}).photo)}<span class="grow">${esc(u.name)}<small>${u.admin ? "Admin global" : ROLE_LABEL[u.role]} · ${esc(project(myPid()).name)}</small></span>${chev()}</button>
       ${!CLOUD ? `<button class="row" data-a="reset"><span class="grow">Restaurar dados de exemplo<small>Apaga o que foi registrado neste navegador</small></span>${chev()}</button>` : ""}
       ${!isStaff() ? `<button class="row" data-a="excluirConta" style="color:var(--abs)"><span class="grow">Excluir minha conta<small>Apaga seu perfil e todos os seus dados do projeto</small></span>${chev()}</button>` : ""}`, "padding:0 16px")}
-    ${isMestre() ? group("Projeto", "", `<button class="row" data-a="zerar"><span class="grow">Começar do zero<small>Apaga os dados de exemplo e deixa só o seu projeto e você</small></span>${chev()}</button>`, "padding:0 16px") : ""}
+    ${isMestre() && db.projects.length <= 1 ? group("Projeto", "", `<button class="row" data-a="zerar"><span class="grow">Começar do zero<small>Apaga os dados de exemplo e deixa só o seu projeto e você</small></span>${chev()}</button>`, "padding:0 16px") : ""}
     ${group("Sobre", "", `<button class="row" data-a="introReplay"><span class="grow">Vídeo de boas-vindas<small>Assista de novo o vídeo do Dojo Social</small></span>${chev()}</button>
       <button class="row" data-toast="Termos de Serviço em breve."><span class="grow">Termos de Serviço</span>${chev()}</button>`, "padding:0 16px")}
     <div class="brand-foot"><span class="wordmark">dojo social</span><b>Dojo Social 1.3.0 (protótipo)</b><span class="muted small">${cloudLabel()}</span></div>
@@ -2402,7 +2516,7 @@ const sheets = {
     <div class="panel" style="padding:0 16px">
       <button class="row" data-a="goAuth" data-to="login">${icon("email")}<span class="grow">Entrar com e-mail</span>${chev()}</button>
       <button class="row" data-toast="Digite o código enviado pelo seu professor.">${icon("key")}<span class="grow">Entrar com código<small>Enviado pelo seu professor</small></span>${chev()}</button>
-      <button class="row" data-a="goAuth" data-to="profile">${icon("person")}<span class="grow">Criar meu perfil<small>Para alunos novos no projeto</small></span>${chev()}</button>
+      <button class="row" data-a="goAuth" data-to="tipo">${icon("person")}<span class="grow">Criar conta<small>Aluno novo ou Mestre cadastrando o projeto</small></span>${chev()}</button>
       ${darkSwitch()}
     </div>
   </div>`,
@@ -2431,6 +2545,9 @@ function render(focusId) {
   if (!state.user) {
     app.className = state.screen === "welcome" ? "app is-welcome" : "app";
     app.innerHTML = auth[state.screen]();
+  } else if (pendingOf()) {
+    app.className = "app";
+    app.innerHTML = auth.aguardando();
   } else {
     app.className = "";
     app.innerHTML = shell();
@@ -2453,6 +2570,7 @@ function maybeShowIntro() {
   if (!sid || !student(sid)) return;
   if (CLOUD && !sync.version) return; // espera os dados do servidor para não repetir em outro aparelho
   if ((db.introSeen || {})[sid]) return;
+  if (student(sid).req) return; // ainda aguardando o Mestre aceitar
   openIntro(sid, false);
 }
 function markIntroSeen(sid) {
@@ -2495,7 +2613,7 @@ function login(email) {
   const t = db.staff.find((x) => (x.email || "").toLowerCase() === e);
   if (t) state.user = { role: t.role, staffId: t.id, name: t.name };
   else {
-    const s = db.students.find((x) => (x.email || "").toLowerCase() === e && x.active);
+    const s = db.students.find((x) => (x.email || "").toLowerCase() === e && (x.active || x.req));
     if (!s) return false;
     state.user = { role: "aluno", studentId: s.id, name: fullName(s) };
   }
@@ -2507,7 +2625,7 @@ function login(email) {
 }
 
 /* ================= EVENTOS ================= */
-const bindAuth = { email: "email", password: "password", pEmail: "email", firstName: "firstName", lastName: "lastName", guardian: "guardian", nickname: "nickname" };
+const bindAuth = { email: "email", password: "password", pEmail: "email", firstName: "firstName", lastName: "lastName", guardian: "guardian", nickname: "nickname", mProj: "mProj", mCity: "mCity", mName: "mName", mEmail: "mEmail", mBelt: "mBelt", mDeg: "mDeg" };
 
 document.addEventListener("input", (e) => {
   const t = e.target;
@@ -2762,9 +2880,33 @@ document.addEventListener("click", (e) => {
 
     /* graduação */
     case "gfilter": state.gfilter = v; render(); break;
-    case "zerar": if (isMestre()) openSheet({ kind: "zerar" }); break;
+    case "zerar": if (isMestre() && db.projects.length <= 1) openSheet({ kind: "zerar" }); break;
     case "excluirConta": if (state.user && !isStaff()) openSheet({ kind: "excluirConta" }); break;
     case "introReplay": openIntro(null, true); break;
+    case "pickProj": state.reqPid = v; render(); break;
+    case "refreshReq": pull(); toast("Conferindo se o Mestre já respondeu…"); break;
+    case "reRequest": {
+      const s = pendingOf();
+      if (!s || !state.reqPid || state.reqPid === s.pid || !mestreOf(state.reqPid)) break;
+      Object.assign(s, { pid: state.reqPid, req: "pendente", reqAt: new Date().toISOString(), active: false });
+      persist(); render(); toast(`Pedido enviado para ${project(s.pid).name}.`);
+      break;
+    }
+    case "aceitar": {
+      const s = student(id);
+      if (!s || !isMestre() || s.pid !== myPid() || s.req !== "pendente") break;
+      Object.assign(s, { active: true, joined: TODAY() }); delete s.req; delete s.reqAt;
+      persist(); render(); toast(`${display(s)} agora faz parte do projeto. Oss!`);
+      break;
+    }
+    case "recusar": {
+      const s = student(id);
+      if (!s || !isMestre() || s.pid !== myPid() || s.req !== "pendente") break;
+      if (!confirm(`Recusar o pedido de ${display(s)} para entrar no projeto?`)) break;
+      Object.assign(s, { req: "recusado", active: false });
+      persist(); render(); toast("Pedido recusado.");
+      break;
+    }
     case "frole": state.frole = v; render(); break;
     case "iper": state.iper = Number(v); render(); break;
     case "grad": openSheet({ kind: "grad", id }); break;
@@ -2840,12 +2982,33 @@ document.addEventListener("submit", (e) => {
   if (id === "warriorForm") {
     if (!state.nickname.trim()) return toast("Escolha um nome de guerra.");
     if (state.lastGrad.length < 10) return toast("Preencha a data da última graduação (DD/MM/AAAA).");
-    /* Autocadastro: o aluno entra no projeto do Mestre (o primeiro Mestre cadastrado, hoje o Mestre Jardel) */
-    const mestre = db.staff.find((t) => t.role === "mestre");
-    const signupPid = (mestre && db.projects.some((p) => p.id === mestre.pid) ? mestre.pid : db.projects[0].id);
-    const s = { id: "s" + uid(), pid: signupPid, first: state.firstName.trim(), last: state.lastName.trim(), nick: state.nickname.trim(), birth: brToIso(state.birthDate), kid: state.isKid, belt: state.belt, degrees: state.degrees, lastGrad: brToIso(state.lastGrad), joined: TODAY(), kimono: "", school: "", social: "", guardian: state.guardian, phone: state.phone, email: state.email.trim(), active: true };
+    state.screen = "projeto"; render(); window.scrollTo(0, 0); return;
+  }
+  /* Aluno escolheu o projeto: o pedido fica pendente até o Mestre daquele projeto aceitar */
+  if (id === "projetoForm") {
+    if (CLOUD && !sync.version) return toast("Carregando os projetos… tente de novo em instantes.");
+    if (!state.reqPid || !mestreOf(state.reqPid)) return toast("Toque no projeto em que você treina.");
+    if (emailTaken(state.email)) return toast("Este e-mail já tem conta. Volte e entre.");
+    const s = { id: "s" + uid(), pid: state.reqPid, first: state.firstName.trim(), last: state.lastName.trim(), nick: state.nickname.trim(), birth: brToIso(state.birthDate), kid: state.isKid, belt: state.belt, degrees: state.degrees, lastGrad: brToIso(state.lastGrad), joined: TODAY(), kimono: "", school: "", social: "", guardian: state.guardian, phone: state.phone, email: state.email.trim(), active: false, req: "pendente", reqAt: new Date().toISOString() };
     db.students.push(s);
-    login(s.email); toast(`Bem-vindo ao dojo, ${s.nick}!`); return;
+    login(s.email); toast("Pedido enviado! Agora é só aguardar o Mestre aceitar."); return;
+  }
+  /* Mestre cadastra o projeto dele e entra como Mestre */
+  if (id === "mestreForm") {
+    if (CLOUD && !sync.version) return toast("Carregando os dados… tente de novo em instantes.");
+    const name = state.mProj.trim().replace(/\s+/g, " "), email = state.mEmail.trim().toLowerCase();
+    if (name.length < 3) return toast("Digite o nome do projeto.");
+    if (db.projects.some((p) => p.name.trim().toLowerCase() === name.toLowerCase())) return toast("Já existe um projeto com esse nome. Se ele é seu, entre com o e-mail do Mestre.");
+    if (state.mName.trim().split(/\s+/).length < 2) return toast("Digite seu nome e sobrenome.");
+    if (!/^\S+@\S+\.\S+$/.test(email)) return toast("Digite um e-mail válido.");
+    if (emailTaken(email)) return toast("Este e-mail já tem conta. Volte e entre.");
+    const used = new Set(db.projects.map((p) => p.color));
+    const pid = "p" + uid();
+    db.projects.push({ id: pid, name, city: state.mCity.trim(), color: PROJ_COLORS.find((c) => !used.has(c)) || PROJ_COLORS[db.projects.length % PROJ_COLORS.length] });
+    db.staff.push({ id: "t" + uid(), pid, name: state.mName.trim().replace(/\s+/g, " "), role: "mestre", belt: state.mBelt || "preta", degrees: Number(state.mDeg) || 0, email, phone: state.phone || "" });
+    login(email);
+    toast(`“${name}” cadastrado! Os alunos já podem pedir para entrar.`);
+    return;
   }
 
   /* ---- sheets ---- */
