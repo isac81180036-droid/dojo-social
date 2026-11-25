@@ -2790,7 +2790,7 @@ function render(focusId) {
     app.innerHTML = shell();
   }
   sheetRoot.innerHTML = state.sheet && (state.user || state.sheet.kind === "opcoes" || state.sheet.kind === "novaSenha") ?`<div class="scrim" data-scrim><div class="sheet" role="dialog" aria-modal="true">${sheets[state.sheet.kind]()}</div></div>` : "";
-  if (state.user && !isStaff() && !introOpen) setTimeout(maybeShowIntro, 400);
+  if (state.user && !introOpen) setTimeout(maybeShowIntro, 400);
   if (CLOUD) hydrateVideos();
   if (focusId) {
     const el = document.getElementById(focusId);
@@ -2798,17 +2798,18 @@ function render(focusId) {
   }
 }
 /* ================= VÍDEO DE BOAS-VINDAS =================
-   Aparece uma única vez para cada aluno (já cadastrado ou novo), na versão vertical no celular em pé
+   Aparece uma única vez para cada aluno e para cada membro da equipe (professor, instrutor, monitor), na versão vertical no celular em pé
    e horizontal no computador. O X para fechar só aparece no fim do vídeo. Fica salvo em db.introSeen. */
 const INTRO = { h: "dojo-social-comercial.mp4", v: "dojo-social-comercial-vertical.mp4", ph: "dojo-social-capa.jpg", pv: "dojo-social-capa-vertical.jpg" };
 let introOpen = false;
 function maybeShowIntro() {
-  if (introOpen || !state.user || isStaff()) return;
-  const sid = state.user.studentId;
-  if (!sid || !student(sid)) return;
+  if (introOpen || !state.user) return;
+  const staff = isStaff();
+  const sid = staff ? state.user.staffId : state.user.studentId;
+  if (!sid || !(staff ? staffById(sid) : student(sid))) return;
   if (CLOUD && !sync.version) return; // espera os dados do servidor para não repetir em outro aparelho
   if ((db.introSeen || {})[sid]) return;
-  if (student(sid).req) return; // ainda aguardando o Mestre aceitar
+  if (!staff && student(sid).req) return; // aluno ainda aguardando o Professor aceitar
   openIntro(sid, false);
 }
 function markIntroSeen(sid) {
