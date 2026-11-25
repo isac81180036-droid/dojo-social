@@ -1,17 +1,26 @@
 {
+  "id": "./",
   "name": "Dojo Social",
   "short_name": "Dojo Social",
-  "description": "Chamada, FO, agenda, graduação e mural do projeto social de Jiu-Jitsu.",
+  "description": "Gestão do projeto social de Jiu-Jitsu: chamada, Fato Observado, agenda, graduação, campeonatos e mural com vídeos do treino para as famílias.",
   "lang": "pt-BR",
+  "dir": "ltr",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
   "orientation": "portrait",
   "background_color": "#F1EDE4",
   "theme_color": "#F1EDE4",
+  "categories": ["education", "sports", "kids"],
   "icons": [
     { "src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
     { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
-    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+    { "src": "icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ],
+  "screenshots": [
+    { "src": "loja/tela-1.png", "sizes": "1080x1920", "type": "image/png", "form_factor": "narrow", "label": "Início do professor" },
+    { "src": "loja/tela-2.png", "sizes": "1080x1920", "type": "image/png", "form_factor": "narrow", "label": "Chamada em um toque" },
+    { "src": "loja/tela-3.png", "sizes": "1080x1920", "type": "image/png", "form_factor": "narrow", "label": "Mural com vídeos do treino" },
+    { "src": "loja/tela-4.png", "sizes": "1080x1920", "type": "image/png", "form_factor": "narrow", "label": "Painel de graduação" }
   ]
 }
