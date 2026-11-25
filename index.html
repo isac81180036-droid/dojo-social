@@ -383,6 +383,18 @@
   @media (min-width: 700px) { .pc-media { aspect-ratio: 5 / 4; } }
   .pc-media::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 62%; background: linear-gradient(to top, rgba(12, 10, 8, .84), rgba(12, 10, 8, 0)); pointer-events: none; z-index: 1; }
   .pc-img { position: absolute; inset: 0; width: 100%; height: 100%; max-width: 100%; object-fit: cover; }
+  .pc-media.is-video { background: #000; }
+  .pc-media.is-video::after { display: none; }
+  .pc-media.is-video .pc-img { object-fit: contain; }
+  .pc-media.is-video .pc-top { pointer-events: none; }
+  .pc-media.is-video .pc-top > * { pointer-events: auto; }
+  .pc-vtag { display: inline-flex; align-items: center; gap: 6px; background: rgba(18, 16, 13, .55); -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); color: #fff; border-radius: 999px; padding: 6px 12px; font-size: 13px; font-weight: 700; white-space: nowrap; }
+  .pc-vtag svg { width: 14px; height: 14px; fill: currentColor; }
+  .pc-vcap .pc-proj { background: var(--ground); color: var(--ink-2); }
+  .pc-vcap p { margin: 8px 0 0; font-size: 16px; font-weight: 600; line-height: 1.4; overflow-wrap: anywhere; }
+  .vid-prev { width: 100%; max-height: 340px; border-radius: 18px; background: #000; margin-top: 12px; display: block; }
+  .upbar { height: 8px; border-radius: 4px; background: var(--surface-2); overflow: hidden; margin-top: 12px; }
+  .upbar i { display: block; height: 100%; background: var(--pos-fill); width: 0; transition: width .2s; }
   .pc-img.ph { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; padding-bottom: 70px; background-color: color-mix(in srgb, var(--c) 62%, #16130F); background-image: var(--pattern-lt); background-size: 72px 72px; color: rgba(255, 255, 255, .78); font-size: 12px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; }
   .ph-b { width: 58px; height: 58px; border-radius: 18px; background: rgba(255, 255, 255, .16); display: grid; place-items: center; }
   .ph-b svg { width: 26px; height: 26px; fill: #FFFFFF; }
@@ -576,6 +588,7 @@
 <script>
 /* ================= ÍCONES ================= */
 const P = {
+  play: "M8 5.14v13.72a1 1 0 0 0 1.52.85l10.78-6.86a1 1 0 0 0 0-1.7L9.52 4.29A1 1 0 0 0 8 5.14z",
   chart: "M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z",
   email: "M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z",
   lock: "M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z",
@@ -1670,21 +1683,26 @@ function postCard(p) {
   const liked = p.likes.includes(me);
   const mine = p.by === me || (isMestre() && p.pid === myPid());
   const people = p.tags.map(student).filter(Boolean);
+  const isVid = typeof p.video === "string" && p.video.startsWith("https://");
+  const dur = p.dur ? `${Math.floor(p.dur / 60)}:${String(Math.round(p.dur % 60)).padStart(2, "0")}` : "";
   return `<article class="pc" style="--c:${pr.color}">
-    <div class="pc-media">
-      ${p.photo
+    <div class="pc-media ${isVid ? "is-video" : ""}">
+      ${isVid
+        ? `<video class="pc-img" src="${esc(p.video)}" ${p.poster ? `poster="${p.poster}"` : ""} controls playsinline preload="none" aria-label="Vídeo do treino do projeto ${esc(pr.name)}"></video>`
+        : p.photo
         ? `<img class="pc-img" src="${p.photo}" alt="Foto do fim do treino do projeto ${esc(pr.name)}" loading="lazy">`
         : `<div class="pc-img ph"><span class="ph-b">${icon("camera", "")}</span><span>Sem foto</span></div>`}
       <div class="pc-top">
-        <span class="pc-who">${avat(a.name, a.photo)}<span class="grow"><b>${esc(a.name)}</b><small>${esc(a.sub)} · ${whenLabel(p.at)}</small></span></span>
+        ${isVid ? `<span class="pc-vtag">${icon("play", "")}Vídeo do treino${dur ? ` · ${dur}` : ""}</span>` : `<span class="pc-who">${avat(a.name, a.photo)}<span class="grow"><b>${esc(a.name)}</b><small>${esc(a.sub)} · ${whenLabel(p.at)}</small></span></span>`}
         ${mine ? `<button class="pc-x" data-a="delPost" data-id="${p.id}" aria-label="Excluir publicação">${icon("del", "")}</button>` : ""}
       </div>
-      <div class="pc-bottom">
+      ${isVid ? "" : `<div class="pc-bottom">
         <span class="pc-proj"><span class="dotmark" style="background:${pr.color}"></span>${esc(pr.name)}</span>
         <p class="pc-cap">${esc(p.caption)}</p>
-      </div>
+      </div>`}
     </div>
     <div class="pc-foot">
+      ${isVid ? `<div class="pc-vcap"><div class="item" style="padding:0;border:0">${avat(a.name, a.photo)}<div class="grow"><div class="nm">${esc(a.name)}</div><div class="meta"><span>${esc(a.sub)} · ${whenLabel(p.at)}</span></div></div><span class="pc-proj"><span class="dotmark" style="background:${pr.color}"></span>${esc(pr.name)}</span></div><p>${esc(p.caption)}</p></div>` : ""}
       <div class="pc-actions">
         <button class="pc-btn like ${liked ? "on" : ""}" data-a="like" data-id="${p.id}" aria-pressed="${liked}">${icon("heart", "")}<b>${p.likes.length}</b><span>Oss</span></button>
         <button class="pc-btn" data-a="comments" data-id="${p.id}" aria-label="${p.comments.length} ${p.comments.length === 1 ? "comentário" : "comentários"}">${icon("chat", "")}<b>${p.comments.length}</b></button>
@@ -1707,7 +1725,8 @@ const projInitials = (n) => n.split(/\s+/).filter((w) => !STOP.includes(w.toLowe
 const commentAuthor = (id) => { const t = staffById(id); if (t) return t.name.split(" ")[0]; const s = student(id); return s ? display(s) : "Alguém"; };
 
 views.mural = () => {
-  const list = db.posts.filter((p) => state.feed === "todos" || p.pid === state.feed).sort((a, b) => b.at.localeCompare(a.at));
+  const list = db.posts.filter((p) => state.feed === "todos" || (state.feed === "videos" ? !!p.video : p.pid === state.feed)).sort((a, b) => b.at.localeCompare(a.at));
+  const nVid = db.posts.filter((p) => p.video).length;
   const weekAgo = Date.now() - 7 * 864e5;
   const ofWeek = db.posts.filter((p) => new Date(p.at).getTime() > weekAgo);
   const tagged = new Set(ofWeek.flatMap((p) => p.tags)).size;
@@ -1719,15 +1738,17 @@ views.mural = () => {
       <span class="st-ring"><span class="st-av" style="${fill}">${inner}</span></span>
       <b>${esc(name)}</b><small>${sub}</small>
     </button>`;
-  const note = "Fotos com menores exigem autorização de uso de imagem assinada pelo responsável.";
+  const note = "Fotos e vídeos com menores exigem autorização de uso de imagem assinada pelo responsável.";
   return `<div class="stack">
     <button class="composer" data-a="newPost">
       ${avat(u.name, (mePerson || {}).photo)}
-      <span class="grow"><b>Como foi o treino hoje?</b><small>Publique a foto do fim do treino e marque quem estava no tatame</small></span>
+      <span class="grow"><b>Como foi o treino hoje?</b><small>${isStaff() && CLOUD ? "Publique uma foto ou um vídeo curto do treino para as famílias" : "Publique a foto do fim do treino e marque quem estava no tatame"}</small></span>
       <span class="cam">${icon("camera", "")}</span>
     </button>
-    <div class="stories" role="group" aria-label="Filtrar o mural por projeto">
+    ${!isStaff() && nVid ? `<div class="banner">${badge("play")}<div class="grow"><b>Assista uma parte do treino</b><span class="muted small">${nVid} ${nVid === 1 ? "vídeo publicado" : "vídeos publicados"} pela equipe. Toque no play para assistir.</span></div><button class="btn sm" data-a="feed" data-v="videos">Ver vídeos</button></div>` : ""}
+    <div class="stories" role="group" aria-label="Filtrar o mural">
       ${story("todos", "Toda a rede", `${db.posts.length} posts`, "background:var(--lilac);color:var(--on-lilac)", icon("grid", ""))}
+      ${story("videos", "Vídeos do treino", `${nVid} ${nVid === 1 ? "vídeo" : "vídeos"}`, "background:var(--ink);color:var(--ground)", icon("play", ""))}
       ${db.projects.map((p) => story(p.id, p.name, `${countOf(p.id)} posts${p.id === myPid() ? " · meu" : ""}`, `background:${p.color};color:#FFFFFF`, projInitials(p.name))).join("")}
     </div>
     <p class="mural-sum">Últimos 7 dias: <b>${ofWeek.length}</b> ${ofWeek.length === 1 ? "publicação" : "publicações"} · <b>${tagged}</b> alunos marcados · <b>${db.projects.length}</b> projetos na rede</p>
@@ -2286,9 +2307,13 @@ const sheets = {
     const roster = myStudents().filter((s) => s.active).sort((a, b) => display(a).localeCompare(display(b)));
     const todays = classesOn(TODAY());
     return `<form id="sheetForm" data-kind="post">
-      ${sheetHead("Foto do fim do treino")}
+      ${sheetHead(isStaff() && CLOUD ? "Foto ou vídeo do treino" : "Foto do fim do treino")}
       <div class="item" style="padding-top:0;border:0">${avat(state.user.name, (isStaff() ? staffById(state.user.staffId) : student(state.user.studentId) || {}).photo)}<div class="grow"><div class="nm">${esc(state.user.name)}</div><div class="meta"><span class="dotmark" style="background:${pr.color}"></span><span>${esc(pr.name)} · ${esc(pr.city)}</span></div></div></div>
-      <label class="btn outline" style="margin-top:6px;cursor:pointer" for="photo">${icon("camera")}${sh.photo ? "Trocar foto" : "Escolher foto"}</label>
+      ${sh.videoFile ? "" : `<label class="btn outline" style="margin-top:6px;cursor:pointer" for="photo">${icon("camera")}${sh.photo ? "Trocar foto" : "Escolher foto"}</label>`}
+      ${isStaff() && CLOUD && !sh.photo ? `<label class="btn outline" style="margin-top:${sh.videoFile ? 6 : 10}px;cursor:pointer" for="video">${icon("play")}${sh.videoFile ? "Trocar vídeo" : "Escolher vídeo (até 60 s)"}</label>
+      <input id="video" type="file" accept="video/mp4,video/quicktime,video/webm,video/*" hidden>
+      ${sh.videoUrl ? `<video class="vid-prev" src="${sh.videoUrl}" controls playsinline muted></video><p class="muted small" style="margin:8px 0 0">${Math.round(sh.videoDur)} s · ${(sh.videoFile.size / 1048576).toFixed(1).replace(".", ",")} MB</p>` : `<p class="muted small" style="margin:8px 0 0">Vídeo curto do treino para as famílias assistirem no Mural. Até 60 segundos e 50 MB.</p>`}
+      <div class="upbar" id="upbar" hidden><i></i></div>` : ""}
       <input id="photo" type="file" accept="image/*" hidden>
       <img id="photoPrev" class="photo-prev" alt="Prévia da foto do treino" ${sh.photo ? `src="${sh.photo}"` : "hidden"}>
       <label class="lbl" style="margin-top:18px" for="postCaption">Legenda</label>
@@ -2298,7 +2323,7 @@ const sheets = {
       <label class="lbl" style="margin-top:18px">Marcar quem estava no tatame <span class="muted small">(${sh.tags.length})</span></label>
       <div class="chips" style="flex-wrap:wrap">${roster.map((s) => `<button type="button" class="chip ${sh.tags.includes(s.id) ? "on" : ""}" data-a="tagStudent" data-id="${s.id}" aria-pressed="${sh.tags.includes(s.id)}">${esc(display(s))}</button>`).join("") || `<span class="muted small">Nenhum aluno cadastrado no projeto.</span>`}</div>
       <div class="row2" style="margin-top:16px"><button type="button" class="btn sm outline" style="width:100%" data-a="tagAll">Marcar todos</button><button type="button" class="btn sm outline" style="width:100%" data-a="tagNone">Limpar</button></div>
-      <button class="btn" type="submit" style="margin-top:18px">Publicar no mural</button>
+      <button class="btn" type="submit" id="postSubmit" style="margin-top:18px" ${sh.uploading ? "disabled" : ""}>${sh.uploading ? "Enviando vídeo…" : "Publicar no mural"}</button>
     </form>`;
   },
 
@@ -2458,6 +2483,20 @@ document.addEventListener("change", async (e) => {
     } catch (err) { toast("Não foi possível ler a imagem. Tente outra foto."); }
     return;
   }
+  if (e.target.id === "video") {
+    const file = e.target.files[0];
+    e.target.value = "";
+    if (!file || !state.sheet) return;
+    if (file.size > 50 * 1048576) return toast("Vídeo grande demais (máx. 50 MB). Grave mais curto ou em 720p.");
+    try {
+      const info = await videoInfo(file);
+      if (info.dur > 61) { URL.revokeObjectURL(info.url); return toast(`Esse vídeo tem ${Math.round(info.dur)} s. Envie um trecho de até 60 segundos.`); }
+      if (state.sheet.videoUrl) URL.revokeObjectURL(state.sheet.videoUrl);
+      Object.assign(state.sheet, { videoFile: file, videoUrl: info.url, videoDur: info.dur, poster: info.poster, photo: "" });
+      render();
+    } catch (err) { toast("Não foi possível ler esse vídeo. Tente outro (MP4 ou MOV)."); }
+    return;
+  }
   if (e.target.id !== "photo" || !e.target.files[0] || !state.sheet) return;
   try {
     const url = await compress(e.target.files[0]);
@@ -2466,6 +2505,59 @@ document.addEventListener("change", async (e) => {
     img.src = url; img.hidden = false;
   } catch (err) { toast("Não foi possível ler a imagem. Tente outra foto."); }
 });
+
+/* Vídeo do Mural: lê duração e tira uma capa (primeiro segundo) */
+function videoInfo(file) {
+  return new Promise((res, rej) => {
+    const url = URL.createObjectURL(file);
+    const v = document.createElement("video");
+    let dur = null, done = false;
+    const finish = (poster) => { if (done) return; done = true; res({ url, dur: isFinite(dur) ? dur : 0, poster: poster || "" }); };
+    v.muted = true; v.playsInline = true; v.preload = "auto";
+    v.onerror = () => { if (!done) { done = true; URL.revokeObjectURL(url); rej(new Error("video")); } };
+    v.onloadedmetadata = () => {
+      dur = v.duration;
+      v.onseeked = () => {
+        try {
+          const k = Math.min(1, 480 / Math.max(v.videoWidth, v.videoHeight));
+          const c = document.createElement("canvas");
+          c.width = Math.round(v.videoWidth * k); c.height = Math.round(v.videoHeight * k);
+          c.getContext("2d").drawImage(v, 0, 0, c.width, c.height);
+          finish(c.toDataURL("image/jpeg", 0.7));
+        } catch (e) { finish(""); }
+      };
+      v.currentTime = Math.min(0.8, (isFinite(dur) ? dur : 2) / 2);
+    };
+    setTimeout(() => (dur !== null ? finish("") : v.onerror()), 8000);
+    v.src = url;
+  });
+}
+
+/* Envia o vídeo para o Supabase Storage (bucket público mural-videos/treinos) com progresso */
+function uploadVideo(file, onProgress) {
+  return new Promise((res, rej) => {
+    const ext = ((file.name || "").split(".").pop() || "mp4").toLowerCase().replace(/[^a-z0-9]/g, "").slice(0, 4) || "mp4";
+    const path = `treinos/${TODAY()}-${uid()}.${ext}`;
+    const base = SUPABASE_URL.replace(/\/+$/, "");
+    const xhr = new XMLHttpRequest();
+    xhr.open("POST", `${base}/storage/v1/object/mural-videos/${path}`);
+    xhr.setRequestHeader("apikey", SUPABASE_KEY);
+    if (SUPABASE_KEY.startsWith("eyJ")) xhr.setRequestHeader("Authorization", "Bearer " + SUPABASE_KEY);
+    xhr.setRequestHeader("Content-Type", file.type || "video/mp4");
+    xhr.setRequestHeader("x-upsert", "false");
+    xhr.upload.onprogress = (e) => { if (e.lengthComputable) onProgress(Math.round((e.loaded * 100) / e.total)); };
+    xhr.onload = () => {
+      if (xhr.status < 300) return res(`${base}/storage/v1/object/public/mural-videos/${path}`);
+      const msg = xhr.responseText || "";
+      rej(new Error(xhr.status === 413 || /size/i.test(msg) ? "Vídeo grande demais para o servidor (máx. 50 MB)."
+        : /mime/i.test(msg) ? "Formato de vídeo não aceito. Use MP4 ou MOV."
+        : /bucket/i.test(msg) ? "O armazenamento de vídeos ainda não foi configurado no Supabase."
+        : `Falha ao enviar o vídeo (erro ${xhr.status}).`));
+    };
+    xhr.onerror = () => rej(new Error("Sem conexão. Tente enviar o vídeo de novo com internet."));
+    xhr.send(file);
+  });
+}
 
 function compress(file, max = 480) {
   return new Promise((res, rej) => {
@@ -2794,7 +2886,25 @@ document.addEventListener("submit", (e) => {
 
   if (kind === "post") {
     const sh = state.sheet, caption = sh.caption.trim();
-    if (!caption) return toast("Escreva uma legenda curta para a foto.");
+    if (!caption) return toast(sh.videoFile ? "Escreva uma legenda curta para o vídeo." : "Escreva uma legenda curta para a foto.");
+    if (sh.videoFile) {
+      if (sh.uploading) return;
+      sh.uploading = true; render();
+      const bar = () => document.getElementById("upbar");
+      uploadVideo(sh.videoFile, (pct) => {
+        const b = bar(); if (b) { b.hidden = false; b.firstElementChild.style.width = pct + "%"; }
+        const s = document.getElementById("postSubmit"); if (s) s.textContent = `Enviando vídeo… ${pct}%`;
+      }).then((url) => {
+        db.posts.push({ id: "n" + uid(), pid: myPid(), by: meKey(), byKind: "staff", photo: "", video: url, poster: sh.poster || "", dur: Math.round(sh.videoDur || 0), caption, tags: sh.tags, at: new Date().toISOString(), likes: [], comments: [] });
+        if (sh.videoUrl) URL.revokeObjectURL(sh.videoUrl);
+        persist(); state.sheet = null; state.feed = "todos"; go("mural");
+        toast("Vídeo publicado no mural! As famílias já podem assistir.");
+      }).catch((err) => {
+        if (state.sheet === sh) { sh.uploading = false; render(); }
+        toast(err.message || "Falha ao enviar o vídeo.");
+      });
+      return;
+    }
     db.posts.push({ id: "n" + uid(), pid: myPid(), by: meKey(), byKind: isStaff() ? "staff" : "student", photo: sh.photo || "", caption, tags: sh.tags, at: new Date().toISOString(), likes: [], comments: [] });
     persist(); state.sheet = null; state.feed = "todos"; go("mural");
     toast(sh.photo ? "Publicado no mural!" : "Publicado sem foto. Você pode excluir e postar de novo com a imagem.");

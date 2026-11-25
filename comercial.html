@@ -87,6 +87,55 @@
   .cap em { font-style: normal; color: var(--lilac-ink); }
   .sub { font-size: 34px; font-weight: 500; color: var(--ink-2); line-height: 1.35; }
 
+  /* S4b · famílias no Mural */
+  .fam-tag { display: inline-flex; align-items: center; gap: 10px; background: var(--lilac); color: var(--deep); border-radius: 999px; padding: 10px 22px; font-size: 30px; font-weight: 800; }
+  .steps3 { margin-top: 40px; display: flex; flex-direction: column; gap: 16px; }
+  .st3 { display: flex; align-items: center; gap: 18px; font-size: 32px; font-weight: 600; color: var(--muted); }
+  .st3 b { width: 56px; height: 56px; border-radius: 18px; background: var(--surface-2); color: var(--ink-2); display: grid; place-items: center; font-family: "Bricolage Grotesque"; font-size: 28px; font-weight: 800; flex: none; }
+  .st3.on { color: var(--ink); }
+  .st3.on b { background: var(--ink); color: #fff; }
+  .hello { margin: 4px 16px 14px; background: var(--lilac); border-radius: 26px; padding: 18px 20px 22px; color: var(--deep); position: relative; overflow: hidden; }
+  .hello::before { content: ""; position: absolute; width: 220px; height: 220px; border-radius: 50%; background: var(--lilac-2); right: -80px; top: -120px; }
+  .hello small { position: relative; display: inline-block; background: rgba(255, 255, 255, .45); border-radius: 999px; padding: 4px 12px; font-weight: 700; font-size: 13px; }
+  .hello h3 { position: relative; margin: 14px 0 0; font-family: "Bricolage Grotesque"; font-size: 40px; font-weight: 800; letter-spacing: -.035em; line-height: 1; }
+  .hello p { position: relative; margin: 6px 0 0; font-size: 15px; font-weight: 600; opacity: .8; }
+  .mini { margin: 0 16px; display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: var(--line); border-radius: 20px; overflow: hidden; }
+  .mini div { background: var(--surface); padding: 14px; }
+  .mini span { display: block; font-size: 12px; color: var(--muted); font-weight: 600; }
+  .mini b { display: block; font-family: "Bricolage Grotesque"; font-size: 30px; font-weight: 800; margin-top: 6px; }
+  .tabs5 { position: absolute; left: 0; right: 0; bottom: 0; height: 92px; background: var(--surface); border-top: 1px solid var(--line); display: grid; grid-template-columns: repeat(5, 1fr); padding: 10px 6px 0; }
+  .tabs5 div { display: flex; flex-direction: column; align-items: center; gap: 4px; font-size: 12px; font-weight: 600; color: var(--muted); }
+  .tabs5 i { width: 52px; height: 32px; border-radius: 12px; display: grid; place-items: center; }
+  .tabs5 svg { width: 24px; height: 24px; fill: currentColor; }
+  .tabs5 .on { color: var(--ink); font-weight: 700; }
+  .tabs5 .on i { background: var(--lilac); color: var(--deep); }
+  .scrA, .scrB { position: absolute; left: 0; right: 0; top: 114px; bottom: 92px; }
+  .vbanner { margin: 0 16px 12px; background: var(--surface); border-radius: 20px; padding: 12px 14px; display: flex; gap: 12px; align-items: center; }
+  .vbanner .bd { width: 42px; height: 42px; border-radius: 14px; background: var(--lilac); color: var(--deep); display: grid; place-items: center; flex: none; }
+  .vbanner .bd svg { width: 20px; height: 20px; fill: currentColor; }
+  .vbanner b { display: block; font-size: 15px; }
+  .vbanner small { color: var(--muted); font-size: 12.5px; }
+  .vcard { margin: 0 12px; background: var(--surface); border-radius: 28px; overflow: hidden; }
+  .vmedia { position: relative; margin: 8px 8px 0; border-radius: 22px; overflow: hidden; height: 330px; background: #10203F; }
+  .mat { position: absolute; inset: 0; background: linear-gradient(180deg, #0F1E3A 0%, #1C3E7A 38%, #2456A6 100%); }
+  .mat::after { content: ""; position: absolute; left: -20%; right: -20%; bottom: 0; height: 62%; background: repeating-linear-gradient(90deg, rgba(255, 255, 255, .07) 0 2px, transparent 2px 90px), repeating-linear-gradient(180deg, rgba(255, 255, 255, .06) 0 2px, transparent 2px 46px); transform: perspective(300px) rotateX(48deg); transform-origin: bottom; }
+  .fig { position: absolute; bottom: 52px; width: 120px; height: 170px; }
+  .fig svg { width: 100%; height: 100%; }
+  .vtag { position: absolute; top: 12px; left: 12px; display: inline-flex; gap: 6px; align-items: center; background: rgba(18, 16, 13, .55); color: #fff; border-radius: 999px; padding: 6px 12px; font-size: 13px; font-weight: 700; z-index: 2; }
+  .vtag svg { width: 13px; height: 13px; fill: currentColor; }
+  .vplay { position: absolute; left: 50%; top: 50%; width: 84px; height: 84px; margin: -42px 0 0 -42px; border-radius: 50%; background: rgba(255, 255, 255, .92); display: grid; place-items: center; z-index: 2; box-shadow: 0 10px 30px rgba(0, 0, 0, .35); }
+  .vplay svg { width: 34px; height: 34px; fill: var(--ink); margin-left: 5px; }
+  .vbar { position: absolute; left: 14px; right: 14px; bottom: 14px; z-index: 2; display: flex; align-items: center; gap: 10px; color: #fff; font-size: 13px; font-weight: 700; font-variant-numeric: tabular-nums; }
+  .vbar .tr { flex: 1; height: 5px; border-radius: 3px; background: rgba(255, 255, 255, .3); overflow: hidden; }
+  .vbar .tr i { display: block; height: 100%; background: #fff; }
+  .vfoot { padding: 12px 16px 16px; }
+  .vfoot p { margin: 0 0 12px; font-size: 15px; font-weight: 600; line-height: 1.35; }
+  .vfoot .acts { display: flex; gap: 8px; }
+  .vfoot .acts b { height: 40px; padding: 0 14px; border-radius: 14px; background: var(--ground); display: inline-flex; align-items: center; gap: 7px; font-size: 14px; }
+  .vfoot .acts b svg { width: 18px; height: 18px; fill: currentColor; }
+  .vfoot .acts b.on { background: var(--abs); color: #fff; }
+  .tap { position: absolute; width: 64px; height: 64px; margin: -32px 0 0 -32px; border-radius: 50%; background: rgba(21, 19, 15, .22); box-shadow: 0 0 0 3px rgba(255, 255, 255, .9); z-index: 9; pointer-events: none; }
+
   /* S5 · órbita */
   .orb { width: 112px; height: 112px; border-radius: 34px; display: grid; place-items: center; box-shadow: 0 18px 40px rgba(21, 19, 15, .10); }
   .orb svg { width: 50px; height: 50px; }
@@ -230,6 +279,46 @@
     </div>
   </section>
 
+  <!-- S4b · famílias assistem o treino no Mural -->
+  <section class="scene" id="s4b">
+    <div class="abs" id="famcap" style="left:180px;top:200px;width:760px">
+      <span class="fam-tag" id="famtag">Mãe, pai:</span>
+      <div class="cap bri" style="margin-top:28px;font-size:96px">assista uma parte<br><em>do treino.</em></div>
+      <div class="steps3">
+        <div class="st3" id="st1"><b>1</b>Entre com a conta do seu filho</div>
+        <div class="st3" id="st2"><b>2</b>Toque em&nbsp;<strong style="color:inherit">Mural</strong></div>
+        <div class="st3" id="st3"><b>3</b>Dê o play no vídeo do treino</div>
+      </div>
+    </div>
+    <div class="abs phone" id="ph5" style="left:1180px;top:100px">
+      <div class="scr">
+        <div class="notch"></div>
+        <div class="sbar"><span>19:40</span><span>●●● 5G</span></div>
+        <div class="ah" id="ph5title">Início</div>
+        <div class="scrA" id="scrA">
+          <div class="hello"><small>● Guardiões do Tatame</small><h3>Oss, Bia.</h3><p>Quarta, 24 de novembro</p></div>
+          <div class="mini"><div><span>Presença · 90 dias</span><b>96%</b></div><div><span>Saldo de FO</span><b style="color:var(--pos)">+4</b></div><div><span>Próximo grau</span><b>3º</b></div><div><span>Medalhas</span><b>2</b></div></div>
+        </div>
+        <div class="scrB" id="scrB">
+          <div class="vbanner"><span class="bd" id="bdplay"></span><span><b>Assista uma parte do treino</b><small>2 vídeos publicados pela equipe</small></span></div>
+          <div class="vcard">
+            <div class="vmedia" id="vmedia">
+              <div class="mat"></div>
+              <div class="fig" id="fig1" style="left:70px"><svg viewBox="0 0 120 170"><circle cx="60" cy="26" r="20" fill="#F3E2CF"/><path d="M26 64 Q60 44 94 64 L104 130 Q60 142 16 130 Z" fill="#F7F5F0"/><rect x="22" y="104" width="76" height="9" rx="3" fill="#1E40AF"/><path d="M30 130 L22 168 H44 L56 134 Z M90 130 L98 168 H76 L64 134 Z" fill="#F7F5F0"/></svg></div>
+              <div class="fig" id="fig2" style="left:200px"><svg viewBox="0 0 120 170"><circle cx="60" cy="26" r="20" fill="#C99A6E"/><path d="M26 64 Q60 44 94 64 L104 130 Q60 142 16 130 Z" fill="#F7F5F0"/><rect x="22" y="104" width="76" height="9" rx="3" fill="#EAB308"/><path d="M30 130 L22 168 H44 L56 134 Z M90 130 L98 168 H76 L64 134 Z" fill="#F7F5F0"/></svg></div>
+              <span class="vtag" id="vtag"></span>
+              <span class="vplay" id="vplay"></span>
+              <div class="vbar" id="vbar"><span id="vtime">0:00</span><span class="tr"><i id="vprog"></i></span><span>0:32</span></div>
+            </div>
+            <div class="vfoot"><p>Treino de raspagem da turma infantil. Olha a evolução, família!</p><div class="acts"><b id="vlike"></b><b id="vcom"></b></div></div>
+          </div>
+        </div>
+        <div class="tabs5" id="tabs5"></div>
+        <div class="tap" id="tap"></div>
+      </div>
+    </div>
+  </section>
+
   <!-- S5 · tudo num lugar só -->
   <section class="scene" id="s5">
     <div id="orbit"></div>
@@ -288,7 +377,7 @@
   <section class="scene" id="s9">
     <svg class="abs mk" id="mk" viewBox="0 0 76 64"><use href="#knot"/></svg>
     <div class="abs wd bri" id="wd">dojo social</div>
-    <div class="abs tg" id="tg">Chamada · FO · Graduação · Campeonatos · Insights</div>
+    <div class="abs tg" id="tg">Chamada · FO · Graduação · Vídeos do treino · Insights</div>
     <div class="abs url" id="url">Projeto social de Jiu-Jitsu · Macapá · AP</div>
   </section>
 
@@ -309,6 +398,7 @@
 
 <script>
 const P = {
+  play: "M8 5.14v13.72a1 1 0 0 0 1.52.85l10.78-6.86a1 1 0 0 0 0-1.7L9.52 4.29A1 1 0 0 0 8 5.14z",
   chart: "M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z",
   email: "M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z",
   lock: "M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z",
@@ -351,7 +441,7 @@ const P = {
   hand: "M13 5.5V2.5c0-.83-.67-1.5-1.5-1.5S10 1.67 10 2.5v9.2L7.7 10.5c-.6-.4-1.4-.3-1.9.2-.5.5-.5 1.3 0 1.8l4.6 5.3c.6.7 1.5 1.1 2.4 1.1h4.7c1.7 0 3.1-1.3 3.4-3l.7-4.4c.2-1.2-.6-2.3-1.8-2.5l-6.8-1.2V5.5z",
   moon: "M12 3a9 9 0 1 0 9 9c0-.46-.04-.92-.1-1.36a5.39 5.39 0 0 1-4.4 2.26 5.4 5.4 0 0 1-3.14-9.8c-.44-.06-.9-.1-1.36-.1z"
 };
-const DURATION = 38;
+const DURATION = 45;
 const $ = (id) => document.getElementById(id);
 const icon = (n) => `<svg class="i" viewBox="0 0 24 24"><path d="${P[n]}"/></svg>`;
 
@@ -390,6 +480,16 @@ const DQ = [["AB", "Bia · Ana Beatriz", "1º · 96 pts"], ["ET", "Manu · Emanu
 $("dq").innerHTML = DQ.map(([a, n, p], i) => `<div class="dq" id="dq${i}"><span class="av">${a}</span><b>${n}</b><em>${p}</em></div>`).join("");
 const FW = [[6, 2], [8, 1], [5, 3], [9, 1], [7, 2], [10, 0], [8, 1], [12, 1]];
 $("fw").innerHTML = FW.map((_, i) => `<span><span class="u"><i id="fu${i}"></i></span><span class="d"><i id="fd${i}"></i></span></span>`).join("");
+
+/* ícones da cena das famílias */
+$("bdplay").innerHTML = icon("play"); $("vplay").innerHTML = icon("play");
+$("vtag").innerHTML = `${icon("play")}Vídeo do treino · 0:32`;
+$("vcom").innerHTML = `${icon("chat")}5`;
+const TABS = [["home", "Início"], ["grid", "Mural"], ["scale", "Agenda"], ["trophy", "Campeonatos"], ["more", "Mais"]];
+$("tabs5").innerHTML = TABS.map(([n, l], i) => `<div id="tb${i}"><i>${icon(n)}</i>${l}</div>`).join("");
+
+/* cenas que vêm depois da cena das famílias começam 7 s mais tarde */
+const SHIFT = { s5: 7, s6: 7, s7: 7, s8: 7, s9: 7 };
 
 /* ---------- cenas: [início, fim, desenhar(tempoGlobal)] ---------- */
 const SC = [
@@ -441,6 +541,45 @@ const SC = [
     css($("save"), { transform: press ? "scale(.97)" : "", filter: press ? "brightness(.92)" : "" });
     const to = eBack(prog(t, 16.75, 17.15)) * (1 - prog(t, 17.3, 17.5));
     css($("toast4"), { opacity: Math.min(1, to * 1.5), transform: `translateX(-50%) translateY(${lerp(30, 0, clamp(to))}px) scale(${lerp(0.9, 1, clamp(to))})` });
+  }],
+  ["s4b", 17.8, 24.9, (t) => {
+    const ph = eOut5(prog(t, 17.8, 18.6)), out = eIn(prog(t, 24.35, 24.9));
+    css($("ph5"), { transform: `translate(${lerp(700, 0, ph) + out * 60}px, ${out * 30}px) rotate(${lerp(-6, 0, ph)}deg) scale(${1 - out * 0.05})`, opacity: 1 - out });
+    const c = eOut(prog(t, 17.95, 18.6));
+    css($("famcap"), { opacity: c * (1 - out), transform: `translateX(${lerp(-60, 0, c) - out * 80}px)` });
+    css($("famtag"), { transform: `scale(${lerp(0.6, 1, eBack(prog(t, 18.0, 18.5)))})` });
+    [["st1", 18.5], ["st2", 19.4], ["st3", 20.95]].forEach(([id, a], i) => {
+      const x = eOut(prog(t, 18.3 + i * 0.12, 18.8 + i * 0.12));
+      const el = $(id); el.className = "st3" + (t > a ? " on" : "");
+      css(el, { opacity: x, transform: `translateY(${lerp(16, 0, x)}px) scale(${t > a ? 1 + 0.05 * (1 - eOut(prog(t, a, a + 0.35))) : 1})` });
+    });
+    /* troca de tela: Início -> Mural */
+    const sw = eInOut(prog(t, 19.55, 19.95));
+    css($("scrA"), { opacity: 1 - sw, transform: `translateX(${-sw * 60}px)` });
+    css($("scrB"), { opacity: sw, transform: `translateX(${(1 - sw) * 60}px)` });
+    $("ph5title").textContent = t < 19.75 ? "Início" : "Mural do tatame";
+    TABS.forEach((_, i) => { $("tb" + i).className = (t < 19.55 ? i === 0 : i === 1) ? "on" : ""; });
+    /* vídeo: play, progresso, alunos se mexendo */
+    const playing = t > 21.15;
+    const pl = eIn(prog(t, 21.1, 21.4));
+    css($("vplay"), { opacity: 1 - pl, transform: `scale(${1 - pl * 0.4})` });
+    const el = playing ? t - 21.15 : 0;
+    $("vtime").textContent = `0:${String(Math.floor(el)).padStart(2, "0")}`;
+    $("vprog").style.width = `${(el / 32) * 100}%`;
+    css($("fig1"), { transform: playing ? `translate(${Math.sin(el * 3.2) * 14}px, ${Math.abs(Math.sin(el * 3.2)) * -8}px) rotate(${Math.sin(el * 3.2) * 6}deg)` : "" });
+    css($("fig2"), { transform: playing ? `translate(${Math.sin(el * 3.2 + 2.4) * -16}px, ${Math.abs(Math.cos(el * 3.2)) * -6}px) rotate(${Math.sin(el * 3.2 + 1) * -7}deg)` : "" });
+    css($("vmedia"), { transform: playing ? `scale(${1 + Math.min(el, 4) * 0.004})` : "" });
+    const liked = t > 23.35;
+    $("vlike").className = liked ? "on" : "";
+    $("vlike").innerHTML = `${icon("heart")}${liked ? 13 : 12} Oss`;
+    css($("vlike"), { transform: liked ? `scale(${1 + 0.15 * (1 - eOut(prog(t, 23.35, 23.7)))})` : "" });
+    /* dedo tocando: Mural (aba), play, Oss */
+    const taps = [[19.25, 19.75, 123, 786], [20.85, 21.35, 201, 365], [23.05, 23.55, 70, 618]];
+    const cur = taps.find(([a, b]) => t >= a - 0.25 && t <= b + 0.15);
+    if (cur) {
+      const [a, b, x, y] = cur, inn = eOut(prog(t, a - 0.25, a)), press = prog(t, a, b), fade = 1 - prog(t, b, b + 0.15);
+      css($("tap"), { left: x + "px", top: y + "px", opacity: Math.min(inn, fade), transform: `scale(${press < 0.35 ? lerp(1, 0.78, press / 0.35) : lerp(0.78, 1.25, (press - 0.35) / 0.65)})`, boxShadow: `0 0 0 ${3 + press * 10}px rgba(255,255,255,${0.9 - press * 0.7})` });
+    } else css($("tap"), { opacity: 0 });
   }],
   ["s5", 17.8, 22.6, (t) => {
     const lt = t - 17.8, inn = eOut(prog(t, 17.8, 18.7)), out = eIn(prog(t, 22.1, 22.6));
@@ -501,14 +640,14 @@ const SC = [
 function seek(t) {
   t = clamp(t, 0, DURATION);
   SC.forEach(([id, a, b, draw]) => {
-    const el = $(id), on = t >= a && t < b;
+    const sh = SHIFT[id] || 0, tt = t - sh, el = $(id), on = tt >= a && tt < b;
     el.style.display = on ? "block" : "none";
-    if (on) draw(t);
+    if (on) draw(tt);
   });
-  css($("bg1"), { transform: `translate(${Math.sin(t * 0.35) * 60}px, ${Math.cos(t * 0.3) * 40}px)`, opacity: t > 34.5 ? 0 : 0.55 });
-  css($("bg2"), { transform: `translate(${Math.cos(t * 0.28) * 70}px, ${Math.sin(t * 0.33) * 30}px)`, opacity: t > 34.5 ? 0 : 0.7 });
+  css($("bg1"), { transform: `translate(${Math.sin(t * 0.35) * 60}px, ${Math.cos(t * 0.3) * 40}px)`, opacity: t > DURATION - 3.5 ? 0 : 0.55 });
+  css($("bg2"), { transform: `translate(${Math.cos(t * 0.28) * 70}px, ${Math.sin(t * 0.33) * 30}px)`, opacity: t > DURATION - 3.5 ? 0 : 0.7 });
   $("prog").style.width = (t / DURATION) * 100 + "%";
-  $("prog").style.opacity = t > 34.5 ? 0 : 0.85;
+  $("prog").style.opacity = t > DURATION - 3.5 ? 0 : 0.85;
   return t;
 }
 window.seek = seek; window.DURATION = DURATION;
