@@ -1,0 +1,540 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Dojo Social · Comercial</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,700;12..96,800&family=Figtree:wght@400;500;600;700;800&display=block">
+<style>
+  :root {
+    --ground: #F1EDE4; --surface: #FAF8F3; --surface-2: #E7E1D6; --line: #E9E4DA;
+    --ink: #15130F; --ink-2: #3B3731; --muted: #78726A; --faint: #A39C92;
+    --lilac: #D8BAE7; --lilac-2: #E5D0EF; --lilac-soft: #EDE1F3; --lilac-ink: #53346A; --deep: #2A1B36;
+    --pos: #1E9E4A; --pos-soft: #DDF0E2; --neg: #EE5A2F; --abs: #E83F48;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; background: #0B0A09; overflow: hidden; }
+  body { font-family: "Figtree", system-ui, sans-serif; color: var(--ink); -webkit-font-smoothing: antialiased; }
+  .bri { font-family: "Bricolage Grotesque", "Figtree", sans-serif; }
+  #stage { position: absolute; left: 50%; top: 50%; width: 1920px; height: 1080px; transform-origin: 50% 50%; overflow: hidden; background: var(--ground); }
+  .scene { position: absolute; inset: 0; display: none; }
+  .abs { position: absolute; }
+  svg.i { width: 1em; height: 1em; fill: currentColor; display: block; }
+
+  /* fundo vivo */
+  .blob { position: absolute; border-radius: 50%; filter: blur(2px); }
+  #bg1 { width: 900px; height: 900px; background: var(--lilac-2); left: 1300px; top: -420px; opacity: .55; }
+  #bg2 { width: 700px; height: 520px; background: var(--lilac-soft); left: -260px; top: 760px; opacity: .7; }
+
+  /* S1 · palavras */
+  .kw { left: 200px; font-size: 118px; font-weight: 800; letter-spacing: -.045em; line-height: 1; white-space: nowrap; }
+  .kw .st { position: absolute; left: -10px; right: -10px; top: 54%; height: 14px; background: var(--lilac); border-radius: 7px; transform-origin: left center; }
+
+  /* S2 · logo */
+  #s2 .abre { left: 0; right: 0; top: 428px; text-align: center; font-size: 46px; font-weight: 600; color: var(--muted); }
+  #s2 .word { left: 0; right: 0; top: 486px; text-align: center; font-size: 190px; font-weight: 800; letter-spacing: -.055em; line-height: 1; }
+  .coin { width: 210px; height: 210px; border-radius: 50%; background: radial-gradient(circle at 35% 30%, #E9D6F2, #C9A3DD 60%, #B48BCB); box-shadow: 0 30px 60px rgba(83, 52, 106, .25), inset 0 -10px 20px rgba(83, 52, 106, .25); display: grid; place-items: center; color: var(--ink); }
+  .coin svg { width: 118px; height: 98px; }
+
+  /* celular */
+  .phone { width: 430px; height: 880px; border-radius: 64px; background: #0F0E0C; padding: 14px; box-shadow: 0 60px 120px rgba(21, 19, 15, .28), 0 0 0 2px #2A2722 inset; }
+  .scr { position: relative; width: 100%; height: 100%; border-radius: 52px; overflow: hidden; background: var(--ground); }
+  .notch { position: absolute; top: 12px; left: 50%; width: 120px; height: 34px; margin-left: -60px; border-radius: 20px; background: #0F0E0C; z-index: 5; }
+  .sbar { height: 58px; display: flex; justify-content: space-between; align-items: flex-end; padding: 0 34px 6px; font-size: 16px; font-weight: 700; }
+  .ah { display: flex; align-items: center; justify-content: center; height: 56px; font-family: "Bricolage Grotesque"; font-size: 25px; font-weight: 800; letter-spacing: -.02em; }
+  .dnav { margin: 4px 16px 12px; background: var(--surface); border-radius: 20px; padding: 10px 14px; display: flex; justify-content: space-between; align-items: center; }
+  .dnav b { font-family: "Bricolage Grotesque"; font-size: 19px; }
+  .dnav small { display: block; color: var(--muted); font-size: 13px; font-weight: 600; text-align: center; }
+  .dnav i { width: 34px; height: 34px; border-radius: 11px; background: var(--surface-2); display: block; }
+  .card { margin: 0 16px; background: var(--surface); border-radius: 22px; padding: 2px 14px; }
+  .r { display: flex; align-items: center; gap: 11px; padding: 11px 0; border-bottom: 1px solid var(--line); }
+  .r:last-child { border-bottom: 0; }
+  .av { width: 42px; height: 42px; border-radius: 32%; background: var(--lilac-soft); color: var(--lilac-ink); display: grid; place-items: center; font-weight: 800; font-size: 14px; flex: none; }
+  .nm { font-weight: 700; font-size: 16px; }
+  .mb { display: inline-flex; justify-content: flex-end; width: 40px; height: 10px; border-radius: 3px; margin-top: 5px; overflow: hidden; box-shadow: inset 0 0 0 1px rgba(21, 19, 15, .2); }
+  .mb span { width: 18px; background: #000; }
+  .g { flex: 1; min-width: 0; }
+  .pa { display: flex; gap: 6px; }
+  .pa b { width: 42px; height: 42px; border-radius: 13px; background: var(--surface-2); color: var(--ink-2); display: grid; place-items: center; font-size: 15px; font-weight: 800; }
+  .pa b.on-p { background: var(--pos); color: #fff; }
+  .pa b.on-a { background: var(--abs); color: #fff; }
+  .foot { position: absolute; left: 0; right: 0; bottom: 0; background: var(--surface); padding: 16px 20px 30px; display: flex; justify-content: space-between; align-items: center; font-size: 15px; color: var(--muted); border-top: 1px solid var(--line); }
+  .foot b { color: var(--ink); font-size: 18px; font-family: "Bricolage Grotesque"; }
+  .pill { display: inline-flex; align-items: center; gap: 6px; height: 34px; padding: 0 14px; border-radius: 999px; font-weight: 700; font-size: 14px; background: var(--ink); color: #fff; }
+
+  /* sheet FO */
+  .scrim { position: absolute; inset: 0; background: rgba(21, 19, 15, .42); }
+  .sheet { position: absolute; left: 0; right: 0; bottom: 0; background: var(--ground); border-radius: 34px 34px 0 0; padding: 12px 22px 30px; }
+  .grab { width: 44px; height: 5px; border-radius: 3px; background: var(--surface-2); margin: 0 auto 16px; }
+  .shh { display: flex; gap: 12px; align-items: center; margin-bottom: 18px; }
+  .shh b { font-size: 19px; display: block; }
+  .shh small { color: var(--muted); font-size: 14px; }
+  .seg { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 16px; }
+  .seg b { height: 56px; border-radius: 18px; background: var(--surface); display: grid; place-items: center; font-size: 17px; font-weight: 800; color: var(--ink-2); }
+  .seg b.on { background: var(--pos); color: #fff; }
+  .chips { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px; }
+  .chips b { height: 38px; padding: 0 16px; border-radius: 999px; background: var(--surface); display: grid; place-items: center; font-size: 15px; font-weight: 600; color: var(--ink-2); }
+  .chips b.on { background: var(--pos); color: #fff; }
+  .note { background: var(--surface); border-radius: 16px; padding: 14px 16px; min-height: 82px; font-size: 17px; line-height: 1.4; border: 1.5px solid var(--ink); }
+  .caret { display: inline-block; width: 2px; height: 20px; background: var(--ink); vertical-align: -3px; margin-left: 1px; }
+  .btn { margin-top: 16px; height: 58px; border-radius: 20px; background: var(--pos); color: #fff; display: grid; place-items: center; font-size: 18px; font-weight: 700; }
+  .toast { position: absolute; left: 50%; bottom: 120px; transform: translateX(-50%); background: var(--ink); color: #fff; border-radius: 999px; padding: 14px 22px; font-size: 16px; font-weight: 600; white-space: nowrap; }
+
+  /* legendas grandes */
+  .cap { font-size: 104px; font-weight: 800; letter-spacing: -.045em; line-height: .98; }
+  .cap em { font-style: normal; color: var(--lilac-ink); }
+  .sub { font-size: 34px; font-weight: 500; color: var(--ink-2); line-height: 1.35; }
+
+  /* S5 · órbita */
+  .orb { width: 112px; height: 112px; border-radius: 34px; display: grid; place-items: center; box-shadow: 0 18px 40px rgba(21, 19, 15, .10); }
+  .orb svg { width: 50px; height: 50px; }
+  .orb.l { background: var(--surface); color: var(--ink); }
+  .orb.d { background: var(--lilac); color: var(--deep); }
+  #s5 .mid { left: 0; right: 0; top: 420px; text-align: center; }
+  #s5 .mid .cap { font-size: 112px; }
+  #s5 .rot { height: 60px; overflow: hidden; margin-top: 22px; font-size: 44px; font-weight: 700; color: var(--lilac-ink); }
+
+  /* S6 · números + faixa */
+  .big { font-size: 300px; font-weight: 800; letter-spacing: -.06em; line-height: .9; font-variant-numeric: tabular-nums; }
+  .belt { width: 760px; height: 110px; border-radius: 16px; background: repeating-linear-gradient(180deg, transparent 0 9px, rgba(0, 0, 0, .07) 9px 10px), #1E40AF; display: flex; justify-content: flex-end; overflow: hidden; box-shadow: 0 30px 60px rgba(21, 19, 15, .18); }
+  .belt .tip { width: 260px; margin-right: 90px; background: #000; display: flex; gap: 18px; align-items: center; justify-content: center; }
+  .belt .tip i { width: 20px; height: 74px; border-radius: 3px; background: #2A2A2A; display: block; }
+  .belt .tip i.on { background: #fff; }
+
+  /* S7 · monitor */
+  .mon { width: 1240px; height: 720px; border-radius: 28px; background: #0F0E0C; padding: 16px; box-shadow: 0 60px 120px rgba(21, 19, 15, .28); }
+  .mon .scr { border-radius: 16px; display: flex; }
+  .stand { width: 220px; height: 90px; background: linear-gradient(#1B1916, #0F0E0C); clip-path: polygon(30% 0, 70% 0, 82% 100%, 18% 100%); }
+  .side { width: 200px; background: var(--ground); border-right: 1px solid var(--line); padding: 22px 14px; }
+  .side .lg { font-family: "Bricolage Grotesque"; font-weight: 800; font-size: 22px; letter-spacing: -.03em; margin: 0 8px 18px; }
+  .side div.n { height: 34px; border-radius: 10px; margin-bottom: 6px; display: flex; align-items: center; gap: 10px; padding: 0 10px; font-size: 14px; font-weight: 500; color: var(--ink-2); }
+  .side div.n.on { background: var(--ink); color: #fff; font-weight: 700; }
+  .side div.n i { width: 14px; height: 14px; border-radius: 4px; background: currentColor; opacity: .5; }
+  .dash { flex: 1; padding: 22px 26px; }
+  .dash h4 { margin: 0 0 14px; font-family: "Bricolage Grotesque"; font-size: 26px; letter-spacing: -.02em; text-align: center; }
+  .kp { display: grid; grid-template-columns: repeat(5, 1fr); gap: 1px; background: var(--line); border-radius: 18px; overflow: hidden; }
+  .kp div { background: var(--surface); padding: 12px 14px; }
+  .kp span { display: block; font-size: 12px; color: var(--muted); font-weight: 600; }
+  .kp b { display: block; font-family: "Bricolage Grotesque"; font-size: 34px; font-weight: 800; letter-spacing: -.03em; font-variant-numeric: tabular-nums; margin-top: 4px; }
+  .row3 { display: grid; grid-template-columns: 1.1fr 1fr; gap: 16px; margin-top: 16px; }
+  .pn { background: var(--surface); border-radius: 18px; padding: 14px 16px; }
+  .pn h5 { margin: 0 0 10px; font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+  .vb { display: flex; align-items: flex-end; gap: 6px; height: 190px; border-bottom: 1px solid var(--line); }
+  .vb i { flex: 1; background: var(--ink-2); border-radius: 5px 5px 0 0; display: block; }
+  .hb { display: grid; grid-template-columns: 70px 1fr 40px; gap: 8px; align-items: center; font-size: 13px; padding: 5px 0; }
+  .hb .t { height: 10px; background: var(--surface-2); border-radius: 0 4px 4px 0; overflow: hidden; }
+  .hb .t i { display: block; height: 100%; background: var(--ink-2); border-radius: 0 4px 4px 0; }
+  .hb b { text-align: right; font-variant-numeric: tabular-nums; }
+  .vb { height: 150px; }
+  .dq { display: flex; align-items: center; gap: 10px; padding: 6px 0; border-bottom: 1px solid var(--line); font-size: 14px; }
+  .dq:last-child { border-bottom: 0; }
+  .dq .av { width: 34px; height: 34px; font-size: 12px; }
+  .dq em { margin-left: auto; font-style: normal; font-weight: 700; font-size: 12px; background: var(--lilac-soft); color: var(--lilac-ink); border-radius: 999px; padding: 4px 10px; }
+  .fw { display: flex; gap: 8px; height: 150px; }
+  .fw span { flex: 1; display: grid; grid-template-rows: 1fr 1fr; }
+  .fw .u { display: flex; align-items: flex-end; border-bottom: 1px solid var(--muted); }
+  .fw .d { display: flex; align-items: flex-start; }
+  .fw i { display: block; width: 100%; }
+  .fw .u i { background: var(--pos); border-radius: 4px 4px 0 0; }
+  .fw .d i { background: var(--neg); border-radius: 0 0 4px 4px; }
+
+  /* S8 · frase */
+  #s8 .line { left: 0; right: 0; top: 470px; display: flex; justify-content: center; align-items: center; gap: 26px; font-size: 92px; font-weight: 700; letter-spacing: -.035em; white-space: nowrap; }
+  #s8 .line .w { display: inline-block; }
+  #s8 .line .hl { color: var(--lilac-ink); font-weight: 800; }
+  #s8 .line .bean { display: grid; place-items: center; }
+  .bean { width: 140px; height: 112px; border-radius: 56px; background: radial-gradient(circle at 35% 30%, #E9D6F2, #B48BCB); display: grid; place-items: center; box-shadow: 0 16px 30px rgba(83, 52, 106, .25); }
+  .bean svg { width: 84px; height: 71px; }
+
+  /* S9 · encerramento */
+  #s9 { background: radial-gradient(1200px 800px at 50% 45%, #E3C9EF, #C49ED8 70%, #B48BCB); }
+  #s9 .mk { left: 50%; top: 270px; width: 220px; height: 184px; margin-left: -110px; color: var(--ink); }
+  #s9 .wd { left: 0; right: 0; top: 480px; text-align: center; font-size: 170px; font-weight: 800; letter-spacing: -.055em; line-height: 1; color: var(--ink); }
+  #s9 .tg { left: 0; right: 0; top: 690px; text-align: center; font-size: 36px; font-weight: 600; color: var(--deep); letter-spacing: .01em; }
+  #s9 .url { left: 0; right: 0; top: 960px; text-align: center; font-size: 22px; font-weight: 600; color: rgba(42, 27, 54, .75); letter-spacing: .06em; text-transform: uppercase; }
+
+  /* barra de progresso fina (como no original) */
+  #prog { position: absolute; left: 0; bottom: 0; height: 8px; background: var(--lilac-ink); opacity: .85; }
+
+  /* controles de pré-visualização (somem na gravação) */
+  #ui { position: fixed; left: 50%; bottom: 18px; transform: translateX(-50%); display: flex; gap: 12px; align-items: center; background: rgba(20, 18, 16, .82); color: #fff; padding: 10px 16px; border-radius: 999px; font: 600 14px "Figtree", sans-serif; z-index: 9; backdrop-filter: blur(8px); }
+  #ui button { background: #fff; color: #111; border: 0; border-radius: 999px; height: 34px; padding: 0 16px; font: inherit; cursor: pointer; }
+  #ui input { width: min(50vw, 520px); }
+  body.render #ui { display: none; }
+  body.idle #ui { opacity: 0; transition: opacity .6s; }
+</style>
+</head>
+<body>
+<div id="stage">
+  <div class="blob" id="bg1"></div>
+  <div class="blob" id="bg2"></div>
+
+  <!-- S1 · o problema -->
+  <section class="scene" id="s1">
+    <div class="abs kw bri" id="k1" style="top:250px">Caderno de chamada.<span class="st"></span></div>
+    <div class="abs kw bri" id="k2" style="top:420px">Planilha perdida.<span class="st"></span></div>
+    <div class="abs kw bri" id="k3" style="top:590px">Faixa no “acho que”.<span class="st"></span></div>
+  </section>
+
+  <!-- S2 · a marca -->
+  <section class="scene" id="s2">
+    <div class="abs abre" id="abre">Abre o</div>
+    <div class="abs word bri" id="word">dojo social</div>
+    <div class="abs coin" id="coin" style="left:250px;top:700px"><svg viewBox="0 0 76 64"><use href="#knot"/></svg></div>
+  </section>
+
+  <!-- S3 · chamada -->
+  <section class="scene" id="s3">
+    <div class="abs" id="s3cap" style="left:190px;top:330px">
+      <div class="cap bri">Chamada<br>em <em>um toque.</em></div>
+      <div class="sub" style="margin-top:34px;max-width:620px">Presente, falta e quem chegou atrasado. Salva sozinho, até sem internet.</div>
+    </div>
+    <div class="abs phone" id="ph3" style="left:1180px;top:100px">
+      <div class="scr">
+        <div class="notch"></div>
+        <div class="sbar"><span>18:30</span><span>●●● 5G</span></div>
+        <div class="ah">Chamada</div>
+        <div class="dnav"><i></i><div><b>Quarta, 24/11</b><small>18:30 · Infantil · Técnica: raspagem</small></div><i></i></div>
+        <div class="card" id="roll"></div>
+        <div class="foot"><span><b id="cnt">0/8</b> marcados</span><span class="pill" id="cntP">0 presentes</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- S4 · FO -->
+  <section class="scene" id="s4">
+    <div class="abs phone" id="ph4" style="left:300px;top:100px">
+      <div class="scr">
+        <div class="notch"></div>
+        <div class="sbar"><span>18:47</span><span>●●● 5G</span></div>
+        <div class="ah">Chamada</div>
+        <div class="dnav"><i></i><div><b>Quarta, 24/11</b><small>18:30 · Infantil</small></div><i></i></div>
+        <div class="card" id="roll4"></div>
+        <div class="scrim" id="scrim4"></div>
+        <div class="sheet" id="sheet4">
+          <div class="grab"></div>
+          <div class="shh"><span class="av" style="width:50px;height:50px">AB</span><span><b>Bia · Ana Beatriz</b><small>Registrar Fato Observado</small></span></div>
+          <div class="seg"><b id="fop">＋ FO positivo</b><b>− FO negativo</b></div>
+          <div class="chips"><b>Elogio</b><b>Disciplina</b><b id="chipT">Técnica</b></div>
+          <div class="note" id="note"></div>
+          <div class="btn" id="save">Registrar FO +</div>
+        </div>
+        <div class="toast" id="toast4">FO + registrado para Bia</div>
+      </div>
+    </div>
+    <div class="abs" id="s4cap" style="left:930px;top:340px">
+      <div class="cap bri">Fato Observado,<br><em>na hora certa.</em></div>
+      <div class="sub" style="margin-top:34px;max-width:760px">Elogio, técnica, disciplina. Cada atitude vira histórico e conta para a graduação.</div>
+    </div>
+  </section>
+
+  <!-- S5 · tudo num lugar só -->
+  <section class="scene" id="s5">
+    <div id="orbit"></div>
+    <div class="abs mid">
+      <div class="cap bri">Tudo num lugar só</div>
+      <div class="rot" id="rot"></div>
+    </div>
+  </section>
+
+  <!-- S6 · números + faixa -->
+  <section class="scene" id="s6">
+    <div class="abs" style="left:190px;top:250px">
+      <div class="big bri" id="pct">0%</div>
+      <div class="sub" style="font-size:40px;margin-top:20px">de presença na turma, <b>sem papel.</b></div>
+    </div>
+    <div class="abs" id="beltwrap" style="left:1000px;top:420px">
+      <div class="belt"><div class="tip"><i></i><i></i><i></i><i></i></div></div>
+      <div class="sub" id="beltcap" style="margin-top:34px;font-size:40px;font-weight:700;color:var(--ink)">Pronto para o <span id="grau">1º</span> grau.</div>
+      <div class="sub" style="margin-top:8px;font-size:28px;color:var(--muted)">Presença + saldo de FO + tempo de faixa.</div>
+    </div>
+  </section>
+
+  <!-- S7 · insights -->
+  <section class="scene" id="s7">
+    <div class="abs" id="s7cap" style="left:0;right:0;top:56px;text-align:center"><div class="cap bri" style="font-size:78px">Insights para quem <em>lidera o tatame.</em></div></div>
+    <div class="abs" id="monwrap" style="left:340px;top:210px;display:flex;flex-direction:column;align-items:center">
+      <div class="mon"><div class="scr">
+        <div class="side"><div class="lg">dojo social</div>
+          <div class="n"><i></i>Início</div><div class="n on"><i></i>Insights</div><div class="n"><i></i>Chamada</div><div class="n"><i></i>Agenda</div><div class="n"><i></i>Alunos</div><div class="n"><i></i>Graduação</div><div class="n"><i></i>Campeonatos</div>
+        </div>
+        <div class="dash">
+          <h4>Insights</h4>
+          <div class="kp" id="kp"></div>
+          <div class="row3">
+            <div class="pn"><h5>Acessos por dia · 14 dias</h5><div class="vb" id="vb"></div></div>
+            <div class="pn"><h5>Ranking de presença</h5><div id="hb"></div></div>
+          </div>
+          <div class="row3" style="grid-template-columns:1fr 1.1fr">
+            <div class="pn"><h5>Destaques do período</h5><div id="dq"></div></div>
+            <div class="pn"><h5>FO por semana · 8 semanas</h5><div class="fw" id="fw"></div></div>
+          </div>
+        </div>
+      </div></div>
+      <div class="stand"></div>
+    </div>
+  </section>
+
+  <!-- S8 · frase -->
+  <section class="scene" id="s8">
+    <div class="abs line" id="line">
+      <span class="w">o</span><span class="w hl">dojo</span><span class="w bean"><svg viewBox="0 0 76 64"><use href="#knot"/></svg></span><span class="w">cuida</span><span class="w">de</span><span class="w">quem</span><span class="w hl">treina.</span>
+    </div>
+  </section>
+
+  <!-- S9 · assinatura -->
+  <section class="scene" id="s9">
+    <svg class="abs mk" id="mk" viewBox="0 0 76 64"><use href="#knot"/></svg>
+    <div class="abs wd bri" id="wd">dojo social</div>
+    <div class="abs tg" id="tg">Chamada · FO · Graduação · Campeonatos · Insights</div>
+    <div class="abs url" id="url">Projeto social de Jiu-Jitsu · Macapá · AP</div>
+  </section>
+
+  <div id="prog"></div>
+</div>
+
+<svg width="0" height="0" style="position:absolute">
+  <defs>
+    <g id="knot" fill="currentColor">
+      <rect x="0" y="16" width="76" height="16" rx="2"/>
+      <rect x="25" y="9" width="26" height="30" rx="3"/>
+      <path d="M28 39 L18 64 L30 64 L37 41 Z"/><path d="M48 39 L58 64 L46 64 L39 41 Z"/>
+    </g>
+  </defs>
+</svg>
+
+<div id="ui"><button id="play">▶ Play</button><input id="scrub" type="range" min="0" max="1000" value="0"><span id="clock">0,0 s</span><button id="full">Tela cheia</button></div>
+
+<script>
+const P = {
+  chart: "M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z",
+  email: "M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z",
+  lock: "M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z",
+  eye: "M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z",
+  eyeOff: "M12 7c2.76 0 5 2.24 5 5 0 .65-.13 1.26-.36 1.83l2.92 2.92c1.51-1.26 2.7-2.89 3.43-4.75-1.73-4.39-6-7.5-11-7.5-1.4 0-2.74.25-3.98.7l2.16 2.16C10.74 7.13 11.35 7 12 7zM2 4.27l2.28 2.28.46.46C3.08 8.3 1.78 10.02 1 12c1.73 4.39 6 7.5 11 7.5 1.55 0 3.03-.3 4.38-.84l.42.42L19.73 22 21 20.73 3.27 3 2 4.27zM7.53 9.8l1.55 1.55c-.05.21-.08.43-.08.65 0 1.66 1.34 3 3 3 .22 0 .44-.03.65-.08l1.55 1.55c-.67.33-1.41.53-2.2.53-2.76 0-5-2.24-5-5 0-.79.2-1.53.53-2.2zm4.31-.78l3.15 3.15.02-.16c0-1.66-1.34-3-3-3l-.17.01z",
+  person: "M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z",
+  cal: "M20 3h-1V1h-2v2H7V1H5v2H4c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 18H4V8h16v13z",
+  key: "M12.65 10C11.83 7.67 9.61 6 7 6c-3.31 0-6 2.69-6 6s2.69 6 6 6c2.61 0 4.83-1.67 5.65-4H17v4h4v-4h2v-4H12.65zM7 14c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2z",
+  people: "M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z",
+  back: "M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z",
+  check: "M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z",
+  minus: "M19 13H5v-2h14v2z",
+  plus: "M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z",
+  drop: "M7 10l5 5 5-5z",
+  home: "M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z",
+  roll: "M19 3h-4.18C14.4 1.84 13.3 1 12 1s-2.4.84-2.82 2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 0c.55 0 1 .45 1 1s-.45 1-1 1-1-.45-1-1 .45-1 1-1zm-2 14l-4-4 1.41-1.41L10 14.17l6.59-6.59L18 9l-8 8z",
+  trophy: "M19 5h-2V3H7v2H5c-1.1 0-2 .9-2 2v1c0 2.55 1.92 4.63 4.39 4.94.63 1.5 1.98 2.63 3.61 2.96V19H7v2h10v-2h-4v-3.1c1.63-.33 2.98-1.46 3.61-2.96C19.08 12.63 21 10.55 21 8V7c0-1.1-.9-2-2-2zM5 8V7h2v3.82C5.84 10.4 5 9.3 5 8zm14 0c0 1.3-.84 2.4-2 2.82V7h2v1z",
+  more: "M6 10c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm12 0c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm-6 0c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z",
+  left: "M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z",
+  right: "M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z",
+  close: "M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z",
+  edit: "M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34a1 1 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z",
+  del: "M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z",
+  search: "M15.5 14h-.79l-.28-.27A6.47 6.47 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z",
+  up: "M1 21h4V9H1v12zm22-11c0-1.1-.9-2-2-2h-6.31l.95-4.57.03-.32c0-.41-.17-.79-.44-1.06L14.17 1 7.59 7.59C7.22 7.95 7 8.45 7 9v10c0 1.1.9 2 2 2h9c.83 0 1.54-.5 1.84-1.22l3.02-7.05c.09-.23.14-.47.14-.73v-2z",
+  down: "M15 3H6c-.83 0-1.54.5-1.84 1.22l-3.02 7.05c-.09.23-.14.47-.14.73v2c0 1.1.9 2 2 2h6.31l-.95 4.57-.03.32c0 .41.17.79.44 1.06L9.83 23l6.59-6.59c.36-.36.58-.86.58-1.41V5c0-1.1-.9-2-2-2zm4 0v12h4V3h-4z",
+  logout: "M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z",
+  belt: "M2 9h20v5H2zM9 6.5h6v10H9zM9.6 16.5 7.5 22h3.2l1.3-5.5zM14.4 16.5 16.5 22h-3.2L12 16.5z",
+  staff: "M20 7h-5V4c0-1.1-.9-2-2-2h-2c-1.1 0-2 .9-2 2v3H4c-1.1 0-2 .9-2 2v11c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V9c0-1.1-.9-2-2-2zM9 12c.83 0 1.5.67 1.5 1.5S9.83 15 9 15s-1.5-.67-1.5-1.5S8.17 12 9 12zm3 6H6v-.43c0-.6.36-1.15.92-1.39A4.97 4.97 0 0 1 9 15.75c.74 0 1.44.16 2.08.43.55.24.92.78.92 1.39V18zm1-9h-2V4h2v5zm5 7.5h-4V15h4v1.5zm0-3h-4V12h4v1.5z",
+  restore: "M13 3a9 9 0 0 0-9 9H1l3.89 3.89.07.14L9 12H6c0-3.87 3.13-7 7-7s7 3.13 7 7-3.13 7-7 7c-1.93 0-3.68-.79-4.94-2.06l-1.42 1.42A8.954 8.954 0 0 0 13 21a9 9 0 0 0 0-18z",
+  camera: "M12 15.2a3.2 3.2 0 1 0 0-6.4 3.2 3.2 0 0 0 0 6.4zM9 2 7.17 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2h-3.17L15 2H9zm3 15c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5z",
+  copy: "M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z",
+  x: "M12 2C6.47 2 2 6.47 2 12s4.47 10 10 10 10-4.47 10-10S17.53 2 12 2zm5 13.59L15.59 17 12 13.41 8.41 17 7 15.59 10.59 12 7 8.41 8.41 7 12 10.59 15.59 7 17 8.41 13.41 12 17 15.59z",
+  ok: "M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z",
+  grid: "M3 3h8v8H3V3zm10 0h8v8h-8V3zM3 13h8v8H3v-8zm10 0h8v8h-8v-8z",
+  heart: "M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z",
+  chat: "M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z",
+  send: "M2.01 21L23 12 2.01 3 2 10l15 2-15 2z",
+  scale: "M17 12l-5 5-3-3 1.41-1.41L12 14.17l3.59-3.58L17 12zm2-9h-1V1h-2v2H8V1H6v2H5c-1.11 0-2 .9-2 2v16c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 18H5V8h14v13z",
+  hand: "M13 5.5V2.5c0-.83-.67-1.5-1.5-1.5S10 1.67 10 2.5v9.2L7.7 10.5c-.6-.4-1.4-.3-1.9.2-.5.5-.5 1.3 0 1.8l4.6 5.3c.6.7 1.5 1.1 2.4 1.1h4.7c1.7 0 3.1-1.3 3.4-3l.7-4.4c.2-1.2-.6-2.3-1.8-2.5l-6.8-1.2V5.5z",
+  moon: "M12 3a9 9 0 1 0 9 9c0-.46-.04-.92-.1-1.36a5.39 5.39 0 0 1-4.4 2.26 5.4 5.4 0 0 1-3.14-9.8c-.44-.06-.9-.1-1.36-.1z"
+};
+const DURATION = 38;
+const $ = (id) => document.getElementById(id);
+const icon = (n) => `<svg class="i" viewBox="0 0 24 24"><path d="${P[n]}"/></svg>`;
+
+/* ---------- utilitários de animação ---------- */
+const clamp = (x, a = 0, b = 1) => Math.min(b, Math.max(a, x));
+const prog = (t, a, b) => clamp((t - a) / (b - a));
+const lerp = (a, b, x) => a + (b - a) * x;
+const eOut = (x) => 1 - Math.pow(1 - x, 3);
+const eOut5 = (x) => 1 - Math.pow(1 - x, 5);
+const eIn = (x) => x * x * x;
+const eInOut = (x) => (x < 0.5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2);
+const eBack = (x) => { const c1 = 1.70158, c3 = c1 + 1; return 1 + c3 * Math.pow(x - 1, 3) + c1 * Math.pow(x - 1, 2); };
+/* entra (de a até a+d) e sai (de b-d até b) */
+const inOut = (t, a, b, d = 0.45) => Math.min(eOut(prog(t, a, a + d)), 1 - eIn(prog(t, b - d, b)));
+const css = (el, o) => { for (const k in o) el.style[k] = o[k]; };
+const fmt = (n) => Math.round(n).toLocaleString("pt-BR");
+
+/* ---------- dados das telas (fictícios) ---------- */
+const kids = [["AB", "Bia", "Ana Beatriz", "#F4F4F5"], ["DN", "Davi", "Davi Nogueira", "#6B7280"], ["ET", "Manu", "Emanuelly Torres", "#EAB308"], ["KR", "Kauã", "Kauã Ribeiro", "#6B7280"], ["LB", "Lolô", "Lorena Batista", "#F4F4F5"], ["MF", "Theuzin", "Matheus Ferreira", "#EAB308"], ["PH", "PH", "Pedro Henrique", "#EA580C"], ["GS", "Gabi", "Gabriel Santos", "#F4F4F5"]];
+const rowHtml = (k, i, id) => `<div class="r"><span class="av">${k[0]}</span><span class="g"><span class="nm" style="display:block">${k[1]}</span><span class="mb" style="background:${k[3]}"><span></span></span></span><span class="pa"><b id="${id}p${i}">P</b><b id="${id}a${i}">A</b></span></div>`;
+$("roll").innerHTML = kids.map((k, i) => rowHtml(k, i, "r")).join("");
+$("roll4").innerHTML = kids.slice(0, 6).map((k, i) => rowHtml(k, i, "q")).join("");
+kids.slice(0, 6).forEach((k, i) => $("q" + (i === 4 ? "a" : "p") + i).classList.add(i === 4 ? "on-a" : "on-p"));
+
+const ORB = ["roll", "belt", "trophy", "scale", "chart", "people", "grid", "hand", "heart", "chat", "check", "home"];
+$("orbit").innerHTML = ORB.map((n, i) => `<div class="abs orb ${i % 3 === 0 ? "d" : "l"}" id="o${i}">${icon(n)}</div>`).join("");
+const ROT = ["Agenda e escala da semana", "Painel de graduação", "Campeonatos e medalhas", "Mural do tatame"];
+
+const KP = [["Entraram hoje", 18], ["Ativos em 30 dias", 31], ["Presença média", 92, "%"], ["FO positivos", 64], ["Prontos p/ graduar", 7]];
+$("kp").innerHTML = KP.map(([l], i) => `<div><span>${l}</span><b id="kv${i}">0</b></div>`).join("");
+const VB = [9, 12, 7, 14, 11, 16, 13, 8, 15, 17, 12, 19, 18, 22];
+$("vb").innerHTML = VB.map((_, i) => `<i id="vb${i}"></i>`).join("");
+const HB = [["Bia", 98], ["Manu", 96], ["Theuzin", 93], ["PH", 91], ["Gabi", 88], ["Davi", 84]];
+$("hb").innerHTML = HB.map(([n], i) => `<div class="hb"><span>${n}</span><span class="t"><i id="hb${i}"></i></span><b id="hv${i}">0%</b></div>`).join("");
+const DQ = [["AB", "Bia · Ana Beatriz", "1º · 96 pts"], ["ET", "Manu · Emanuelly", "2º · 93 pts"], ["MF", "Theuzin · Matheus", "3º · 90 pts"]];
+$("dq").innerHTML = DQ.map(([a, n, p], i) => `<div class="dq" id="dq${i}"><span class="av">${a}</span><b>${n}</b><em>${p}</em></div>`).join("");
+const FW = [[6, 2], [8, 1], [5, 3], [9, 1], [7, 2], [10, 0], [8, 1], [12, 1]];
+$("fw").innerHTML = FW.map((_, i) => `<span><span class="u"><i id="fu${i}"></i></span><span class="d"><i id="fd${i}"></i></span></span>`).join("");
+
+/* ---------- cenas: [início, fim, desenhar(tempoGlobal)] ---------- */
+const SC = [
+  ["s1", 0, 4.1, (t) => {
+    [["k1", 0.15], ["k2", 0.75], ["k3", 1.35]].forEach(([id, a], i) => {
+      const el = $(id), x = eOut5(prog(t, a, a + 0.7));
+      const out = eIn(prog(t, 3.25 + i * 0.08, 3.85 + i * 0.08));
+      css(el, { opacity: x * (1 - out), transform: `translate(${lerp(-80, 0, x) + out * 140}px, ${lerp(30, 0, x)}px)` });
+      css(el.querySelector(".st"), { transform: `scaleX(${eInOut(prog(t, 2.35 + i * 0.18, 2.85 + i * 0.18))})` });
+    });
+  }],
+  ["s2", 4.0, 7.7, (t) => {
+    const a = eOut(prog(t, 4.15, 4.6)), w = eBack(prog(t, 4.45, 5.15)), o = eIn(prog(t, 7.2, 7.7));
+    css($("abre"), { opacity: a * (1 - o), transform: `translateY(${lerp(20, 0, a)}px)` });
+    css($("word"), { opacity: Math.min(1, prog(t, 4.45, 4.7)) * (1 - o), transform: `scale(${lerp(0.6, 1, w) * (1 + o * 0.15)})`, letterSpacing: `${lerp(-0.02, -0.055, eOut(prog(t, 4.45, 5.6)))}em` });
+    const c = eOut(prog(t, 4.7, 5.5)), spin = (t - 4.7) * 2.2;
+    css($("coin"), { opacity: c * (1 - o), transform: `translate(${lerp(-200, 0, c)}px, ${Math.sin(t * 2) * 10}px) scaleX(${Math.cos(spin)}) ` });
+  }],
+  ["s3", 7.6, 13.2, (t) => {
+    const ph = eOut5(prog(t, 7.6, 8.5)), out = eInOut(prog(t, 12.6, 13.2));
+    css($("ph3"), { transform: `translate(${out * 700}px, ${lerp(900, 0, ph)}px) rotate(${lerp(6, 0, ph) + out * 8}deg)` });
+    const c = eOut(prog(t, 7.9, 8.6));
+    css($("s3cap"), { opacity: c * (1 - out), transform: `translateX(${lerp(-60, 0, c) - out * 120}px)` });
+    let marked = 0, pres = 0;
+    kids.forEach((k, i) => {
+      const on = t > 8.9 + i * 0.36, absent = i === 3;
+      $("rp" + i).className = on && !absent ? "on-p" : "";
+      $("ra" + i).className = on && absent ? "on-a" : "";
+      const pop = 1 + 0.18 * (1 - eOut(prog(t, 8.9 + i * 0.36, 9.15 + i * 0.36)));
+      $((absent ? "ra" : "rp") + i).style.transform = on ? `scale(${pop})` : "";
+      if (on) { marked++; if (!absent) pres++; }
+    });
+    $("cnt").textContent = `${marked}/8`; $("cntP").textContent = `${pres} presentes`;
+  }],
+  ["s4", 13.1, 17.9, (t) => {
+    const ph = eOut5(prog(t, 13.1, 13.9)), out = eIn(prog(t, 17.4, 17.9));
+    css($("ph4"), { transform: `translate(${lerp(-700, 0, ph)}px, ${out * 40}px) scale(${1 - out * 0.06})`, opacity: 1 - out });
+    const c = eOut(prog(t, 13.5, 14.2));
+    css($("s4cap"), { opacity: c * (1 - out), transform: `translateX(${lerp(60, 0, c)}px)` });
+    const sh = eOut5(prog(t, 13.8, 14.4)) * (1 - eInOut(prog(t, 16.6, 16.95)));
+    css($("sheet4"), { transform: `translateY(${lerp(110, 0, sh)}%)` });
+    css($("scrim4"), { opacity: sh });
+    $("fop").className = t > 14.3 ? "on" : "";
+    $("chipT").className = t > 14.7 ? "on" : "";
+    const txt = "Acertou a raspagem no drill inteiro e ajudou o colega novo.";
+    const n = Math.round(txt.length * prog(t, 14.95, 16.15));
+    $("note").innerHTML = txt.slice(0, n) + (t < 16.3 && Math.floor(t * 3) % 2 === 0 ? '<span class="caret"></span>' : "");
+    const press = t > 16.3 && t < 16.55;
+    css($("save"), { transform: press ? "scale(.97)" : "", filter: press ? "brightness(.92)" : "" });
+    const to = eBack(prog(t, 16.75, 17.15)) * (1 - prog(t, 17.3, 17.5));
+    css($("toast4"), { opacity: Math.min(1, to * 1.5), transform: `translateX(-50%) translateY(${lerp(30, 0, clamp(to))}px) scale(${lerp(0.9, 1, clamp(to))})` });
+  }],
+  ["s5", 17.8, 22.6, (t) => {
+    const lt = t - 17.8, inn = eOut(prog(t, 17.8, 18.7)), out = eIn(prog(t, 22.1, 22.6));
+    ORB.forEach((_, i) => {
+      const ang = (i / ORB.length) * Math.PI * 2 + lt * 0.22, rx = 760 * lerp(0.6, 1, inn), ry = 360 * lerp(0.6, 1, inn);
+      const x = 960 + Math.cos(ang) * rx - 56, y = 520 + Math.sin(ang) * ry - 56;
+      const d = eBack(prog(t, 17.85 + i * 0.06, 18.45 + i * 0.06));
+      css($("o" + i), { left: x + "px", top: y + "px", opacity: clamp(d * 1.4) * (1 - out), transform: `scale(${lerp(0.3, 1, clamp(d)) * (1 + out * 0.4)}) rotate(${Math.sin(lt + i) * 6}deg)` });
+    });
+    const m = eOut(prog(t, 18.2, 18.9));
+    css(document.querySelector("#s5 .mid"), { opacity: m * (1 - out), transform: `translateY(${lerp(30, 0, m)}px) scale(${1 - out * 0.05})` });
+    const k = Math.min(ROT.length - 1, Math.floor(Math.max(0, t - 18.9) / 0.8));
+    const kp = prog(t - k * 0.8, 18.9, 19.25);
+    $("rot").innerHTML = `<div style="transform:translateY(${lerp(60, 0, eOut(kp))}px);opacity:${t < 18.9 ? 0 : kp}">• ${ROT[k]}</div>`;
+  }],
+  ["s6", 22.5, 27.1, (t) => {
+    const inn = eOut(prog(t, 22.5, 23.2)), out = eIn(prog(t, 26.6, 27.1));
+    const v = 92 * eOut5(prog(t, 22.7, 24.2));
+    $("pct").textContent = Math.round(v) + "%";
+    css($("pct").parentElement, { opacity: inn * (1 - out), transform: `translateY(${lerp(40, 0, inn) - out * 40}px)` });
+    const b = eOut5(prog(t, 23.2, 24.0));
+    css($("beltwrap"), { opacity: b * (1 - out), transform: `translateX(${lerp(260, 0, b) + out * 120}px)` });
+    const ticks = document.querySelectorAll(".belt .tip i");
+    let g = 0;
+    ticks.forEach((el, i) => { const on = t > 24.3 + i * 0.42 && i < 3; el.className = on ? "on" : ""; el.style.transform = on ? `scaleY(${1 + 0.25 * (1 - eOut(prog(t, 24.3 + i * 0.42, 24.6 + i * 0.42)))})` : ""; if (on) g++; });
+    $("grau").textContent = `${Math.max(1, g)}º`;
+  }],
+  ["s7", 27.0, 31.4, (t) => {
+    const m = eOut5(prog(t, 27.0, 27.9)), out = eIn(prog(t, 30.9, 31.4));
+    css($("monwrap"), { transform: `translateY(${lerp(700, 0, m)}px) scale(${lerp(0.92, 1, m) * (1 - out * 0.04)})`, opacity: 1 - out });
+    const c = eOut(prog(t, 27.3, 27.9));
+    css($("s7cap"), { opacity: c * (1 - out), transform: `translateY(${lerp(-30, 0, c)}px)` });
+    KP.forEach(([, v, suf], i) => { $("kv" + i).textContent = fmt(v * eOut5(prog(t, 27.8 + i * 0.12, 29.2 + i * 0.12))) + (suf || ""); });
+    const mx = Math.max(...VB);
+    VB.forEach((v, i) => { $("vb" + i).style.height = `${(v / mx) * 100 * eOut5(prog(t, 28.0 + i * 0.05, 28.9 + i * 0.05))}%`; });
+    HB.forEach(([, v], i) => { const x = eOut5(prog(t, 28.4 + i * 0.1, 29.4 + i * 0.1)); $("hb" + i).style.width = v * x + "%"; $("hv" + i).textContent = Math.round(v * x) + "%"; });
+    DQ.forEach((_, i) => { const x = eOut5(prog(t, 28.9 + i * 0.15, 29.5 + i * 0.15)); css($("dq" + i), { opacity: x, transform: `translateX(${lerp(-24, 0, x)}px)` }); });
+    FW.forEach(([u, d], i) => { const x = eOut5(prog(t, 29.0 + i * 0.06, 29.8 + i * 0.06)); $("fu" + i).style.height = (u / 12) * 100 * x + "%"; $("fd" + i).style.height = (d / 12) * 100 * x + "%"; });
+  }],
+  ["s8", 31.3, 34.6, (t) => {
+    const out = eIn(prog(t, 34.1, 34.6));
+    document.querySelectorAll("#line .w").forEach((el, i) => {
+      const x = (el.classList.contains("bean") ? eBack : eOut5)(prog(t, 31.45 + i * 0.2, 31.95 + i * 0.2));
+      css(el, { opacity: clamp(x * 1.3) * (1 - out), transform: `translateY(${lerp(50, 0, x)}px) ${el.classList.contains("bean") ? `rotate(${lerp(-25, 0, clamp(x))}deg) scale(${lerp(0.4, 1, x)})` : ""}` });
+    });
+  }],
+  ["s9", 34.5, 38.01, (t) => {
+    const bg = eOut(prog(t, 34.5, 35.0));
+    css($("s9"), { clipPath: `circle(${lerp(0, 75, bg)}% at 50% 50%)` });
+    const k = eBack(prog(t, 34.9, 35.6)), w = eOut5(prog(t, 35.15, 35.95)), tg = eOut(prog(t, 35.7, 36.3)), u = eOut(prog(t, 36.0, 36.6));
+    css($("mk"), { opacity: clamp(k * 1.5), transform: `scale(${lerp(0.4, 1, k)}) rotate(${lerp(-20, 0, clamp(k))}deg)` });
+    css($("wd"), { opacity: w, transform: `translateY(${lerp(40, 0, w)}px)`, letterSpacing: `${lerp(0, -0.055, w)}em` });
+    css($("tg"), { opacity: tg, transform: `translateY(${lerp(20, 0, tg)}px)` });
+    css($("url"), { opacity: u });
+  }],
+];
+
+function seek(t) {
+  t = clamp(t, 0, DURATION);
+  SC.forEach(([id, a, b, draw]) => {
+    const el = $(id), on = t >= a && t < b;
+    el.style.display = on ? "block" : "none";
+    if (on) draw(t);
+  });
+  css($("bg1"), { transform: `translate(${Math.sin(t * 0.35) * 60}px, ${Math.cos(t * 0.3) * 40}px)`, opacity: t > 34.5 ? 0 : 0.55 });
+  css($("bg2"), { transform: `translate(${Math.cos(t * 0.28) * 70}px, ${Math.sin(t * 0.33) * 30}px)`, opacity: t > 34.5 ? 0 : 0.7 });
+  $("prog").style.width = (t / DURATION) * 100 + "%";
+  $("prog").style.opacity = t > 34.5 ? 0 : 0.85;
+  return t;
+}
+window.seek = seek; window.DURATION = DURATION;
+
+/* ---------- encaixe na tela ---------- */
+function fit() { const s = Math.min(innerWidth / 1920, innerHeight / 1080); $("stage").style.transform = `translate(-50%, -50%) scale(${s})`; }
+addEventListener("resize", fit); fit();
+
+/* ---------- pré-visualização ---------- */
+const render = new URLSearchParams(location.search).has("render");
+if (render) document.body.classList.add("render");
+let cur = 0, playing = false, last = 0;
+function loop(ts) {
+  if (playing) { cur += (ts - last) / 1000; if (cur >= DURATION) { cur = DURATION; playing = false; $("play").textContent = "↺ De novo"; } }
+  last = ts; seek(cur);
+  $("scrub").value = (cur / DURATION) * 1000; $("clock").textContent = cur.toFixed(1).replace(".", ",") + " s";
+  requestAnimationFrame(loop);
+}
+function toggle() { if (cur >= DURATION) cur = 0; playing = !playing; $("play").textContent = playing ? "❚❚ Pausar" : "▶ Play"; }
+$("play").onclick = toggle;
+$("scrub").oninput = (e) => { cur = (e.target.value / 1000) * DURATION; };
+$("full").onclick = () => (document.fullscreenElement ? document.exitFullscreen() : document.documentElement.requestFullscreen());
+addEventListener("keydown", (e) => { if (e.code === "Space") { e.preventDefault(); toggle(); } if (e.key === "f") $("full").click(); });
+let idleT; addEventListener("mousemove", () => { document.body.classList.remove("idle"); clearTimeout(idleT); idleT = setTimeout(() => playing && document.body.classList.add("idle"), 1800); });
+if (!render) { seek(0); document.fonts.ready.then(() => requestAnimationFrame((ts) => { last = ts; loop(ts); })); }
+else seek(0);
+</script>
+</body>
+</html>
