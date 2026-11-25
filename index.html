@@ -1006,6 +1006,43 @@ function gradStatus(s) {
 const isStaff = () => state.user && state.user.role !== "aluno";
 const canEditPhoto = (s) => isMestre() || state.user.studentId === s.id;
 const isMestre = () => state.user && state.user.role === "mestre";
+/* Admin global: só um e-mail (guardado como hash SHA-256, para o e-mail não ficar visível no código público).
+   Vê os Insights. A senha é criada no primeiro acesso e fica salva como hash em db.admin. */
+const ADMIN_HASH = "d982bcecccd9da0a2b82c1a216dc8e43d6acc0580c0ee4e5f715701012077bbd";
+const isAdmin = () => !!(state.user && state.user.admin);
+function sha256(text) {
+  const rr = (v, n) => (v >>> n) | (v << (32 - n));
+  const K = [], H0 = [];
+  for (let p = 2, c = 0; c < 64; p++) {
+    let prime = true;
+    for (let d = 2; d * d <= p; d++) if (p % d === 0) { prime = false; break; }
+    if (prime) { if (c < 8) H0[c] = (Math.pow(p, 1 / 2) * 2 ** 32) | 0; K[c++] = (Math.pow(p, 1 / 3) * 2 ** 32) | 0; }
+  }
+  const bytes = new TextEncoder().encode(text), len = bytes.length;
+  const msg = new Uint8Array(((len + 9 + 63) >> 6) << 6);
+  msg.set(bytes); msg[len] = 0x80;
+  const dv = new DataView(msg.buffer);
+  dv.setUint32(msg.length - 4, len * 8);
+  let H = H0.slice();
+  for (let i = 0; i < msg.length; i += 64) {
+    const w = new Array(64);
+    for (let j = 0; j < 16; j++) w[j] = dv.getUint32(i + j * 4) | 0;
+    for (let j = 16; j < 64; j++) {
+      const s0 = rr(w[j - 15], 7) ^ rr(w[j - 15], 18) ^ (w[j - 15] >>> 3);
+      const s1 = rr(w[j - 2], 17) ^ rr(w[j - 2], 19) ^ (w[j - 2] >>> 10);
+      w[j] = (w[j - 16] + s0 + w[j - 7] + s1) | 0;
+    }
+    let [a, b, c, d, e, f, g, h] = H;
+    for (let j = 0; j < 64; j++) {
+      const t1 = (h + (rr(e, 6) ^ rr(e, 11) ^ rr(e, 25)) + ((e & f) ^ (~e & g)) + K[j] + w[j]) | 0;
+      const t2 = ((rr(a, 2) ^ rr(a, 13) ^ rr(a, 22)) + ((a & b) ^ (a & c) ^ (b & c))) | 0;
+      h = g; g = f; f = e; e = (d + t1) | 0; d = c; c = b; b = a; a = (t1 + t2) | 0;
+    }
+    H = [a, b, c, d, e, f, g, h].map((x, k) => (H[k] + x) | 0);
+  }
+  return H.map((x) => (x >>> 0).toString(16).padStart(8, "0")).join("");
+}
+
 /* Chamada, FO, montar a grade e painel de graduação: só Mestre e Instrutor (Monitor não) */
 const canTeach = () => !!state.user && (state.user.role === "mestre" || state.user.role === "instrutor");
 const TEACH_ONLY = "Só o Mestre e o Instrutor podem fazer isso.";
@@ -1015,9 +1052,10 @@ const myStudents = () => db.students.filter((s) => s.pid === myPid());
 
 function navItems() {
   if (!isStaff()) return [["inicio", "Início", "home"], ["mural", "Mural", "grid"], ["agenda", "Agenda", "scale"], ["campeonatos", "Campeonatos", "trophy"]];
-  const items = [["inicio", "Início", "home"], ["chamada", "Chamada", "roll"], ["agenda", "Agenda", "scale"], ["mural", "Mural", "grid"], ["alunos", "Alunos", "people"], ["graduacao", "Graduação", "belt"], ["campeonatos", "Campeonatos", "trophy"], ["insights", "Insights", "chart"], ["funcoes", "Funções", "hand"]];
+  const items = [["inicio", "Início", "home"], ["chamada", "Chamada", "roll"], ["agenda", "Agenda", "scale"], ["mural", "Mural", "grid"], ["alunos", "Alunos", "people"], ["graduacao", "Graduação", "belt"], ["campeonatos", "Campeonatos", "trophy"], ["funcoes", "Funções", "hand"]];
   if (isMestre()) items.push(["equipe", "Equipe", "staff"]);
-  return canTeach() ? items : items.filter(([k]) => k !== "chamada" && k !== "graduacao" && k !== "insights");
+  if (isAdmin()) items.splice(1, 0, ["insights", "Insights", "chart"]);
+  return canTeach() ? items : items.filter(([k]) => k !== "chamada" && k !== "graduacao");
 }
 
 /* ================= AUTENTICAÇÃO (telas do login) ================= */
@@ -1770,7 +1808,7 @@ views.mais = () => {
     ${group("Aparência", "", themePicker())}
     ${extra.length ? group("Mais seções","", extra.map(([k, l]) => `<button class="row" data-a="nav" data-view="${k}"><span class="grow">${l}</span>${chev()}</button>`).join(""), "padding:0 16px") : ""}
     ${group("Dados pessoais", "", `
-      <button class="row" data-a="me">${avat(u.name, (mePerson || {}).photo)}<span class="grow">${esc(u.name)}<small>${ROLE_LABEL[u.role]} · ${esc(project(myPid()).name)}</small></span>${chev()}</button>
+      <button class="row" data-a="me">${avat(u.name, (mePerson || {}).photo)}<span class="grow">${esc(u.name)}<small>${u.admin ? "Admin global" : ROLE_LABEL[u.role]} · ${esc(project(myPid()).name)}</small></span>${chev()}</button>
       ${!CLOUD ? `<button class="row" data-a="reset"><span class="grow">Restaurar dados de exemplo<small>Apaga o que foi registrado neste navegador</small></span>${chev()}</button>` : ""}
       ${!isStaff() ? `<button class="row" data-a="excluirConta" style="color:var(--abs)"><span class="grow">Excluir minha conta<small>Apaga seu perfil e todos os seus dados do projeto</small></span>${chev()}</button>` : ""}`, "padding:0 16px")}
     ${isMestre() ? group("Projeto", "", `<button class="row" data-a="zerar"><span class="grow">Começar do zero<small>Apaga os dados de exemplo e deixa só o seu projeto e você</small></span>${chev()}</button>`, "padding:0 16px") : ""}
@@ -1796,7 +1834,7 @@ const hbars = (rows, max, fmt = (v) => v) => rows.map(([label, v, tip, color]) =
 const insGroup = (title, aside, body, note = "") => group(title, aside, body + (note ? `<p class="ins-n">${note}</p>` : ""));
 
 views.insights = () => {
-  if (!canTeach()) return empty("Acesso restrito", TEACH_ONLY);
+  if (!isAdmin()) return empty("Acesso restrito", "Os Insights são exclusivos do Admin global.");
   const P = state.iper || 30, tIso = TODAY(), from = iso(addDays(today(), -P));
   const pid = myPid();
   const students = myStudents().filter((s) => s.active);
@@ -2105,7 +2143,7 @@ function shell() {
       <header class="top">
         <div class="l">${back}</div>
         <h1>${title}</h1>
-        <div class="r"><button class="who" data-a="me" aria-label="Abrir meu perfil">${avat(u.name, (mePerson || {}).photo)}<span class="who-t"><b>${esc(u.name.split(" ")[0])}</b><small>${ROLE_LABEL[u.role]}</small></span></button></div>
+        <div class="r"><button class="who" data-a="me" aria-label="Abrir meu perfil">${avat(u.name, (mePerson || {}).photo)}<span class="who-t"><b>${esc(u.name.split(" ")[0])}</b><small>${u.admin ? "Admin global" : ROLE_LABEL[u.role]}</small></span></button></div>
       </header>
       <div class="screen">${views[state.view]()}</div>
     </main>
@@ -2627,6 +2665,20 @@ document.addEventListener("submit", (e) => {
   if (id === "loginForm") {
     if (!/^\S+@\S+\.\S+$/.test(state.email)) return toast("Digite um e-mail válido, como nome@email.com.");
     if (state.password.length < 4) return toast("Digite sua senha (mínimo 4 caracteres).");
+    if (sha256(state.email.trim().toLowerCase()) === ADMIN_HASH) {
+      if (CLOUD && !sync.version) return toast("Carregando os dados do projeto… tente de novo em instantes.");
+      const first = !db.admin;
+      if (first) {
+        if (state.password.length < 8) return toast("Admin global: crie uma senha com pelo menos 8 caracteres.");
+        const salt = uid();
+        db.admin = { salt, pw: sha256(salt + state.password) };
+      } else if (sha256(db.admin.salt + state.password) !== db.admin.pw) return toast("Senha do Admin global incorreta.");
+      if (!login(state.email)) { if (first) delete db.admin; return toast("Este e-mail não está cadastrado na equipe."); }
+      state.user.admin = true;
+      persist(); go("insights");
+      toast(first ? "Senha do Admin global criada. Guarde bem: ela será pedida sempre." : "Bem-vindo, Admin global.");
+      return;
+    }
     if (!login(state.email)) toast(CLOUD ? (sync.online === null && !sync.version ? "Carregando os dados do projeto… tente de novo em instantes." : "Conta não encontrada. Confira o e-mail ou crie seu perfil.") : "Conta não encontrada. Use um acesso de demonstração ou crie seu perfil.");
     return;
   }
@@ -2720,7 +2772,7 @@ document.addEventListener("submit", (e) => {
     db = {
       projects: [{ id: pid, name: fd.pname.trim(), city: fd.pcity.trim(), color: old.color || "#2B5CE6" }],
       staff: [{ id: tid, name: fd.mname.trim(), role: "mestre", belt: fd.mbelt, degrees: Number(fd.mdeg), email, phone: me.phone && me.email !== "mestre@dojo.org" ? me.phone : "", pid, photo: me.email !== "mestre@dojo.org" ? me.photo || "" : "" }],
-      students: [], classes: [], attendance: {}, fos: [], comps: [], grads: [], posts: [], scales: {}, access: {}
+      students: [], classes: [], attendance: {}, fos: [], comps: [], grads: [], posts: [], scales: {}, access: {}, admin: db.admin
     };
     state.user = { role: "mestre", staffId: tid, name: fd.mname.trim() };
     state.sheet = null;
