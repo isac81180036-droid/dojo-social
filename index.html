@@ -397,6 +397,93 @@
   .pc-vcap .pc-proj { background: var(--ground); color: var(--ink-2); }
   .pc-vcap p { margin: 8px 0 0; font-size: 16px; font-weight: 600; line-height: 1.4; overflow-wrap: anywhere; }
   .vid-prev { width: 100%; max-height: 340px; border-radius: 18px; background: #000; margin-top: 12px; display: block; }
+  /* Estudos: cards dos vídeos rápidos, pontuação, federações e quiz */
+  .stu-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+  @media (min-width: 900px) { .stu-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } .stu-card { aspect-ratio: 4 / 5; } }
+  .stu-card { position: relative; overflow: hidden; isolation: isolate; aspect-ratio: 9 / 13; border: 0; border-radius: 22px; padding: 14px; background: var(--c-bg); color: #F3F0EB; text-align: left; cursor: pointer; display: flex; flex-direction: column; justify-content: flex-end; gap: 4px; font: inherit; transition: transform .12s; min-width: 0; }
+  .stu-card:active { transform: scale(.97); }
+  .stu-card:focus-visible { outline: 3px solid var(--lilac); outline-offset: 2px; }
+  .stu-card .big { position: absolute; z-index: -1; top: 10px; left: 12px; right: 8px; font-family: "Bricolage Grotesque", "Figtree", system-ui, sans-serif; font-weight: 800; font-size: clamp(44px, 15vw, 72px); line-height: .9; letter-spacing: -.04em; color: var(--c-ac); overflow: hidden; white-space: nowrap; }
+  .stu-card .big.belts { display: flex; flex-direction: column; gap: 6px; right: 12px; }
+  .stu-card .big.belts i { display: block; height: 12px; border-radius: 3px; box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .25); }
+  .stu-card::after { content: ""; position: absolute; inset: 40% 0 0; z-index: -1; background: linear-gradient(transparent, rgba(0, 0, 0, .45)); }
+  .stu-card b { font-family: "Bricolage Grotesque", "Figtree", system-ui, sans-serif; font-size: 18px; font-weight: 800; line-height: 1.1; letter-spacing: -.01em; }
+  .stu-card small { font-size: 13px; opacity: .8; line-height: 1.3; }
+  .stu-card .meta { display: flex; align-items: center; gap: 8px; margin-top: 8px; font-size: 13px; font-weight: 700; flex-wrap: wrap; }
+  .stu-card .pl { width: 34px; height: 34px; border-radius: 50%; background: var(--c-ac); color: #15130F; display: grid; place-items: center; flex: none; }
+  .stu-card .pl svg { width: 18px; height: 18px; fill: currentColor; }
+  .stu-card .seen { display: inline-flex; align-items: center; gap: 3px; background: rgba(255, 255, 255, .16); border-radius: 999px; padding: 3px 8px 3px 6px; font-size: 12px; }
+  .stu-card .seen svg { width: 13px; height: 13px; fill: currentColor; }
+  .pts { display: flex; gap: 14px; align-items: flex-start; padding: 14px 0; border-top: 1px solid var(--line); }
+  .pts:first-child { border-top: 0; padding-top: 2px; }
+  .pts:last-child { padding-bottom: 2px; }
+  .pts b, .fed b { font-size: 16px; font-weight: 700; color: var(--ink); }
+  .pts p, .fed p { margin: 4px 0 0; color: var(--ink-2); line-height: 1.45; font-size: 15px; }
+  .pts-n { width: 54px; height: 54px; border-radius: 17px; display: grid; place-items: center; flex: none; font-family: "Bricolage Grotesque", "Figtree", system-ui, sans-serif; font-weight: 800; font-size: 28px; letter-spacing: -.02em; }
+  .pts-n.v2 { background: var(--lilac-soft); color: var(--lilac-ink); }
+  .pts-n.v3 { background: var(--lilac); color: var(--on-lilac); }
+  .pts-n.v4 { background: var(--ink); color: var(--ground); }
+  .pts-ex p { margin: 6px 0 0; font-size: 16px; line-height: 1.5; color: var(--ink); }
+  .tl { display: grid; gap: 10px; }
+  .tl > div { display: flex; align-items: center; gap: 12px; font-size: 15px; }
+  .tl i { width: 44px; height: 12px; border-radius: 3px; flex: none; box-shadow: inset 0 0 0 1px var(--line); }
+  .tl span { flex: 1; }
+  .tl b { font-variant-numeric: tabular-nums; }
+  .fed { display: flex; gap: 14px; align-items: flex-start; padding: 14px 0; border-top: 1px solid var(--line); }
+  .fed:first-child { border-top: 0; padding-top: 2px; }
+  .fed:last-child { padding-bottom: 2px; }
+  .fed-a { min-width: 64px; height: 36px; padding: 0 8px; border-radius: 12px; background: var(--lilac-soft); color: var(--lilac-ink); display: grid; place-items: center; font-weight: 800; font-size: 13px; letter-spacing: .02em; flex: none; }
+  .fed-n { width: 36px; height: 36px; border-radius: 50%; background: var(--lilac); color: var(--on-lilac); display: grid; place-items: center; font-weight: 800; flex: none; }
+  .qz h3 { font-family: "Bricolage Grotesque", "Figtree", system-ui, sans-serif; font-size: 23px; font-weight: 800; line-height: 1.15; letter-spacing: -.02em; margin: 16px 0 14px; }
+  .qz-top { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+  .qz-bar { height: 6px; border-radius: 6px; background: var(--surface-2); margin-top: 12px; overflow: hidden; }
+  .qz-bar i { display: block; height: 100%; background: var(--lilac); border-radius: 6px; transition: width .3s; }
+  .qz-opts { display: grid; gap: 10px; }
+  .qz-opt { display: flex; align-items: center; gap: 10px; min-height: 54px; padding: 12px 16px; border-radius: 16px; border: 2px solid transparent; background: var(--surface-2); color: var(--ink); font: 600 16px "Figtree", system-ui, sans-serif; text-align: left; cursor: pointer; transition: transform .1s, border-color .15s; }
+  .qz-opt:not(:disabled):active { transform: scale(.98); }
+  .qz-opt:disabled { cursor: default; opacity: .7; }
+  .qz-opt svg { width: 20px; height: 20px; fill: currentColor; flex: none; }
+  .qz-opt.ok { border-color: var(--pos); color: var(--pos); opacity: 1; }
+  .qz-opt.bad { border-color: var(--abs); color: var(--abs); opacity: 1; }
+  .qz-why { margin: 14px 0; padding: 12px 14px; border-radius: 14px; font-size: 15px; line-height: 1.45; }
+  .qz-why.ok { background: var(--pos-soft); }
+  .qz-why.bad { background: var(--abs-soft); }
+  .qz-end { text-align: center; display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 24px 16px; }
+  .qz-end .btn { margin-top: 12px; }
+  .qz-score { font-family: "Bricolage Grotesque", "Figtree", system-ui, sans-serif; font-size: 72px; font-weight: 800; line-height: 1; letter-spacing: -.04em; }
+  .qz-score small { font-size: 28px; color: var(--muted); }
+  .qz-end > b { font-size: 19px; }
+  .qz-end p { margin: 4px 0 0; }
+  /* Player dos vídeos rápidos (tela cheia, estilo stories) */
+  #story { position: fixed; inset: 0; z-index: 100; background: var(--st-bg); color: #F3F0EB; display: flex; flex-direction: column; padding: calc(10px + env(safe-area-inset-top, 0px)) 16px calc(28px + env(safe-area-inset-bottom, 0px)); overflow: hidden; animation: in .25s ease-out; transition: background .4s; }
+  .st-bars { display: flex; gap: 4px; max-width: 560px; width: 100%; margin: 0 auto; position: relative; z-index: 3; }
+  .st-bars i { flex: 1; height: 4px; border-radius: 4px; background: rgba(255, 255, 255, .25); overflow: hidden; }
+  .st-bars b { display: block; height: 100%; width: 0; background: #fff; border-radius: 4px; }
+  .st-top { display: flex; align-items: center; gap: 8px; max-width: 560px; width: 100%; margin: 12px auto 0; position: relative; z-index: 3; }
+  .st-name { flex: 1; font-weight: 700; font-size: 15px; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .st-btn { width: 44px; height: 44px; border-radius: 50%; border: 0; background: rgba(255, 255, 255, .14); color: #fff; display: grid; place-items: center; cursor: pointer; flex: none; padding: 0; }
+  .st-btn svg { width: 22px; height: 22px; fill: currentColor; }
+  .st-stage { flex: 1; position: relative; display: flex; align-items: center; max-width: 560px; width: 100%; margin: 0 auto; min-height: 0; }
+  .st-zone { position: absolute; top: calc(80px + env(safe-area-inset-top, 0px)); bottom: 0; width: 34%; background: none; border: 0; padding: 0; z-index: 2; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+  .st-zone.l { left: 0; }
+  .st-zone.r { right: 0; width: 66%; }
+  .st-zone:focus-visible { outline: 2px solid rgba(255, 255, 255, .5); outline-offset: -6px; border-radius: 20px; }
+  #story.ended .st-zone { display: none; }
+  .st-slide { width: 100%; position: relative; z-index: 1; }
+  .st-big { position: absolute; z-index: -1; left: -8px; bottom: calc(100% + 8px); font-family: "Bricolage Grotesque", "Figtree", system-ui, sans-serif; font-weight: 800; font-size: clamp(96px, 30vw, 200px); line-height: .85; letter-spacing: -.05em; color: var(--st-ac); opacity: .28; white-space: nowrap; transform-origin: left bottom; animation: stZoom 12s linear both; pointer-events: none; }
+  @keyframes stZoom { from { transform: scale(1); } to { transform: scale(1.12) translateX(-3%); } }
+  .st-k { display: inline-block; background: var(--st-ac); color: #15130F; font-weight: 800; font-size: 14px; padding: 6px 12px; border-radius: 999px; animation: stUp .45s .05s both; }
+  .st-slide h2 { font-family: "Bricolage Grotesque", "Figtree", system-ui, sans-serif; font-weight: 800; font-size: clamp(32px, 9vw, 48px); line-height: 1.02; letter-spacing: -.03em; margin: 16px 0 0; animation: stUp .5s .18s both; }
+  .st-slide p { font-size: clamp(18px, 4.8vw, 22px); line-height: 1.45; margin: 16px 0 0; color: rgba(243, 240, 235, .92); animation: stUp .5s .45s both; }
+  @keyframes stUp { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: none; } }
+  .st-belts { display: grid; gap: 8px; margin-top: 18px; }
+  .st-belts span { display: flex; align-items: center; gap: 12px; font-weight: 700; font-size: 16px; animation: stUp .45s both; }
+  .st-belts i { width: min(52vw, 240px); height: 16px; border-radius: 4px; box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .3); }
+  .st-acts { display: grid; gap: 10px; margin-top: 26px; animation: stUp .5s .3s both; position: relative; z-index: 4; }
+  .st-cta { display: flex; align-items: center; justify-content: center; gap: 10px; min-height: 56px; padding: 10px 18px; border-radius: 18px; border: 0; background: var(--st-ac); color: #15130F; font: 700 17px "Figtree", system-ui, sans-serif; cursor: pointer; text-align: center; }
+  .st-cta.ghost { background: rgba(255, 255, 255, .14); color: #fff; }
+  .st-cta svg { width: 22px; height: 22px; fill: currentColor; flex: none; }
+  @media (prefers-reduced-motion: reduce) { .st-big, .st-k, .st-slide h2, .st-slide p, .st-belts span, .st-acts { animation: none; } }
   /* Vídeo de boas-vindas (pop-up, 1 vez por aluno) */
   #intro { position: fixed; inset: 0; z-index: 100; background: #0B0A09; display: grid; place-items: center; animation: in .25s ease-out; }
   #intro video { width: 100%; height: 100%; object-fit: contain; background: #0B0A09; }
@@ -641,6 +728,10 @@ const P = {
   send: "M2.01 21L23 12 2.01 3 2 10l15 2-15 2z",
   scale: "M17 12l-5 5-3-3 1.41-1.41L12 14.17l3.59-3.58L17 12zm2-9h-1V1h-2v2H8V1H6v2H5c-1.11 0-2 .9-2 2v16c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 18H5V8h14v13z",
   hand: "M13 5.5V2.5c0-.83-.67-1.5-1.5-1.5S10 1.67 10 2.5v9.2L7.7 10.5c-.6-.4-1.4-.3-1.9.2-.5.5-.5 1.3 0 1.8l4.6 5.3c.6.7 1.5 1.1 2.4 1.1h4.7c1.7 0 3.1-1.3 3.4-3l.7-4.4c.2-1.2-.6-2.3-1.8-2.5l-6.8-1.2V5.5z",
+  school: "M5 13.18v4L12 21l7-3.82v-4L12 17l-7-3.82zM12 3 1 9l11 6 9-4.91V17h2V9L12 3z",
+  pause: "M6 19h4V5H6v14zm8-14v14h4V5h-4z",
+  volume: "M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z",
+  volumeOff: "M16.5 12c0-1.77-1.02-3.29-2.5-4.03v2.21l2.45 2.45c.03-.2.05-.41.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51A8.796 8.796 0 0 0 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3 3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06a8.99 8.99 0 0 0 3.69-1.81L19.73 21 21 19.73l-9-9L4.27 3zM12 4 9.91 6.09 12 8.18V4z",
   moon: "M12 3a9 9 0 1 0 9 9c0-.46-.04-.92-.1-1.36a5.39 5.39 0 0 1-4.4 2.26 5.4 5.4 0 0 1-3.14-9.8c-.44-.06-.9-.1-1.36-.1z"
 };
 const icon = (n, cls = "i", style = "") => `<svg class="${cls}" viewBox="0 0 24 24" aria-hidden="true"${style ? ` style="${style}"` : ""}><path d="${P[n]}"/></svg>`;
@@ -1265,8 +1356,8 @@ const meKey = () => (isStaff() ? state.user.staffId : state.user.studentId);
 const myStudents = () => db.students.filter((s) => s.pid === myPid());
 
 function navItems() {
-  if (!isStaff()) return [["inicio", "Início", "home"], ["mural", "Mural", "grid"], ["agenda", "Agenda", "scale"], ["campeonatos", "Campeonatos", "trophy"]];
-  const items = [["inicio", "Início", "home"], ["chamada", "Chamada", "roll"], ["agenda", "Agenda", "scale"], ["mural", "Mural", "grid"], ["alunos", "Alunos", "people"], ["graduacao", "Graduação", "belt"], ["campeonatos", "Campeonatos", "trophy"], ["funcoes", "Funções", "hand"]];
+  if (!isStaff()) return [["inicio", "Início", "home"], ["mural", "Mural", "grid"], ["agenda", "Agenda", "scale"], ["estudos", "Estudos", "school"], ["campeonatos", "Campeonatos", "trophy"]];
+  const items = [["inicio", "Início", "home"], ["chamada", "Chamada", "roll"], ["agenda", "Agenda", "scale"], ["mural", "Mural", "grid"], ["alunos", "Alunos", "people"], ["graduacao", "Graduação", "belt"], ["campeonatos", "Campeonatos", "trophy"], ["estudos", "Estudos", "school"], ["funcoes", "Funções", "hand"]];
   if (isMestre()) items.push(["equipe", "Equipe", "staff"]);
   if (isAdmin()) items.splice(1, 0, ["insights", "Insights", "chart"]);
   return canTeach() ? items : items.filter(([k]) => k !== "chamada" && k !== "graduacao");
@@ -2167,7 +2258,7 @@ views.equipe = () => {
 };
 
 views.mais = () => {
-  const extra = navItems().slice(isStaff() ? 5 : 3);
+  const extra = navItems().slice(isStaff() ? 5 : 4);
   const u = state.user;
   const mePerson = isStaff() ? staffById(u.staffId) : student(u.studentId);
   return `<div class="stack">
@@ -2445,6 +2536,306 @@ const PERMS = [
   ["Apagar FO e posts do projeto", 1, 0, 0],
 ];
 
+/* ================= ESTUDOS: história em vídeos rápidos, pontuação, federações e quiz =================
+   Os "vídeos rápidos" são histórias animadas (estilo stories), com narração da voz do aparelho
+   (pode desligar). Funcionam sem internet. O que cada pessoa já assistiu e o recorde do quiz
+   ficam só neste aparelho (localStorage). */
+const BELT_CORAL = "repeating-linear-gradient(90deg,#C8102E 0 16px,#0A0A0A 16px 32px)";
+const STORIES = [
+  { id: "origens", t: "Do Japão ao Brasil", sub: "Samurais, Kodokan e o Conde Koma", big: "1914", bg: "#1B1420", ac: "#D8BAE7", slides: [
+    { k: "Japão antigo", big: "柔術", t: "Tudo começou com os samurais", x: "O jujutsu nasceu no Japão como luta sem armas: quedas, alavancas e chaves para vencer quem é maior e mais forte." },
+    { k: "1882", t: "Jigoro Kano cria o judô", x: "No Instituto Kodokan, em Tóquio, Kano organizou o jujutsu em um método de treino seguro. Foi ali que se formou Mitsuyo Maeda." },
+    { k: "1914", t: "O Conde Koma chega ao Brasil", x: "Maeda, conhecido como Conde Koma, rodou o mundo fazendo lutas e demonstrações. Chegou ao Brasil em 1914 e foi viver em Belém do Pará." },
+    { k: "Belém do Pará", big: "PA", t: "Um aluno chamado Carlos Gracie", x: "Gastão Gracie ajudou Maeda na cidade, e o filho dele, Carlos, começou a treinar com o mestre japonês ainda jovem." },
+    { k: "Oss!", t: "A semente estava plantada", x: "Do Pará, o jiu-jitsu seguiu para o Rio de Janeiro e começou a virar uma arte brasileira." }
+  ] },
+  { id: "brasil", t: "Nasce o jiu-jitsu brasileiro", sub: "Gracie, Fadda e a primeira federação", big: "1925", bg: "#0F2A1C", ac: "#7FD99A", slides: [
+    { k: "1925", t: "Academia no Rio de Janeiro", x: "Carlos Gracie abriu academia no Rio com os irmãos. O jiu-jitsu passou a ser ensinado como defesa pessoal para todos." },
+    { k: "Hélio Gracie", big: "HG", t: "Técnica vence força", x: "Hélio, o irmão mais novo e franzino, adaptou os golpes para usar alavanca e o tempo certo. Assim, quem é menor também consegue se defender." },
+    { k: "Luiz França e Oswaldo Fadda", big: "OF", t: "O jiu-jitsu do povo", x: "Luiz França também aprendeu com Maeda e formou Oswaldo Fadda. Fadda ensinou nos subúrbios do Rio, abriu o tatame para quem tinha pouco dinheiro e ficou famoso pelas chaves de pé." },
+    { k: "1967", t: "A primeira federação", x: "Nasce no Rio a Federação de Jiu-Jitsu da Guanabara, com regras para as competições. É a avó das federações de hoje." },
+    { k: "Projeto social", big: "Oss", t: "Igual ao nosso tatame", x: "Como fez Fadda, os projetos sociais seguem levando o jiu-jitsu para todos: disciplina, respeito e oportunidade." }
+  ] },
+  { id: "mundo", t: "O mundo conhece o jiu-jitsu", sub: "UFC, Mundial e ADCC", big: "1993", bg: "#102033", ac: "#8EC5FF", slides: [
+    { k: "1978", t: "Os Gracie nos Estados Unidos", x: "Rorion Gracie se mudou para a Califórnia e começou a dar aulas na garagem de casa." },
+    { k: "1993", t: "O primeiro UFC", x: "Royce Gracie, magro e de kimono, venceu lutadores muito maiores no primeiro UFC. O mundo inteiro viu a força das finalizações." },
+    { k: "1996", t: "O primeiro Mundial", x: "A Confederação Brasileira de Jiu-Jitsu realizou o primeiro Campeonato Mundial, no Rio de Janeiro." },
+    { k: "1998", t: "Nasce o ADCC", x: "Em Abu Dhabi começa o ADCC, o maior torneio de luta agarrada sem kimono do mundo." },
+    { k: "Hoje", big: "BJJ", t: "Um esporte de todos os continentes", x: "O jiu-jitsu brasileiro é treinado no mundo todo, e o Brasil continua sendo a grande referência. Muitos campeões começaram em projetos sociais." }
+  ] },
+  { id: "faixas", t: "O caminho das faixas", sub: "Cores, graus e tempo de tatame", deco: "belts", bg: "#2A1B10", ac: "#F2B880", slides: [
+    { k: "Adulto", big: "16+", belts: "adulto", t: "Da branca à preta", x: "Branca, azul, roxa, marrom e preta. Antes de trocar de faixa, o aluno ganha até quatro graus, as listras na ponta." },
+    { k: "Infantil, até 15 anos", big: "4–15", belts: "infantil", t: "As faixas das crianças", x: "Depois da branca vêm cinza, amarela, laranja e verde, cada uma com variações. Aos 16 anos o aluno passa para as faixas de adulto." },
+    { k: "Faixa preta", big: "10º", belts: "mestres", t: "Coral e vermelha", x: "A preta vai do primeiro ao sexto grau. Depois vêm a coral, no sétimo e no oitavo, e a vermelha, no nono e no décimo, para quem dedicou a vida ao jiu-jitsu." },
+    { k: "Tempo de tatame", big: "Oss", t: "Graduação não se compra", x: "Presença, comportamento e técnica contam. No Dojo Social, o Professor acompanha tudo isso no painel de graduação." }
+  ] },
+  { id: "etiqueta", t: "O código do tatame", sub: "Respeito, higiene e segurança", big: "Oss", bg: "#2B1020", ac: "#FF9BB8", slides: [
+    { k: "Oss", t: "Respeito em primeiro lugar", x: "Cumprimente o professor e os colegas ao entrar e ao sair do tatame." },
+    { k: "Higiene", big: "✓", t: "Kimono limpo, unhas cortadas", x: "Kimono lavado depois de cada treino, unhas curtas e chinelo fora do tatame. Assim ninguém se machuca nem fica doente." },
+    { k: "Segurança", big: "TAP", t: "Bateu, soltou", x: "Quando o parceiro bater com a mão ou falar, solte na hora. No treino, o parceiro é seu aliado, não seu inimigo." },
+    { k: "Disciplina", big: "100%", t: "O tatame ensina para a vida", x: "Chegar no horário, estudar e manter a escola em dia também fazem parte do jiu-jitsu." }
+  ] }
+];
+
+const PONTOS = [
+  [2, "Queda", "Derrubar o adversário de costas, de lado ou sentado e ficar por cima no controle."],
+  [2, "Raspagem", "Quem está por baixo, na guarda, inverte a posição e termina por cima."],
+  [2, "Joelho na barriga", "Joelho sobre a barriga, o peito ou as costelas do adversário, a outra perna esticada e o pé no chão."],
+  [3, "Passagem de guarda", "Passar pelas pernas do adversário e controlá-lo por cima, de lado (cem quilos) ou de frente (norte-sul)."],
+  [4, "Montada", "Sentar sobre o tronco do adversário, de frente para a cabeça dele, com os dois joelhos no chão (ou um joelho e um pé)."],
+  [4, "Pegada pelas costas", "Controlar as costas com os dois ganchos: os calcanhares por dentro das coxas do adversário. A montada pelas costas também vale 4."]
+];
+const REGRAS = [
+  ["Finalização", "Chave ou estrangulamento e o adversário bate: a luta acaba na hora e vence quem finalizou, não importa o placar."],
+  ["3 segundos", "Toda posição precisa ficar estabilizada por 3 segundos para valer ponto."],
+  ["Vantagem", "Quando o atleta quase chega a uma posição que vale ponto, ou quase finaliza. Serve para desempatar."],
+  ["Punição", "Falta de combatividade ou golpe proibido. 1ª punição: fica anotada. 2ª: vantagem para o adversário. 3ª: 2 pontos para o adversário. 4ª: desclassificação. Faltas graves desclassificam na hora."],
+  ["Puxar para a guarda", "Sentar ou puxar o adversário para a guarda não vale ponto."],
+  ["Desempate", "1º pontos, 2º vantagens, 3º quem tem menos punições, 4º decisão dos árbitros."]
+];
+const TEMPO_LUTA = [["branca", "Branca", 5], ["azul", "Azul", 6], ["roxa", "Roxa", 7], ["marrom", "Marrom", 8], ["preta", "Preta", 10]];
+const FEDS = [
+  ["IBJJF", "Federação Internacional de Jiu-Jitsu Brasileiro", "A maior do mundo, criada por Carlos Gracie Jr. Organiza o Mundial, o Pan-Americano e o Europeu, e suas regras são as mais usadas nos campeonatos."],
+  ["CBJJ", "Confederação Brasileira de Jiu-Jitsu", "Parceira da IBJJF no Brasil. Organiza o Campeonato Brasileiro e outros eventos nacionais."],
+  ["Estaduais", "Federações de cada estado", "Fazem os campeonatos estaduais e regionais, o melhor lugar para começar a competir. A do Rio de Janeiro, de 1967, é a mais antiga."],
+  ["CBJJE", "Confederação Brasileira de Jiu-Jitsu Esportivo", "Outra confederação nacional, com muitos campeonatos pelo país e regras parecidas com as da IBJJF."],
+  ["AJP", "Abu Dhabi Jiu-Jitsu Pro (Emirados Árabes)", "Organiza o Abu Dhabi World Pro e o circuito Grand Slam, com premiação em dinheiro. Tem regras próprias, parecidas com as da IBJJF."],
+  ["ADCC", "Torneio de luta agarrada sem kimono", "Criado em 1998 em Abu Dhabi, é o maior evento de grappling sem kimono do mundo. As regras são diferentes das lutas de kimono."]
+];
+const COMPETIR = [
+  ["Filie-se", "Faça o cadastro na federação do campeonato (em geral com carteirinha anual)."],
+  ["Faixa registrada", "O Professor confirma a sua faixa. Lute sempre na faixa que você usa no treino."],
+  ["Inscrição no prazo", "Escolha a categoria certa: idade, faixa e peso. Depois do prazo, muitas vezes não dá para trocar."],
+  ["Pesagem", "Na IBJJF a pesagem é feita de kimono, logo antes da primeira luta. Confira o peso da categoria já com o kimono."],
+  ["Kimono na regra", "Nos eventos da IBJJF: kimono branco, azul ou preto, inteiro, limpo e sem rasgos."]
+];
+const QUIZ = [
+  ["Quantos pontos vale a montada?", ["2 pontos", "3 pontos", "4 pontos"], 2, "Montada e pegada pelas costas valem 4."],
+  ["Quem trouxe o jiu-jitsu para o Brasil?", ["Jigoro Kano", "Mitsuyo Maeda, o Conde Koma", "Royce Gracie"], 1, "Maeda chegou em 1914 e ensinou Carlos Gracie em Belém."],
+  ["Quanto tempo a posição precisa ficar estabilizada para valer ponto?", ["1 segundo", "3 segundos", "10 segundos"], 1, "São 3 segundos de controle."],
+  ["Uma raspagem vale…", ["2 pontos", "3 pontos", "Só vantagem"], 0, "Raspagem, queda e joelho na barriga valem 2."],
+  ["Em que cidade Maeda foi viver no Brasil?", ["Rio de Janeiro", "São Paulo", "Belém do Pará"], 2, "Foi em Belém que Carlos Gracie começou a treinar."],
+  ["Se os pontos empatam, o que decide primeiro?", ["As vantagens", "As punições", "O peso"], 0, "Ordem: pontos, vantagens, punições e decisão dos árbitros."],
+  ["Qual federação organiza o Mundial de Jiu-Jitsu de kimono?", ["ADCC", "IBJJF", "AJP"], 1, "O Mundial é da IBJJF. O ADCC é sem kimono."],
+  ["Passar a guarda vale…", ["2 pontos", "3 pontos", "4 pontos"], 1, "Passagem de guarda vale 3."],
+  ["Qual é a ordem das faixas de adulto?", ["Branca, azul, roxa, marrom, preta", "Branca, roxa, azul, marrom, preta", "Branca, azul, marrom, roxa, preta"], 0, "Branca, azul, roxa, marrom e preta."],
+  ["O parceiro bateu no treino. O que você faz?", ["Aperta mais um pouco", "Solta na hora", "Espera o professor"], 1, "Bateu, soltou. Segurança em primeiro lugar."]
+];
+
+const stuMem = () => { try { return JSON.parse(localStorage.getItem("dojoEstudos") || "{}") || {}; } catch (e) { return {}; } };
+const stuSave = (patch) => { try { localStorage.setItem("dojoEstudos", JSON.stringify(Object.assign(stuMem(), patch))); } catch (e) {} };
+const slideMs = (sl) => Math.max(5500, (sl.t + " " + sl.x).split(/\s+/).length * 380 + 1600);
+const storySecs = (s) => Math.round(s.slides.reduce((n, sl) => n + slideMs(sl), 0) / 1000);
+
+function stuBelts(kind) {
+  const list = kind === "infantil" ? KIDS.slice(1).map(([, l, c]) => [l, c])
+    : kind === "mestres" ? [["Preta", "#0A0A0A"], ["Coral", BELT_CORAL], ["Vermelha", "#C8102E"]]
+    : ADULT.map(([, l, c]) => [l, c]);
+  return `<div class="st-belts">${list.map(([l, c], i) => `<span style="animation-delay:${0.3 + i * 0.12}s"><i style="background:${c}"></i>${esc(l)}</span>`).join("")}</div>`;
+}
+
+function stuHistoria() {
+  const seen = stuMem().seen || {};
+  const deco = (s) => s.deco === "belts"
+    ? `<div class="big belts" aria-hidden="true">${ADULT.map(([, , c]) => `<i style="background:${c}"></i>`).join("")}</div>`
+    : `<div class="big" aria-hidden="true">${esc(s.big)}</div>`;
+  return `<section class="grp">
+    <div class="sec-h"><h2>História em vídeos rápidos</h2><span class="muted small">${STORIES.filter((s) => seen[s.id]).length}/${STORIES.length} vistos</span></div>
+    <div class="stu-grid">${STORIES.map((s) => `<button class="stu-card" style="--c-bg:${s.bg};--c-ac:${s.ac}" data-a="stuPlay" data-id="${s.id}" aria-label="Assistir: ${esc(s.t)}">
+      ${deco(s)}
+      <b>${esc(s.t)}</b><small>${esc(s.sub)}</small>
+      <span class="meta"><span class="pl">${icon("play", "")}</span>${storySecs(s)} s${seen[s.id] ? `<span class="seen">${icon("check", "")}Visto</span>` : ""}</span>
+    </button>`).join("")}</div>
+    <p class="muted small" style="margin:12px 4px 0;line-height:1.5">Toque para assistir. Toque na direita para avançar e na esquerda para voltar. A narração usa a voz do aparelho e pode ser desligada no botão de som.</p>
+  </section>`;
+}
+
+function stuPontos() {
+  const rows = PONTOS.map(([n, t, x]) => `<div class="pts"><div class="pts-n v${n}" aria-label="${n} pontos">${n}</div><div><b>${t}</b><p>${x}</p></div></div>`).join("");
+  return `${group("Quanto vale cada posição", `<span class="pill blue">Regras IBJJF</span>`, rows)}
+    <div class="panel pts-ex"><span class="muted small">Exemplo de placar</span><p>Raspou <b>(2)</b>, passou a guarda <b>(3)</b> e montou <b>(4)</b> = <b>9 pontos</b>. As posições vão somando conforme o atleta avança.</p></div>
+    ${group("Regras que decidem a luta", "", REGRAS.map(([t, x]) => `<div class="pts"><div><b>${t}</b><p>${x}</p></div></div>`).join(""))}
+    ${group("Tempo de luta · adulto", "", `<div class="tl">${TEMPO_LUTA.map(([k, l, m]) => { const c = (ADULT.find((b) => b[0] === k) || [])[2]; return `<div><i style="background:${c}"></i><span>${l}</span><b>${m} min</b></div>`; }).join("")}</div>`)}
+    <p class="muted small" style="margin:-8px 4px 0;line-height:1.5">Valem as regras da IBJJF, as mais usadas. Infantil e master têm tempos menores, e outras federações podem mudar detalhes: confira sempre o livro de regras do campeonato.</p>`;
+}
+
+function stuFeds() {
+  return `${group("Quem organiza os campeonatos", "", FEDS.map(([a, n, x]) => `<div class="fed"><span class="fed-a">${a}</span><div><b>${n}</b><p>${x}</p></div></div>`).join(""))}
+    ${group("Como competir", "", COMPETIR.map(([t, x], i) => `<div class="fed"><span class="fed-n">${i + 1}</span><div><b>${t}</b><p>${x}</p></div></div>`).join(""))}
+    <button class="btn outline" data-a="nav" data-view="campeonatos">${icon("trophy")}Ver campeonatos no app</button>`;
+}
+
+function stuQuiz() {
+  const q = state.quiz || (state.quiz = { i: 0, pick: null, ok: 0 });
+  const best = stuMem().best || 0;
+  if (q.i >= QUIZ.length) {
+    const msg = q.ok === QUIZ.length ? "Gabaritou! Oss!" : q.ok >= 7 ? "Muito bem!" : q.ok >= 4 ? "Bom começo!" : "Bora estudar mais um pouco!";
+    return `<div class="panel qz-end">
+      <span class="muted small">Resultado</span>
+      <div class="qz-score">${q.ok}<small>/${QUIZ.length}</small></div>
+      <b>${msg}</b>
+      <p class="muted">Seu recorde neste aparelho: ${best}/${QUIZ.length}</p>
+      <button class="btn" data-a="quizReset">${icon("restore")}Fazer de novo</button>
+    </div>`;
+  }
+  const [p, opts, right, why] = QUIZ[q.i];
+  const done = q.pick !== null;
+  return `<div class="panel qz">
+    <div class="qz-top"><span class="pill blue">Pergunta ${q.i + 1} de ${QUIZ.length}</span><span class="muted small">${q.ok} ${q.ok === 1 ? "acerto" : "acertos"}</span></div>
+    <div class="qz-bar"><i style="width:${(q.i / QUIZ.length) * 100}%"></i></div>
+    <h3>${p}</h3>
+    <div class="qz-opts">${opts.map((o, i) => `<button class="qz-opt ${done && i === right ? "ok" : ""} ${done && i === q.pick && i !== right ? "bad" : ""}" data-a="quizPick" data-v="${i}" ${done ? "disabled" : ""}>${done && i === right ? icon("check", "") : done && i === q.pick ? icon("close", "") : ""}<span>${o}</span></button>`).join("")}</div>
+    ${done ? `<p class="qz-why ${q.pick === right ? "ok" : "bad"}"><b>${q.pick === right ? "Acertou!" : "Quase."}</b> ${why}</p>
+      <button class="btn" data-a="quizNext">${q.i + 1 < QUIZ.length ? "Próxima pergunta" : "Ver resultado"}</button>` : ""}
+  </div>`;
+}
+
+views.estudos = () => {
+  const sec = state.stuSec || "historia";
+  const secs = [["historia", "História"], ["pontos", "Pontuação"], ["federacoes", "Federações"], ["quiz", "Quiz"]];
+  const body = sec === "pontos" ? stuPontos() : sec === "federacoes" ? stuFeds() : sec === "quiz" ? stuQuiz() : stuHistoria();
+  return `<div class="stack">
+    <div class="hello">
+      <span class="eyebrow">${icon("school", "i", "width:18px;height:18px")}Estudos</span>
+      <h2>Jiu-jitsu além do tatame</h2>
+      <p>A história em vídeos rápidos, quanto vale cada posição, as federações e um quiz para testar o que você aprendeu.</p>
+    </div>
+    <div class="chips" role="tablist" aria-label="Assunto">${secs.map(([k, l]) => `<button class="chip ${k === sec ? "on" : ""}" role="tab" aria-selected="${k === sec}" data-a="stuSec" data-v="${k}">${l}</button>`).join("")}</div>
+    ${body}
+  </div>`;
+};
+
+/* Player dos vídeos rápidos (tela cheia) */
+let story = null;
+function stVoice() { try { const vs = speechSynthesis.getVoices(); return vs.find((v) => /^pt[-_]BR/i.test(v.lang)) || vs.find((v) => /^pt/i.test(v.lang)) || null; } catch (e) { return null; } }
+function stHush() { try { if ("speechSynthesis" in window) speechSynthesis.cancel(); } catch (e) {} }
+function stSpeak(text) {
+  stHush();
+  story.spoken = true;
+  if (!story.sound || !("speechSynthesis" in window)) return;
+  try {
+    const u = new SpeechSynthesisUtterance(text);
+    u.lang = "pt-BR"; u.rate = 1.03;
+    const v = stVoice(); if (v) u.voice = v;
+    const tok = story.tok = (story.tok || 0) + 1;
+    u.onend = u.onerror = () => { if (story && story.tok === tok) story.spoken = true; };
+    story.spoken = false;
+    speechSynthesis.speak(u);
+  } catch (e) { story.spoken = true; }
+}
+function stButtons() {
+  const el = story.el;
+  el.querySelector('[data-st="pause"]').innerHTML = icon(story.paused ? "play" : "pause", "");
+  el.querySelector('[data-st="pause"]').setAttribute("aria-label", story.paused ? "Continuar" : "Pausar");
+  el.querySelector('[data-st="sound"]').innerHTML = icon(story.sound ? "volume" : "volumeOff", "");
+  el.querySelector('[data-st="sound"]').setAttribute("aria-label", story.sound ? "Desligar narração" : "Ligar narração");
+}
+function stShow(i) {
+  const s = story.s, sl = s.slides[i];
+  story.i = i; story.elapsed = 0; story.dur = slideMs(sl); story.ended = false;
+  story.el.classList.remove("ended");
+  story.el.querySelectorAll(".st-bars b").forEach((b, j) => { b.style.width = j < i ? "100%" : "0%"; });
+  story.el.querySelector(".st-stage").innerHTML = `<div class="st-slide" role="group" aria-roledescription="parte" aria-label="${i + 1} de ${s.slides.length}">
+    <div class="st-big" aria-hidden="true" style="animation-duration:${story.dur + 3000}ms">${esc(sl.big || sl.k)}</div>
+    <span class="st-k">${esc(sl.k)}</span>
+    <h2>${esc(sl.t)}</h2>
+    ${sl.belts ? stuBelts(sl.belts) : ""}
+    <p>${esc(sl.x)}</p>
+  </div>`;
+  story.el.querySelector(".st-live").textContent = `${sl.t}. ${sl.x}`;
+  if (!story.paused) stSpeak(`${sl.k}. ${sl.t}. ${sl.x}`); else story.spoken = true;
+}
+function stEnd() {
+  const s = story.s, k = STORIES.indexOf(s), next = STORIES[k + 1];
+  story.ended = true; stHush();
+  story.el.classList.add("ended");
+  story.el.querySelectorAll(".st-bars b").forEach((b) => { b.style.width = "100%"; });
+  const m = stuMem(); stuSave({ seen: Object.assign(m.seen || {}, { [s.id]: new Date().toISOString().slice(0, 10) }) });
+  story.el.querySelector(".st-stage").innerHTML = `<div class="st-slide st-end">
+    <div class="st-big" aria-hidden="true">Oss</div>
+    <span class="st-k">Fim</span>
+    <h2>${esc(s.t)}</h2>
+    <div class="st-acts">
+      ${next ? `<button class="st-cta" data-st="nextStory" data-id="${next.id}">${icon("play", "")}Próximo: ${esc(next.t)}</button>` : `<button class="st-cta" data-st="quiz">${icon("school", "")}Fazer o quiz</button>`}
+      <button class="st-cta ghost" data-st="replay">${icon("restore", "")}Ver de novo</button>
+    </div>
+  </div>`;
+  story.el.querySelector(".st-live").textContent = "Fim do vídeo.";
+  const f = story.el.querySelector(".st-cta"); if (f) f.focus();
+}
+function stNext() { if (story.ended) return; if (story.i < story.s.slides.length - 1) stShow(story.i + 1); else stEnd(); }
+function stPrev() { if (story.ended) { stShow(story.s.slides.length - 1); return; } stShow(story.elapsed > 1800 || story.i === 0 ? story.i : story.i - 1); }
+function stTick(now) {
+  if (!story) return;
+  const dt = Math.min(250, now - (story.last || now)); story.last = now;
+  if (!story.paused && !story.ended && !document.hidden) {
+    story.elapsed += dt;
+    const p = Math.min(1, story.elapsed / story.dur);
+    const bar = story.el.querySelectorAll(".st-bars b")[story.i]; if (bar) bar.style.width = (p * 100).toFixed(2) + "%";
+    if (p >= 1 && (story.spoken || story.elapsed > story.dur * 2.5)) stNext();
+  }
+  story.raf = requestAnimationFrame(stTick);
+}
+function stClose() {
+  if (!story) return;
+  cancelAnimationFrame(story.raf); stHush();
+  story.el.remove(); document.body.style.overflow = story.prevOverflow;
+  const back = story.from; story = null;
+  render();
+  const b = back && document.querySelector(`[data-a="stuPlay"][data-id="${back}"]`); if (b) b.focus();
+}
+function openStory(id) {
+  const s = STORIES.find((x) => x.id === id);
+  if (!s) return;
+  if (story) { story.s = s; story.from = id; story.el.style.setProperty("--st-bg", s.bg); story.el.style.setProperty("--st-ac", s.ac); story.el.querySelector(".st-name").textContent = s.t; story.el.querySelector(".st-bars").innerHTML = s.slides.map(() => "<i><b></b></i>").join(""); story.paused = false; stButtons(); stShow(0); return; }
+  const el = document.createElement("div");
+  el.id = "story";
+  el.setAttribute("role", "dialog"); el.setAttribute("aria-modal", "true"); el.setAttribute("aria-label", `Vídeo rápido: ${s.t}`);
+  el.style.setProperty("--st-bg", s.bg); el.style.setProperty("--st-ac", s.ac);
+  el.innerHTML = `<div class="st-bars">${s.slides.map(() => "<i><b></b></i>").join("")}</div>
+    <div class="st-top"><span class="st-name">${esc(s.t)}</span>
+      <button class="st-btn" type="button" data-st="sound"></button>
+      <button class="st-btn" type="button" data-st="pause"></button>
+      <button class="st-btn" type="button" data-st="close" aria-label="Fechar">${icon("close", "")}</button></div>
+    <div class="st-stage"></div>
+    <button class="st-zone l" type="button" data-st="prev" aria-label="Voltar"></button>
+    <button class="st-zone r" type="button" data-st="next" aria-label="Avançar"></button>
+    <p class="st-live" aria-live="polite" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)"></p>`;
+  document.body.appendChild(el);
+  const m = stuMem();
+  story = { s, el, from: id, i: 0, paused: false, sound: m.sound !== false, prevOverflow: document.body.style.overflow };
+  document.body.style.overflow = "hidden";
+  el.addEventListener("click", (e) => {
+    const b = e.target.closest("[data-st]"); if (!b || !story) return;
+    const a = b.dataset.st;
+    if (a === "close") stClose();
+    else if (a === "next") stNext();
+    else if (a === "prev") stPrev();
+    else if (a === "replay") { story.paused = false; stButtons(); stShow(0); }
+    else if (a === "nextStory") openStory(b.dataset.id);
+    else if (a === "quiz") { stClose(); state.stuSec = "quiz"; state.quiz = null; render(); }
+    else if (a === "pause") {
+      story.paused = !story.paused;
+      if (story.paused) { stHush(); story.spoken = true; } else if (story.ended) stShow(0);
+      stButtons();
+    } else if (a === "sound") {
+      story.sound = !story.sound; stuSave({ sound: story.sound });
+      if (!story.sound) { stHush(); story.spoken = true; } else if (!story.paused && !story.ended) stShow(story.i);
+      stButtons();
+    }
+  });
+  el.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") stClose();
+    else if (e.key === "ArrowRight") stNext();
+    else if (e.key === "ArrowLeft") stPrev();
+  });
+  stButtons();
+  stShow(0);
+  el.querySelector('[data-st="close"]').focus();
+  story.last = performance.now();
+  story.raf = requestAnimationFrame(stTick);
+}
+
 views.funcoes = () => {
   const roles = ["mestre", "instrutor", "monitor"];
   const mine = state.user && roles.includes(state.user.role) ? state.user.role : null;
@@ -2488,12 +2879,12 @@ views.funcoes = () => {
   </div>`;
 };
 
-const TITLES = { insights: "Insights", inicio: "Início", chamada: "Chamada", mural: "Mural do tatame", alunos: "Alunos", aluno: "Ficha do aluno", agenda: "Agenda e escala", graduacao: "Graduação", campeonatos: "Campeonatos", funcoes: "Funções da equipe", equipe: "Equipe técnica", mais: "Mais" };
+const TITLES = { insights: "Insights", inicio: "Início", chamada: "Chamada", mural: "Mural do tatame", alunos: "Alunos", aluno: "Ficha do aluno", agenda: "Agenda e escala", graduacao: "Graduação", campeonatos: "Campeonatos", funcoes: "Funções da equipe", estudos: "Estudos", equipe: "Equipe técnica", mais: "Mais" };
 
 function shell() {
   const items = navItems();
   const u = state.user;
-  const tabs = items.slice(0, isStaff() ? 5 : 3).concat([["mais", "Mais", "more"]]);
+  const tabs = items.slice(0, isStaff() ? 5 : 4).concat([["mais", "Mais", "more"]]);
   const activeView = state.view === "aluno" ? state.from : state.view;
   const back = state.view === "aluno" ? `<button class="sq-btn" data-a="nav" data-view="${state.from}" aria-label="Voltar">${icon("back", "")}</button>` : "";
   const mePerson = isStaff() ? staffById(u.staffId) : student(u.studentId);
@@ -3024,6 +3415,11 @@ document.addEventListener("click", (e) => {
     case "deg": state.degrees = Math.min(4, Math.max(0, state.degrees + Number(el.dataset.d))); render(); break;
 
     /* navegação */
+    case "stuSec": state.stuSec = v; render(); break;
+    case "stuPlay": openStory(id); break;
+    case "quizPick": { const q = state.quiz; if (!q || q.pick !== null || q.i >= QUIZ.length) break; q.pick = Number(v); if (q.pick === QUIZ[q.i][2]) q.ok++; render(); break; }
+    case "quizNext": { const q = state.quiz; if (!q || q.pick === null) break; q.i++; q.pick = null; if (q.i >= QUIZ.length && q.ok > (stuMem().best || 0)) stuSave({ best: q.ok }); render(); break; }
+    case "quizReset": state.quiz = { i: 0, pick: null, ok: 0 }; render(); break;
     case "nav": go(el.dataset.view); break;
     case "me":
       if (isStaff()) openSheet({ kind: "perfil" });
