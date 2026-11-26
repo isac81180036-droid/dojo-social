@@ -1,5 +1,5 @@
-<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Dojo Social"><meta name="apple-mobile-web-app-status-bar-style" content="default"><meta name="theme-color" content="#F1EDE4"><link rel="apple-touch-icon" href="icon-180.png"><link rel="icon" type="image/png" href="icon-192.png"><link rel="manifest" href="manifest.webmanifest"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
-<title>Dojo Social</title>
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Dojo Fácil"><meta name="apple-mobile-web-app-status-bar-style" content="default"><meta name="theme-color" content="#F1EDE4"><link rel="apple-touch-icon" href="icon-180.png"><link rel="icon" type="image/png" href="icon-192.png"><link rel="manifest" href="manifest.webmanifest"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Dojo Fácil</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,700;12..96,800&family=Figtree:wght@400;500;600;700;800&display=swap">
@@ -1165,7 +1165,7 @@ function safeRender() { if (typing()) sync.needRender = true; else { sync.needRe
 function setOnline(ok, err) {
   const was = sync.online;
   sync.online = ok;
-  if (err) console.warn("[Dojo Social] sincronização:", err);
+  if (err) console.warn("[Dojo Fácil] sincronização:", err);
   if (!ok && was !== false) toast("Sem conexão com o servidor. O que você registrar fica neste aparelho e é enviado depois.");
   if (ok && was === false) toast("Conectado de novo. Dados sincronizados.");
 }
@@ -1368,14 +1368,14 @@ function navItems() {
 
 /* ================= AUTENTICAÇÃO (telas do login) ================= */
 const logo = (cls = "") => `
-  <div class="logo ${cls}" aria-label="Dojo Social">
+  <div class="logo ${cls}" aria-label="Dojo Fácil">
     <svg viewBox="0 0 76 64" aria-hidden="true">
       <rect x="0" y="16" width="76" height="16" rx="2" fill="currentColor"/>
       <rect x="25" y="9" width="26" height="30" rx="3" fill="currentColor" style="stroke:var(--logo-gap, var(--ground))" stroke-width="4"/>
       <path d="M28 39 L18 64 L30 64 L37 41 Z" fill="currentColor"/>
       <path d="M48 39 L58 64 L46 64 L39 41 Z" fill="currentColor"/>
     </svg>
-    <div class="word">dojo<br class="br"> social</div>
+    <div class="word">dojo<br class="br"> fácil</div>
   </div>`;
 
 function field({ id, label, hint, ic, left = "", type = "text", placeholder = "", value = "", disabled = false, right = "", mode = "" }) {
@@ -1534,7 +1534,7 @@ const auth = {
     <div class="screen onb">
       <div class="onb-top"><button class="sq-btn" data-a="goAuth" data-to="welcome" aria-label="Voltar">${icon("back", "")}</button></div>
       <h1 class="big">Criar conta</h1>
-      <p class="lead">Como você vai usar o Dojo Social?</p>
+      <p class="lead">Como você vai usar o Dojo Fácil?</p>
       <div class="stack" style="gap:12px">
         <button class="switch-row" style="margin:0" data-a="goAuth" data-to="profile"><span class="bdg">${icon("person")}</span><span class="grow">Sou aluno<small>Ou responsável por um aluno. Escolha o projeto em que treina e peça para entrar.</small></span>${chev()}</button>
         <button class="switch-row" style="margin:0" data-a="goAuth" data-to="mestre"><span class="bdg">${icon("belt")}</span><span class="grow">Sou professor de um projeto<small>Cadastre seu projeto social e aprove os alunos que pedirem para entrar.</small></span>${chev()}</button>
@@ -1624,7 +1624,7 @@ const emailTaken = (e) => { e = (e || "").trim().toLowerCase(); return db.studen
 const pendingOf = () => { if (!state.user || isStaff()) return null; const s = student(state.user.studentId); return s && s.req ? s : null; };
 function projectPicker(exclude) {
   const list = joinableProjects().filter((p) => p.id !== exclude).sort((a, b) => a.name.localeCompare(b.name));
-  if (!list.length) return `<div class="panel">${empty("Nenhum projeto disponível", "Peça ao seu Professor para cadastrar o projeto no Dojo Social.")}</div>`;
+  if (!list.length) return `<div class="panel">${empty("Nenhum projeto disponível", "Peça ao seu Professor para cadastrar o projeto no Dojo Fácil.")}</div>`;
   return `<div class="panel" style="padding:0 16px" role="radiogroup" aria-label="Projetos">${list.map((p) => {
     const m = mestreOf(p.id), n = CLOUD ? p.count || 0 : db.students.filter((s) => s.pid === p.id && s.active).length, on = state.reqPid === p.id;
     return `<button type="button" class="row" role="radio" aria-checked="${on}" data-a="pickProj" data-v="${p.id}">
@@ -2272,10 +2272,10 @@ views.mais = () => {
       ${!CLOUD ? `<button class="row" data-a="reset"><span class="grow">Restaurar dados de exemplo<small>Apaga o que foi registrado neste navegador</small></span>${chev()}</button>` : ""}
       ${!isStaff() ? `<button class="row" data-a="excluirConta" style="color:var(--abs)"><span class="grow">Excluir minha conta<small>Apaga seu perfil e todos os seus dados do projeto</small></span>${chev()}</button>` : ""}`, "padding:0 16px")}
     ${isMestre() && db.projects.length <= 1 ? group("Projeto", "", `<button class="row" data-a="zerar"><span class="grow">Começar do zero<small>Apaga os dados de exemplo e deixa só o seu projeto e você</small></span>${chev()}</button>`, "padding:0 16px") : ""}
-    ${group("Sobre", "", `<button class="row" data-a="introReplay"><span class="grow">Vídeo de boas-vindas<small>Assista de novo o vídeo do Dojo Social</small></span>${chev()}</button>
+    ${group("Sobre", "", `<button class="row" data-a="introReplay"><span class="grow">Vídeo de boas-vindas<small>Assista de novo o vídeo do Dojo Fácil</small></span>${chev()}</button>
       <a class="row" href="politica-de-privacidade.html" target="_blank" rel="noopener" style="text-decoration:none"><span class="grow">Política de Privacidade</span>${chev()}</a>
       <a class="row" href="excluir-conta.html" target="_blank" rel="noopener" style="text-decoration:none"><span class="grow">Excluir conta e dados<small>Como pedir a exclusão pelo app ou por e-mail</small></span>${chev()}</a>`, "padding:0 16px")}
-    <div class="brand-foot"><span class="wordmark">dojo social</span><b>Dojo Social 1.3.0 (protótipo)</b><span class="muted small">${cloudLabel()}</span></div>
+    <div class="brand-foot"><span class="wordmark">dojo fácil</span><b>Dojo Fácil 1.3.0 (protótipo)</b><span class="muted small">${cloudLabel()}</span></div>
     <button class="btn" data-a="logout">Sair</button>
   </div>`;
 };
@@ -2570,7 +2570,7 @@ const STORIES = [
     { k: "Adulto", big: "16+", belts: "adulto", t: "Da branca à preta", x: "Branca, azul, roxa, marrom e preta. Antes de trocar de faixa, o aluno ganha até quatro graus, as listras na ponta." },
     { k: "Infantil, até 15 anos", big: "4–15", belts: "infantil", t: "As faixas das crianças", x: "Depois da branca vêm cinza, amarela, laranja e verde, cada uma com variações. Aos 16 anos o aluno passa para as faixas de adulto." },
     { k: "Faixa preta", big: "10º", belts: "mestres", t: "Coral e vermelha", x: "A preta vai do primeiro ao sexto grau. Depois vêm a coral, no sétimo e no oitavo, e a vermelha, no nono e no décimo, para quem dedicou a vida ao jiu-jitsu." },
-    { k: "Tempo de tatame", big: "Oss", t: "Graduação não se compra", x: "Presença, comportamento e técnica contam. No Dojo Social, o Professor acompanha tudo isso no painel de graduação." }
+    { k: "Tempo de tatame", big: "Oss", t: "Graduação não se compra", x: "Presença, comportamento e técnica contam. No Dojo Fácil, o Professor acompanha tudo isso no painel de graduação." }
   ] },
   { id: "etiqueta", t: "O código do tatame", sub: "Respeito, higiene e segurança", big: "Oss", bg: "#2B1020", ac: "#FF9BB8", slides: [
     { k: "Oss", t: "Respeito em primeiro lugar", x: "Cumprimente o professor e os colegas ao entrar e ao sair do tatame." },
@@ -3032,7 +3032,7 @@ const sheets = {
   /* Pop-up: quem já tinha cadastro e ainda não criou senha (aparece ao tentar entrar) */
   novaSenha: () => `<form id="sheetForm" data-kind="novaSenha">
       ${sheetHead("Crie sua nova senha")}
-      <p class="muted" style="margin:-8px 0 16px;line-height:1.5">O Dojo Social agora usa <b style="color:var(--ink)">senha</b> para proteger os dados dos alunos. Se é a sua primeira vez entrando depois da atualização, crie sua senha abaixo. Você só faz isso <b style="color:var(--ink)">uma vez</b>.</p>
+      <p class="muted" style="margin:-8px 0 16px;line-height:1.5">O Dojo Fácil agora usa <b style="color:var(--ink)">senha</b> para proteger os dados dos alunos. Se é a sua primeira vez entrando depois da atualização, crie sua senha abaixo. Você só faz isso <b style="color:var(--ink)">uma vez</b>.</p>
       <div class="field"><span class="lbl">E-mail</span><div class="box disabled">${icon("email")}<input value="${esc(state.email)}" disabled></div></div>
       ${passFields()}
       <button class="btn" type="submit">Criar senha e entrar</button>
@@ -3220,7 +3220,7 @@ function openIntro(sid, replay) {
   const portrait = innerHeight > innerWidth;
   const el = document.createElement("div");
   el.id = "intro";
-  el.setAttribute("role", "dialog"); el.setAttribute("aria-modal", "true"); el.setAttribute("aria-label", "Vídeo de boas-vindas do Dojo Social");
+  el.setAttribute("role", "dialog"); el.setAttribute("aria-modal", "true"); el.setAttribute("aria-label", "Vídeo de boas-vindas do Dojo Fácil");
   el.innerHTML = `<video playsinline preload="auto" src="${portrait ? INTRO.v : INTRO.h}" poster="${portrait ? INTRO.pv : INTRO.ph}"></video>
     <button class="intro-play" type="button">${icon("play", "")}<span>Assistir boas-vindas</span></button>
     <button class="intro-x" type="button" aria-label="Fechar vídeo" ${replay ? "" : "hidden"}>${icon("close", "")}</button>
