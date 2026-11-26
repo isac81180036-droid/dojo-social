@@ -1,8 +1,5 @@
-<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Dojo Social"><meta name="apple-mobile-web-app-status-bar-style" content="default"><meta name="theme-color" content="#F1EDE4"><link rel="apple-touch-icon" href="icon-180.png"><link rel="icon" type="image/png" href="icon-192.png"><link rel="manifest" href="manifest.webmanifest"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Dojo Social"><meta name="apple-mobile-web-app-status-bar-style" content="default"><meta name="theme-color" content="#F2F2F7"><link rel="apple-touch-icon" href="icon-180.png"><link rel="icon" type="image/png" href="icon-192.png"><link rel="manifest" href="manifest.webmanifest"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
 <title>Dojo Social</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,700;12..96,800&family=Figtree:wght@400;500;600;700;800&display=swap">
 <style>
   :root {
     color-scheme: light;
@@ -677,6 +674,178 @@
 
   .toast { position: fixed; left: 50%; bottom: calc(96px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); background: var(--btn); color: var(--btn-ink); padding: 14px 20px; border-radius: 18px; font-size: 15px; font-weight: 600; max-width: calc(100% - 32px); box-shadow: 0 12px 30px rgba(0, 0, 0, .25); z-index: 30; }
   @media (min-width: 900px) { .toast { bottom: 28px; } }
+
+  /* =====================================================================
+     PADRÃO iPHONE (iOS Human Interface Guidelines)
+     Fonte do sistema (San Francisco), cores do sistema, título grande,
+     barra de abas translúcida, listas agrupadas com cantos de 10 px.
+     ===================================================================== */
+  :root {
+    --sys: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", system-ui, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    --tint: #5856D6;            /* systemIndigo */
+    --tint-soft: rgba(88, 86, 214, .12);
+    --ground: #F2F2F7;          /* systemGroupedBackground */
+    --surface: #FFFFFF;         /* secondarySystemGroupedBackground */
+    --surface-2: rgba(118, 118, 128, .12); /* tertiarySystemFill */
+    --line: rgba(60, 60, 67, .18);         /* separator */
+    --ink: #000000;             /* label */
+    --ink-2: rgba(60, 60, 67, .85);
+    --muted: rgba(60, 60, 67, .6);          /* secondaryLabel */
+    --faint: rgba(60, 60, 67, .3);          /* tertiaryLabel */
+    --btn: var(--tint);
+    --btn-ink: #FFFFFF;
+    --btn-2: rgba(118, 118, 128, .12);
+    --btn-2-ink: var(--tint);
+    --lilac-soft: #ECEBFB;
+    --lilac-ink: #4745B8;
+    --pos: #248A3D; --pos-fill: #34C759; --pos-soft: rgba(52, 199, 89, .14);
+    --neg: #C93400; --neg-fill: #FF9500; --neg-soft: rgba(255, 149, 0, .14);
+    --abs: #D70015; --abs-fill: #FF3B30; --abs-soft: rgba(255, 59, 48, .12);
+    --warn: #9C6500; --warn-soft: rgba(255, 204, 0, .2);
+    --bar: rgba(249, 249, 249, .82);
+    --hl: rgba(60, 60, 67, .08);
+    --shadow: 0 1px 2px rgba(0, 0, 0, .04), 0 8px 24px rgba(0, 0, 0, .08);
+  }
+  :root.dark {
+    --tint: #7D7AFF;
+    --tint-soft: rgba(125, 122, 255, .18);
+    --ground: #000000;
+    --surface: #1C1C1E;
+    --surface-2: rgba(118, 118, 128, .24);
+    --line: rgba(84, 84, 88, .6);
+    --ink: #FFFFFF;
+    --ink-2: rgba(235, 235, 245, .85);
+    --muted: rgba(235, 235, 245, .6);
+    --faint: rgba(235, 235, 245, .3);
+    --btn: var(--tint);
+    --btn-ink: #FFFFFF;
+    --btn-2: rgba(118, 118, 128, .24);
+    --btn-2-ink: var(--tint);
+    --lilac-soft: #26254A;
+    --lilac-ink: #B4B2FF;
+    --pos: #30D158; --pos-fill: #30D158; --pos-soft: rgba(48, 209, 88, .16);
+    --neg: #FF9F0A; --neg-fill: #FF9F0A; --neg-soft: rgba(255, 159, 10, .16);
+    --abs: #FF453A; --abs-fill: #FF453A; --abs-soft: rgba(255, 69, 58, .16);
+    --warn: #FFD60A; --warn-soft: rgba(255, 214, 10, .16);
+    --bar: rgba(22, 22, 24, .82);
+    --hl: rgba(235, 235, 245, .1);
+  }
+
+  /* tipografia do sistema em tudo */
+  body, body * { font-family: var(--sys) !important; }
+  body { font-size: 17px; letter-spacing: -.41px; -webkit-font-smoothing: antialiased; -webkit-tap-highlight-color: transparent; }
+  h1, .big, .modal-h, .hello h2, .sh-head h2 { letter-spacing: .2px; }
+  .big { font-size: 34px; font-weight: 700; letter-spacing: .37px; line-height: 1.1; }
+  .lead { font-size: 17px; color: var(--muted); }
+  .muted { color: var(--muted); }
+  :is(button, a, input, select, textarea):focus-visible { outline: 2px solid var(--tint); outline-offset: 2px; }
+
+  /* título grande + barra translúcida */
+  .top {
+    grid-template-columns: auto 1fr auto; padding: 8px 0 10px; margin-inline: -16px; padding-inline: 16px;
+    background: color-mix(in srgb, var(--ground) 86%, transparent);
+    -webkit-backdrop-filter: saturate(180%) blur(20px); backdrop-filter: saturate(180%) blur(20px);
+  }
+  .top h1 { font-size: 34px; font-weight: 700; letter-spacing: .37px; text-align: left; line-height: 1.12; }
+  .top .l { min-width: 0; }
+  .top .l:empty { display: none; }
+  .top .r .who .av { width: 34px; height: 34px; font-size: 13px; }
+  .sq-btn { background: transparent; color: var(--tint); width: 36px; height: 36px; border-radius: 10px; }
+  .sq-btn:active { background: var(--hl); }
+
+  /* barra de abas do iPhone */
+  .tabs {
+    background: var(--bar); border-top: .5px solid var(--line);
+    -webkit-backdrop-filter: saturate(180%) blur(20px); backdrop-filter: saturate(180%) blur(20px);
+    padding: 6px 4px calc(4px + env(safe-area-inset-bottom, 0px));
+  }
+  .tab { font-size: 10px; font-weight: 500; letter-spacing: .1px; gap: 2px; color: rgba(118, 118, 128, .9); }
+  :root.dark .tab { color: rgba(152, 152, 159, .95); }
+  .tab .ic { width: 30px; height: 28px; border-radius: 0; background: none !important; }
+  .tab svg { width: 26px; height: 26px; }
+  .tab.on { color: var(--tint); font-weight: 600; }
+  .tab.on .ic { background: none; color: var(--tint); }
+  .tab:active .ic { transform: scale(.9); }
+
+  /* barra lateral (computador / iPad) */
+  @media (min-width: 900px) {
+    .side { background: var(--surface); border-right: .5px solid var(--line); }
+    .top { margin-inline: 0; }
+  }
+  .nav { border-radius: 10px; font-size: 17px; padding: 10px 12px; color: var(--ink); }
+  .nav svg { color: var(--tint); }
+  .nav:hover { background: var(--hl); }
+  .nav.on { background: var(--tint); color: #FFFFFF; }
+  .nav.on svg { color: #FFFFFF; }
+
+  /* listas agrupadas (inset grouped) */
+  .sec-h { padding-inline: 16px; margin-bottom: 6px; min-height: 20px; }
+  .sec-h h2 { font-size: 13px; font-weight: 400; letter-spacing: -.08px; color: var(--muted); }
+  .panel { border-radius: 10px; padding: 12px 16px; box-shadow: none; }
+  .row { min-height: 44px; padding: 11px 0; font-size: 17px; font-weight: 400; border-bottom: .5px solid var(--line); }
+  .row small { font-size: 15px; color: var(--muted); }
+  button.row:active, button.item:active, .slot:active, .rail-item:active { background: var(--hl); }
+  button.row:hover .grow, button.item:hover .grow { opacity: 1; }
+  .item { border-bottom: .5px solid var(--line); padding: 11px 0; }
+  .nm { font-weight: 600; }
+  .meta { font-size: 15px; color: var(--muted); }
+  svg.chev { color: rgba(60, 60, 67, .3); width: 20px; height: 20px; }
+  :root.dark svg.chev { color: rgba(235, 235, 245, .3); }
+
+  /* avatares redondos */
+  .av { border-radius: 50%; background: var(--lilac-soft); color: var(--lilac-ink); font-weight: 600; }
+  .st-av { border-radius: 50%; }
+  .st-ring { border-radius: 50%; }
+
+  /* botões */
+  .btn { height: 50px; border-radius: 12px; font-size: 17px; font-weight: 600; background: var(--tint); color: #FFFFFF; }
+  .btn:hover { opacity: 1; filter: brightness(1.05); }
+  .btn:active { transform: none; opacity: .7; }
+  .btn.outline { background: var(--btn-2); color: var(--tint); }
+  .btn.sm { height: 34px; border-radius: 17px; padding: 0 14px; font-size: 15px; font-weight: 600; }
+  .link { color: var(--tint); text-decoration: none; font-weight: 400; font-size: 17px; }
+  .link.small { font-size: 15px; }
+  .iconbtn { color: var(--tint); }
+
+  /* filtros em cápsula */
+  .chip { height: 32px; padding: 0 14px; font-size: 15px; font-weight: 500; background: var(--surface-2); color: var(--ink); }
+  .chip.on { background: var(--tint); color: #FFFFFF; }
+  .tabsbar { border-radius: 9px; padding: 2px; background: var(--surface-2); }
+  .tabsbar button { height: 32px; border-radius: 7px; font-size: 13px; font-weight: 500; }
+  .tabsbar button.on { background: var(--surface); box-shadow: 0 3px 8px rgba(0, 0, 0, .12), 0 3px 1px rgba(0, 0, 0, .04); font-weight: 600; }
+  :root.dark .tabsbar button.on { background: #636366; }
+
+  /* campos */
+  .box { height: 50px; border-radius: 10px; border: 0; background: var(--surface); }
+  .box:focus-within { box-shadow: 0 0 0 2px var(--tint); }
+  .box.disabled { background: var(--surface-2); }
+  .lbl { font-size: 13px; font-weight: 400; color: var(--muted); text-transform: uppercase; letter-spacing: -.08px; margin-left: 16px; }
+  .notebox { border-radius: 10px; border: 0; }
+  .notebox:focus-within { box-shadow: 0 0 0 2px var(--tint); }
+  .switch-row { border-radius: 10px; font-size: 17px; }
+
+  /* cartões e números */
+  .hello { border-radius: 16px; }
+  .hello h2 { font-weight: 700; }
+  .kpis, .ins-kpis { border-radius: 10px; gap: .5px; }
+  .kpi b { font-weight: 700; letter-spacing: .2px; }
+  .banner { border-radius: 10px; }
+  .pc { border-radius: 16px; }
+  .pc-media { border-radius: 12px; }
+  .pill { border-radius: 999px; font-weight: 600; }
+  .bdg { border-radius: 10px; background: var(--tint-soft); color: var(--tint); }
+
+  /* janelas que sobem (sheet) e avisos */
+  .sheet { border-radius: 13px 13px 0 0; }
+  @media (min-width: 700px) { .sheet { border-radius: 13px; } }
+  .grab { width: 36px; height: 5px; background: var(--faint); }
+  .sh-head h2 { font-size: 22px; font-weight: 700; }
+  .toast { border-radius: 14px; background: color-mix(in srgb, var(--ink) 88%, transparent); color: var(--ground); font-size: 15px; font-weight: 500;
+           -webkit-backdrop-filter: blur(20px); backdrop-filter: blur(20px); }
+
+  /* tela de boas-vindas */
+  .wbtn { border-radius: 14px; height: 54px; font-weight: 600; }
+  .logo .word, .wordmark { letter-spacing: -.5px; font-weight: 800; }
 </style>
 
 <div class="app" id="app"></div>
