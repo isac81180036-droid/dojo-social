@@ -82,10 +82,10 @@
 
   /* Logo */
   .logo { display: flex; flex-direction: column; align-items: center; gap: 8px; color: var(--ink); }
-  .logo svg { width: 60px; height: 50px; }
+  .logo svg { width: 60px; height: 54px; }
   .logo .word { font-weight: 800; font-size: 44px; line-height: .86; letter-spacing: -.045em; text-align: center; }
   .logo.sm { flex-direction: row; justify-content: flex-start; gap: 10px; }
-  .logo.sm svg { width: 34px; height: 28px; }
+  .logo.sm svg { width: 34px; height: 30px; }
   .logo.sm .word { font-size: 24px; line-height: 1; letter-spacing: -.035em; }
   .logo.sm .br { display: none; }
 
@@ -1369,12 +1369,7 @@ function navItems() {
 /* ================= AUTENTICAÇÃO (telas do login) ================= */
 const logo = (cls = "") => `
   <div class="logo ${cls}" aria-label="Dojo Fácil">
-    <svg viewBox="0 0 76 64" aria-hidden="true">
-      <rect x="0" y="16" width="76" height="16" rx="2" fill="currentColor"/>
-      <rect x="25" y="9" width="26" height="30" rx="3" fill="currentColor" style="stroke:var(--logo-gap, var(--ground))" stroke-width="4"/>
-      <path d="M28 39 L18 64 L30 64 L37 41 Z" fill="currentColor"/>
-      <path d="M48 39 L58 64 L46 64 L39 41 Z" fill="currentColor"/>
-    </svg>
+    <svg viewBox="4 13 92 82" aria-hidden="true" fill="currentColor"><path d="M26 34C37 31 44 24 50 15c6 9 13 16 24 19v8C63 40 56 34 50 28c-6 6-13 12-24 14z"/><rect x="38" y="38" width="24" height="12"/><path d="M6 62C27 58 40 48 50 38c10 10 23 20 44 24v10C73 69 60 61 50 52 40 61 27 69 6 72z"/><rect x="24" y="68" width="11" height="22" rx="2"/><rect x="65" y="68" width="11" height="22" rx="2"/><rect x="14" y="86" width="72" height="7" rx="3"/></svg>
     <div class="word">dojo<br class="br"> fácil</div>
   </div>`;
 
@@ -1405,7 +1400,7 @@ const GI_ART = `<svg class="w-gi" viewBox="0 0 400 400" aria-hidden="true">
   <path d="M66 292 C88 283 110 285 128 294 M272 294 C292 285 314 285 334 292" fill="none" stroke="#E2DCD3" stroke-width="2.5" stroke-linecap="round"/>
   <g transform="translate(262 168)">
     <rect width="48" height="36" rx="7" fill="#1B1420"/>
-    <g transform="translate(9 5) scale(.4)" fill="#D8BAE7"><rect x="0" y="16" width="76" height="16" rx="2"/><rect x="25" y="9" width="26" height="30" rx="3" stroke="#1B1420" stroke-width="5"/><path d="M28 39 L18 64 L30 64 L37 41 Z M48 39 L58 64 L46 64 L39 41 Z"/></g>
+    <g transform="translate(7.5 .2) scale(.33)" fill="#D8BAE7"><path d="M26 34C37 31 44 24 50 15c6 9 13 16 24 19v8C63 40 56 34 50 28c-6 6-13 12-24 14z"/><rect x="38" y="38" width="24" height="12"/><path d="M6 62C27 58 40 48 50 38c10 10 23 20 44 24v10C73 69 60 61 50 52 40 61 27 69 6 72z"/><rect x="24" y="68" width="11" height="22" rx="2"/><rect x="65" y="68" width="11" height="22" rx="2"/><rect x="14" y="86" width="72" height="7" rx="3"/></g>
   </g>
   <path d="M30 298 C130 307 270 307 370 298 L371 336 C270 345 130 345 29 336 Z" fill="#17140F"/>
   <path d="M186 336 L207 338 L176 400 L150 400 Z" fill="#17140F"/>
