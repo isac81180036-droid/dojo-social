@@ -741,6 +741,23 @@
 
   .toast { position: fixed; left: 50%; bottom: calc(96px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); background: var(--btn); color: var(--btn-ink); padding: 14px 20px; border-radius: 18px; font-size: 15px; font-weight: 600; max-width: calc(100% - 32px); box-shadow: 0 12px 30px rgba(0, 0, 0, .25); z-index: 30; }
   @media (min-width: 900px) { .toast { bottom: 28px; } }
+  /* botão de ajuda do Professor (canto inferior direito) */
+  .help-fab { position: fixed; right: 14px; bottom: calc(98px + env(safe-area-inset-bottom, 0px)); z-index: 9; height: 48px; padding: 0 16px 0 6px; border: 0; border-radius: 999px; display: flex; align-items: center; gap: 8px; background: var(--btn); color: var(--btn-ink); font: inherit; font-size: 15px; font-weight: 700; box-shadow: 0 10px 26px rgba(0, 0, 0, .22); cursor: pointer; transition: transform .32s cubic-bezier(.2, .8, .2, 1); -webkit-tap-highlight-color: transparent; }
+  .help-fab .q { width: 36px; height: 36px; border-radius: 50%; background: var(--lilac); color: var(--on-lilac); display: grid; place-items: center; font-size: 20px; font-weight: 800; line-height: 1; }
+  .help-fab:active { transform: scale(.95); }
+  html.tabs-off .help-fab { transform: translateY(82px); }
+  @media (min-width: 900px) { .help-fab { right: 28px; bottom: 28px; } html.tabs-off .help-fab { transform: none; } }
+  .help-h { font-size: 13px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); margin: 6px 4px 10px; }
+  .faq { background: var(--surface); border-radius: 20px; padding: 4px 16px; margin-bottom: 24px; }
+  .faq details { border-bottom: 1px solid var(--line); }
+  .faq details:last-child { border-bottom: 0; }
+  .faq summary { list-style: none; cursor: pointer; padding: 14px 0; font-weight: 700; font-size: 15px; display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+  .faq summary::-webkit-details-marker { display: none; }
+  .faq summary::after { content: "+"; font-size: 22px; font-weight: 500; color: var(--muted); flex: none; transition: transform .2s; }
+  .faq details[open] summary::after { transform: rotate(45deg); }
+  .faq details p { margin: -4px 0 14px; color: var(--ink-2); line-height: 1.5; font-size: 15px; }
+  .help-tipos .chip { background: var(--surface); }
+  .help-tipos .chip.on { background: var(--btn); color: var(--btn-ink); }
 </style>
 
 <div class="app" id="app"></div>
@@ -2977,6 +2994,7 @@ function shell() {
         return `<button class="tab ${on ? "on" : ""}" data-a="nav" data-view="${k}" aria-current="${on ? "page" : "false"}"><span class="ic">${icon(ic, "")}</span>${l}</button>`;
       }).join("")}
     </nav>
+    ${isMestre() ? `<button class="help-fab" data-a="help" aria-label="Ajuda: dúvidas e sugestões"><span class="q" aria-hidden="true">?</span>Ajuda</button>` : ""}
   </div>`;
 }
 
@@ -2986,6 +3004,21 @@ const fi = (name, label, value = "", type = "text", required = false, extra = ""
 const fs = (name, label, options) => `<div class="f field" style="margin-bottom:16px"><label class="lbl" for="f_${name}">${label}</label><div class="box"><select id="f_${name}" name="${name}">${options}</select></div></div>`;
 const sheetHead = (title) => `<div class="grab"></div><div class="sh-head"><h2>${title}</h2><button type="button" class="sq-btn" data-a="closeSheet" aria-label="Fechar">${icon("close", "")}</button></div>`;
 const modalTop = () => `<div class="grab"></div><div class="sh-x"><button type="button" class="sq-btn" data-a="closeSheet" aria-label="Fechar">${icon("close", "")}</button></div>`;
+
+/* Central de ajuda do Professor: perguntas frequentes (texto fixo, sem dados de alunos) */
+const AJUDA_FAQ = [
+  ["Como faço a chamada?", "Abra a aba <b>Chamada</b>, escolha o dia com as setas e toque na aula. Toque em <b>P</b> para presente ou <b>A</b> para ausente. O botão <b>Restantes presentes</b> marca de uma vez todos que faltam. Tudo é salvo sozinho, a cada toque."],
+  ["Como registro um Fato Observado (FO)?", "Na <b>Chamada</b>, toque no botão <b>±</b> ao lado do aluno. Escolha <b>FO+</b> (algo bom) ou <b>FO−</b> (algo a melhorar), a categoria, escreva uma justificativa curta e toque em <b>Registrar</b>."],
+  ["Um aluno pediu para entrar. Como aceito?", "Os pedidos aparecem no <b>Início</b> e na aba <b>Alunos</b>, no bloco <b>Pedidos para entrar</b>. Toque em aceitar ou recusar. Só depois de aceito o aluno vê os dados do projeto."],
+  ["Como cadastro um aluno novo?", "Na aba <b>Alunos</b>, toque em <b>Novo aluno</b> e preencha os dados. Se preferir, o próprio aluno (ou o responsável) cria a conta pelo app em <b>Criar conta</b> e escolhe o seu projeto. Você só aceita o pedido."],
+  ["O aluno esqueceu a senha ou trocou de celular", "Abra o aluno na aba <b>Alunos</b>, toque no lápis (<b>Editar</b>) e em <b>Liberar novo acesso</b>. Depois peça para ele entrar em <b>Primeiro acesso</b> com o mesmo e-mail e criar uma senha nova. Vale também para alguém da equipe, pela tela <b>Equipe</b>."],
+  ["Como monto a grade da semana?", "Na aba <b>Agenda</b>, toque em <b>Nova aula</b> para cada horário. Para repetir a semana passada inteira, use <b>Copiar semana anterior</b>."],
+  ["Como gradúo um aluno?", "Vá em <b>Mais › Graduação</b>. O painel mostra quem já cumpriu os critérios (presença, tempo na faixa e saldo de FO). Toque em <b>Graduar</b> ao lado do aluno e confirme."],
+  ["Como posto foto ou vídeo do treino no Mural?", "Abra a aba <b>Mural</b> e toque em <b>Como foi o treino hoje?</b>. Escolha a foto ou o vídeo, escreva uma legenda e marque os alunos que estavam no tatame. Os pais e responsáveis veem a postagem pelo app."],
+  ["O que cada pessoa da equipe pode fazer?", "Veja em <b>Mais › Funções</b>. Em resumo: o <b>Professor</b> cuida de tudo; o <b>Instrutor</b> faz chamada, FO e monta a grade; o <b>Monitor</b> ajuda nas aulas, se voluntaria na escala e posta no Mural."],
+  ["Como instalo o app no celular?", "<b>iPhone:</b> abra o link no Safari, toque em <b>Compartilhar</b> (quadrado com seta) e em <b>Adicionar à Tela de Início</b>. <b>Android:</b> abra no Chrome, toque nos três pontinhos e em <b>Instalar app</b>."],
+  ["Os dados dos alunos estão seguros?", "Sim. Cada pessoa entra com e-mail e senha, e só vê o que é do próprio projeto. Os vídeos do Mural ficam guardados de forma privada e só abrem para quem está logado."],
+];
 
 const sheets = {
   fo: () => {
@@ -3092,6 +3125,22 @@ const sheets = {
   },
 
   /* Pop-up: quem já tinha cadastro e ainda não criou senha (aparece ao tentar entrar) */
+  ajuda: () => {
+    const sh = state.sheet;
+    const tipos = [["duvida", "Dúvida"], ["sugestao", "Sugestão"], ["problema", "Algo deu errado"]];
+    return `<form id="sheetForm" data-kind="ajuda">
+      ${sheetHead("Central de ajuda")}
+      <p class="muted" style="margin:-8px 0 18px;line-height:1.5">Respostas rápidas para o dia a dia do projeto. Não achou? Mande sua dúvida ou sugestão logo abaixo.</p>
+      <h3 class="help-h">Dúvidas frequentes</h3>
+      <div class="faq">${AJUDA_FAQ.map(([q, a]) => `<details><summary>${q}</summary><p>${a}</p></details>`).join("")}</div>
+      <h3 class="help-h">Fale com a gente</h3>
+      <div class="chips help-tipos" style="flex-wrap:wrap;margin-bottom:14px" role="group" aria-label="Tipo de mensagem">${tipos.map(([k, l]) => `<button type="button" class="chip ${sh.tipo === k ? "on" : ""}" data-a="ajudaTipo" data-v="${k}" aria-pressed="${sh.tipo === k}">${l}</button>`).join("")}</div>
+      <div class="notebox"><textarea id="ajudaMsg" name="msg" maxlength="1500" rows="4" aria-label="Sua mensagem" placeholder="Escreva aqui. Ex.: Como faço para mudar o horário de uma aula?" required>${esc(sh.msg || "")}</textarea></div>
+      <button class="btn" type="submit" style="margin-top:16px">${icon("send")}Enviar mensagem</button>
+      <p class="small muted" style="text-align:center;margin:10px 0 0;line-height:1.5">Abre o seu e-mail com a mensagem pronta para <b style="color:var(--ink)">isac81180036@gmail.com</b>. A resposta chega no seu e-mail.</p>
+    </form>`;
+  },
+
   novaSenha: () => `<form id="sheetForm" data-kind="novaSenha">
       ${sheetHead("Crie sua nova senha")}
       <p class="muted" style="margin:-8px 0 16px;line-height:1.5">O Dojo Fácil agora usa <b style="color:var(--ink)">senha</b> para proteger os dados dos alunos. Se é a sua primeira vez entrando depois da atualização, crie sua senha abaixo. Você só faz isso <b style="color:var(--ink)">uma vez</b>.</p>
@@ -4017,6 +4066,13 @@ document.addEventListener("click", (e) => {
     case "foType": state.sheet.type = v; state.sheet.cat = FO_CATS[v][0][0]; render(); break;
     case "foCat": state.sheet.cat = v; render(); break;
     case "closeSheet": closeSheet(); break;
+    case "help": if (isMestre()) openSheet({ kind: "ajuda", tipo: "duvida", msg: "" }); break;
+    case "ajudaTipo":
+      if (state.sheet && state.sheet.kind === "ajuda") {
+        state.sheet.tipo = v; // troca sem redesenhar, para não perder o texto nem fechar as respostas abertas
+        document.querySelectorAll('[data-a="ajudaTipo"]').forEach((b) => { b.classList.toggle("on", b.dataset.v === v); b.setAttribute("aria-pressed", b.dataset.v === v); });
+      }
+      break;
 
     /* alunos */
     case "aud": state.aud = v; render(); break;
@@ -4358,6 +4414,20 @@ document.addEventListener("submit", (e) => {
     Object.assign(state, { user: null, sheet: null, screen: "welcome", view: "inicio", sel: null, email: "", password: "" });
     persist(); render(); window.scrollTo(0, 0);
     toast("Sua conta foi excluída. Oss!");
+    return;
+  }
+
+  if (kind === "ajuda") {
+    const msg = (fd.msg || "").trim();
+    if (msg.length < 3) return toast("Escreva sua mensagem antes de enviar.");
+    const tipo = { duvida: "Dúvida", sugestao: "Sugestão", problema: "Algo deu errado" }[state.sheet.tipo] || "Dúvida";
+    const u = state.user, pr = project(myPid()) || {};
+    const app = window.matchMedia("(display-mode: standalone)").matches || navigator.standalone ? "app instalado" : "navegador";
+    const subject = `Dojo Fácil · ${tipo} · ${u.name}${pr.name ? " (" + pr.name + ")" : ""}`;
+    const body = `${msg}\n\n---\n${u.name} · ${userLabel(u)}${pr.name ? "\nProjeto: " + pr.name : ""}\nEnviado pelo ${app}`;
+    window.location.href = `mailto:isac81180036@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    closeSheet();
+    toast("Abrindo seu e-mail… é só tocar em Enviar.");
     return;
   }
 
