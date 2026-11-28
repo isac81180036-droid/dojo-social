@@ -612,6 +612,17 @@
   .cc-note { margin: 0 22px; font-size: 11px; opacity: .85; line-height: 1.4; }
   .df-form { margin-top: 4px; }
   @media (prefers-reduced-motion: reduce) { .cc, .cc-face { transition: none; } .cc-scene { animation: none; } }
+  /* Leads (contatos da página de vendas) */
+  .lead-row { display: grid; gap: 10px; padding: 14px 0; border-bottom: 1px solid var(--line); }
+  .lead-row:last-child { border-bottom: 0; }
+  .lead-top { display: flex; align-items: center; gap: 12px; }
+  .lead-top .grow { min-width: 0; flex: 1; }
+  .lead-top b { display: block; font-size: 16px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .lead-top small { display: block; color: var(--muted); font-size: 13px; font-variant-numeric: tabular-nums; }
+  .lead-info { display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: 14px; color: var(--ink-2); }
+  .lead-acts { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+  .lead-acts .btn.sm { margin: 0; text-decoration: none; }
+  .lead-st { height: 40px; border-radius: 14px; border: 1.5px solid var(--line); background: var(--surface); color: var(--ink); padding: 0 12px; font: 600 14px "Figtree", system-ui, sans-serif; }
   /* Vídeo de boas-vindas (pop-up, 1 vez por aluno) */
   #intro { position: fixed; inset: 0; z-index: 100; background: #0B0A09; display: grid; place-items: center; animation: in .25s ease-out; }
   #intro video { width: 100%; height: 100%; object-fit: contain; background: #0B0A09; }
@@ -1510,6 +1521,7 @@ function navItems() {
   if (isMestre()) { finEnsure(); if (finPaid()) items.splice(5, 0, ["financeiro", "Financeiro", "money"]); }
   if (typeof payCard !== "undefined" && payCard && state.view !== "assinatura" && (payCard.num || payCard.cvv || payCard.done)) payClear();
   if (isAdmin()) items.splice(1, 0, ["insights", "Insights", "chart"]);
+  if (isAdmin()) items.splice(2, 0, ["leads", "Leads", "people"]);
   return canTeach() ? items : items.filter(([k]) => k !== "chamada" && k !== "graduacao");
 }
 
@@ -3028,7 +3040,7 @@ views.funcoes = () => {
   </div>`;
 };
 
-const TITLES = { insights: "Insights", inicio: "Início", chamada: "Chamada", mural: "Mural do tatame", alunos: "Alunos", aluno: "Ficha do aluno", agenda: "Agenda e escala", graduacao: "Graduação", campeonatos: "Campeonatos", funcoes: "Funções da equipe", financeiro: "Financeiro", assinatura: "Plano e pagamento", estudos: "Estudos", equipe: "Equipe técnica", mais: "Mais" };
+const TITLES = { insights: "Insights", inicio: "Início", chamada: "Chamada", mural: "Mural do tatame", alunos: "Alunos", aluno: "Ficha do aluno", agenda: "Agenda e escala", graduacao: "Graduação", campeonatos: "Campeonatos", funcoes: "Funções da equipe", financeiro: "Financeiro", assinatura: "Plano e pagamento", leads: "Leads", estudos: "Estudos", equipe: "Equipe técnica", mais: "Mais" };
 
 function shell() {
   const items = navItems();
@@ -4081,6 +4093,70 @@ function payMaisRow() {
   return `<button class="row" data-a="payOpen"><span class="grow">Plano do Dojo Fácil<small>${free ? "Grátis para projeto social" : `${rec.nome} indicada · ${n} ${n === 1 ? "aluno" : "alunos"} · ${brl(rec.preco)}/mês`}</small></span>${chev()}</button>`;
 }
 
+/* ================= LEADS (contatos que chegam pelo formulário da página de vendas) =================
+   Só o Admin global vê. Dados na tabela app_leads, via admin_leads / admin_lead_set (supabase/08_leads.sql). */
+var leads = { list: null, busy: false, err: "", at: 0 };
+const LEAD_ST = [["novo", "Novos", "blue"], ["contatado", "Contatados", ""], ["cliente", "Clientes", "pos"], ["descartado", "Descartados", "neg"]];
+const LEAD_LABEL = { novo: "Novo", contatado: "Contatado", cliente: "Cliente", descartado: "Descartado" };
+const leadPhone = (p) => { const d = String(p || ""); return d.length === 11 ? `(${d.slice(0, 2)}) ${d.slice(2, 7)}-${d.slice(7)}` : d.length === 10 ? `(${d.slice(0, 2)}) ${d.slice(2, 6)}-${d.slice(6)}` : d; };
+const leadWhen = (ts) => { const d = new Date(ts); return `${pad(d.getDate())}/${pad(d.getMonth() + 1)} às ${pad(d.getHours())}:${pad(d.getMinutes())}`; };
+const leadPlan = (n) => (typeof dfRecommended === "function" ? dfRecommended(Number(n) || 0) : null);
+async function leadsLoad() {
+  if (leads.busy || !isAdmin()) return;
+  if (!CLOUD) { leads.list = []; leads.err = ""; safeRender(); return; }
+  leads.busy = true;
+  try { leads.list = (await rpc("admin_leads")) || []; leads.err = ""; leads.at = Date.now(); }
+  catch (e) { leads.err = /admin_leads|schema cache|Could not find/i.test(e.message || "") ? "setup" : "net"; if (!leads.list) leads.list = null; }
+  leads.busy = false; safeRender();
+}
+views.leads = () => {
+  if (!isAdmin()) return `<div class="panel">${empty("Só o Admin global", "Os contatos da página de vendas ficam só com o administrador.")}</div>`;
+  if (!leads.busy && (!leads.list || Date.now() - leads.at > 60000) && leads.err !== "setup") setTimeout(leadsLoad, 0);
+  if (leads.err === "setup") return `<div class="panel">${empty("Falta ativar os contatos", "Rode o arquivo 08_leads.sql no Supabase (SQL Editor) e toque em Atualizar.", `<button class="btn sm" data-a="leadReload">${icon("restore")}Atualizar</button>`)}</div>`;
+  if (!leads.list) return `<div class="panel">${empty(leads.err ? "Sem conexão" : "Carregando os contatos…", leads.err ? "Confira a internet e toque em Atualizar." : "Um instante.", leads.err ? `<button class="btn sm" data-a="leadReload">${icon("restore")}Atualizar</button>` : "")}</div>`;
+  const all = leads.list, flt = state.leadFilter || "novo";
+  const count = (st) => all.filter((l) => l.status === st).length;
+  const shown = all.filter((l) => flt === "todos" || l.status === flt);
+  const week = all.filter((l) => Date.now() - new Date(l.created_at).getTime() < 7 * 864e5).length;
+  const alunos = all.filter((l) => l.status !== "descartado").reduce((n, l) => n + (Number(l.students) || 0), 0);
+  return `<div class="stack">
+    <div class="kpis">
+      <div class="kpi"><span>Novos para chamar</span><b class="${count("novo") ? "pos" : ""}">${count("novo")}</b></div>
+      <div class="kpi"><span>Chegaram em 7 dias</span><b>${week}</b></div>
+      <div class="kpi"><span>Viraram clientes</span><b>${count("cliente")}</b></div>
+      <div class="kpi"><span>Alunos somados</span><b>${alunos}</b></div>
+    </div>
+    <div class="chips" role="tablist" aria-label="Situação">${[["todos", "Todos", ""], ...LEAD_ST].map(([k, l]) => `<button class="chip ${k === flt ? "on" : ""}" role="tab" aria-selected="${k === flt}" data-a="leadFilter" data-v="${k}">${l} (${k === "todos" ? all.length : count(k)})</button>`).join("")}</div>
+    ${group("Contatos da página de vendas", `<button class="link small" data-a="leadReload">${leads.busy ? "Atualizando…" : "Atualizar"}</button>`, shown.length ? `<div class="list">${shown.map((l) => {
+      const first = l.name.split(" ")[0], p = leadPlan(l.students);
+      const msg = `Olá, ${first}! Aqui é do Dojo Fácil. Vi que você deixou seu contato no nosso site e tem ${l.students} ${Number(l.students) === 1 ? "aluno" : "alunos"}. Posso te mostrar como o app funciona?`;
+      const wa = `https://wa.me/55${l.phone}?text=${encodeURIComponent(msg)}`;
+      return `<div class="lead-row">
+        <div class="lead-top">${avat(l.name)}<span class="grow"><b>${esc(l.name)}</b><small>${leadPhone(l.phone)} · ${leadWhen(l.created_at)}</small></span><span class="pill ${(LEAD_ST.find((x) => x[0] === l.status) || [])[2] || ""}">${LEAD_LABEL[l.status] || l.status}</span></div>
+        <div class="lead-info"><span><b>${l.students}</b> ${Number(l.students) === 1 ? "aluno" : "alunos"}</span>${p ? `<span>Plano indicado: <b>${p.nome}</b> · ${brl(p.preco)}/mês</span>` : ""}</div>
+        <div class="lead-acts">
+          <a class="btn sm" href="${wa}" target="_blank" rel="noopener" data-a="leadWa" data-id="${l.id}">${icon("chat")}Chamar no WhatsApp</a>
+          <select class="lead-st" data-lead="${l.id}" aria-label="Situação de ${esc(l.name)}">${LEAD_ST.map(([k]) => `<option value="${k}" ${k === l.status ? "selected" : ""}>${LEAD_LABEL[k]}</option>`).join("")}</select>
+        </div>
+      </div>`;
+    }).join("")}</div>` : empty(all.length ? "Nada nesta situação" : "Nenhum contato ainda", all.length ? "Escolha outra situação acima." : "Quando alguém preencher o formulário da página de vendas, aparece aqui."), "padding:4px 16px")}
+  </div>`;
+};
+async function leadSet(id, st) {
+  const l = (leads.list || []).find((x) => String(x.id) === String(id)); if (!l || l.status === st) return;
+  const old = l.status; l.status = st; render();
+  if (!CLOUD) return;
+  try { await rpc("admin_lead_set", { p_id: Number(id), p_status: st }); toast(`${l.name.split(" ")[0]}: ${LEAD_LABEL[st]}.`); }
+  catch (e) { l.status = old; render(); toast("Não foi possível salvar. Confira a internet."); }
+}
+function leadClick(a, id, v) {
+  if (!isAdmin()) return;
+  if (a === "leadFilter") { state.leadFilter = v; render(); return; }
+  if (a === "leadReload") { leads.err = ""; leads.at = 0; leadsLoad(); render(); return; }
+  if (a === "leadWa") { const l = (leads.list || []).find((x) => String(x.id) === String(id)); if (l && l.status === "novo") setTimeout(() => leadSet(id, "contatado"), 300); }
+}
+document.addEventListener("change", (e) => { const t = e.target; if (t.classList && t.classList.contains("lead-st")) leadSet(t.dataset.lead, t.value); });
+
 function go(view) { state.view = view; state.sheet = null; render(); window.scrollTo(0, 0); document.documentElement.classList.remove("tabs-off"); }
 
 /* Barra inferior flutuante: esconde ao rolar para baixo, mostra ao rolar para cima (como no iPhone) */
@@ -4254,6 +4330,7 @@ document.addEventListener("click", (e) => {
   const a = el.dataset.a, id = el.dataset.id, v = el.dataset.v;
   if (a && (a.startsWith("fin") || a === "mKind" || a === "copyPix")) { finClick(a, id, v, el); return; }
   if (a && a.startsWith("pay")) { payClick(a, id, v, el); return; }
+  if (a && a.startsWith("lead")) { leadClick(a, id, v); return; }
   /* cada projeto só mexe nos próprios alunos, aulas e equipe */
   if (state.user && isStaff() && id) {
     const sOther = ["fo", "openStudent", "editStudent", "archiveStudent", "grad", "aceitar", "recusar"].includes(a) && student(id) && student(id).pid !== myPid();
