@@ -496,6 +496,7 @@
   .fin-alert svg.i { width: 24px; height: 24px; flex: none; fill: currentColor; }
   .fin-alert b { display: block; color: var(--ink); font-size: 15px; }
   .fin-alert .grow { font-size: 14px; line-height: 1.4; min-width: 0; }
+  .fin .kpi b { font-size: clamp(21px, 6.2vw, 30px); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .fin-saldo { display: grid; gap: 2px; }
   .fin-saldo span { color: var(--muted); font-size: 14px; }
   .fin-saldo b { font-family: "Bricolage Grotesque", "Figtree", system-ui, sans-serif; font-size: 34px; font-weight: 800; letter-spacing: -.03em; font-variant-numeric: tabular-nums; }
@@ -3888,11 +3889,11 @@ async function finInitKind() {
    desta tela para animar o cartão e conferir se estão certos. Nada é enviado nem guardado.
    Para cobrar de verdade, ligar um gateway (Mercado Pago, Asaas, Pagar.me) que tokeniza o cartão. */
 const DF_PLANOS = [
-  { id: "branca", nome: "Faixa Branca", ate: 30, preco: 4990, cor: "#F4F4F5" },
-  { id: "azul", nome: "Faixa Azul", ate: 60, preco: 8990, cor: "#1E40AF" },
-  { id: "roxa", nome: "Faixa Roxa", ate: 120, preco: 14990, cor: "#6B21A8" },
-  { id: "marrom", nome: "Faixa Marrom", ate: 250, preco: 24990, cor: "#7C2D12" },
-  { id: "preta", nome: "Faixa Preta", ate: null, preco: 39990, cor: "#0A0A0A" }
+  { id: "branca", nome: "Faixa Branca", ate: 30, preco: 2990, cor: "#F4F4F5" },
+  { id: "azul", nome: "Faixa Azul", ate: 60, preco: 4990, cor: "#1E40AF" },
+  { id: "roxa", nome: "Faixa Roxa", ate: 120, preco: 7990, cor: "#6B21A8" },
+  { id: "marrom", nome: "Faixa Marrom", ate: 250, preco: 11990, cor: "#7C2D12" },
+  { id: "preta", nome: "Faixa Preta", ate: null, preco: 17990, cor: "#0A0A0A" }
 ];
 const DF_PAY = { ativo: false };
 var payCard = { num: "", name: "", exp: "", cvv: "", done: false };
