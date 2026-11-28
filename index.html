@@ -548,6 +548,69 @@
   .fin-pix small { display: block; color: var(--muted); font-size: 13px; }
   .fin-pixkey { display: block; font-size: 15px; overflow-wrap: anywhere; user-select: all; }
   .fin-pix .grow { min-width: 0; }
+  /* Assinatura do Dojo Fácil */
+  .df-plans { display: grid; gap: 10px; }
+  .df-plan { display: flex; align-items: center; gap: 14px; width: 100%; text-align: left; background: var(--surface); color: var(--ink); border: 2px solid transparent; border-radius: 20px; padding: 14px 16px; cursor: pointer; font: inherit; transition: border-color .15s, transform .15s; }
+  .df-plan:not(:disabled):active { transform: scale(.99); }
+  .df-plan.on { border-color: var(--ink); }
+  .df-plan { position: relative; }
+  .df-plan .pill { position: absolute; top: -11px; right: 16px; box-shadow: 0 0 0 3px var(--ground); }
+  .df-plans { padding-top: 6px; row-gap: 16px; }
+  .df-plan:disabled { opacity: .5; cursor: not-allowed; }
+  .df-belt { width: 46px; height: 14px; border-radius: 3px; position: relative; flex: none; box-shadow: inset 0 0 0 1px var(--belt-edge); }
+  .df-belt i { position: absolute; right: 6px; top: 0; bottom: 0; width: 12px; background: #0A0A0A; }
+  .df-belt.preta i { background: #C8102E; }
+  .df-name { flex: 1; min-width: 0; }
+  .df-name b { display: block; font-size: 17px; }
+  .df-name small { display: block; color: var(--muted); font-size: 13.5px; }
+  .df-price { text-align: right; flex: none; }
+  .df-price b { font-family: "Bricolage Grotesque", "Figtree", system-ui, sans-serif; font-size: 19px; font-weight: 800; letter-spacing: -.02em; font-variant-numeric: tabular-nums; }
+  .df-price small { color: var(--muted); font-size: 12px; }
+  .df-meter { display: grid; gap: 10px; }
+  .df-meter-top { display: flex; justify-content: space-between; gap: 10px; font-size: 15px; font-variant-numeric: tabular-nums; }
+  .df-meter small { color: var(--muted); font-size: 13.5px; }
+  .df-feats { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; font-size: 15px; }
+  .df-feats li { display: flex; gap: 10px; align-items: flex-start; }
+  .df-feats svg { width: 20px; height: 20px; fill: var(--pos); flex: none; }
+  .df-sum { display: flex; align-items: center; gap: 14px; background: var(--surface); border-radius: 20px; padding: 14px 16px; }
+  .df-sum .grow { min-width: 0; }
+  .df-sum .grow b { display: block; font-size: 17px; }
+  .df-sum small { display: block; color: var(--muted); font-size: 13px; }
+  .df-done { text-align: center; display: grid; justify-items: center; gap: 10px; padding: 26px 18px; }
+  .df-done b { font-size: 20px; }
+  .df-ok svg { width: 56px; height: 56px; fill: var(--pos); }
+  .df-done p { margin: 0; color: var(--ink-2); max-width: 40ch; line-height: 1.5; }
+  .stack > .btn:disabled { opacity: .55; cursor: not-allowed; }
+  .chip svg { width: 18px; height: 18px; fill: currentColor; }
+  /* Cartão que vira (frente e verso) */
+  .cc-scene { perspective: 1400px; width: 100%; max-width: 380px; margin: 0 auto; animation: ccIn .7s cubic-bezier(.2, .8, .2, 1) both; }
+  @keyframes ccIn { from { transform: translateY(30px) rotateX(22deg) scale(.96); } to { transform: none; } }
+  .cc { position: relative; width: 100%; aspect-ratio: 1.586; transform-style: preserve-3d; transition: transform .75s cubic-bezier(.3, .7, .2, 1); }
+  .cc.flip { transform: rotateY(180deg); }
+  .cc-face { position: absolute; inset: 0; border-radius: 20px; padding: 20px 22px; -webkit-backface-visibility: hidden; backface-visibility: hidden; overflow: hidden; display: flex; flex-direction: column; justify-content: space-between; color: #1B1420; background: linear-gradient(135deg, #EBDCF2, #D8BAE7 55%, #C4A2D8); box-shadow: 0 18px 40px rgba(27, 20, 32, .28); transition: background .5s, color .5s; }
+  .cc-back { transform: rotateY(180deg); padding: 22px 0; justify-content: flex-start; gap: 16px; }
+  .cc.b-visa .cc-face { background: linear-gradient(135deg, #172463, #1E40AF 60%, #3A5BD9); color: #FFFFFF; }
+  .cc.b-mastercard .cc-face { background: linear-gradient(135deg, #15130F, #2C2925 55%, #53346A); color: #FFFFFF; }
+  .cc.b-elo .cc-face { background: linear-gradient(135deg, #0B0A09, #2C2925 60%, #3B3731); color: #FFFFFF; }
+  .cc.b-amex .cc-face { background: linear-gradient(135deg, #0C5160, #1F7F93 60%, #3FA6BA); color: #FFFFFF; }
+  .cc.b-hipercard .cc-face { background: linear-gradient(135deg, #7A1414, #B3121F 60%, #D23A3A); color: #FFFFFF; }
+  .cc-top { display: flex; align-items: center; justify-content: space-between; }
+  .cc-chip { width: 46px; height: 34px; border-radius: 7px; background: linear-gradient(135deg, #F0D48A, #C9A227); box-shadow: inset 0 0 0 1px rgba(0, 0, 0, .18); }
+  .cc-brand { font-family: "Bricolage Grotesque", "Figtree", system-ui, sans-serif; font-size: 21px; font-weight: 800; letter-spacing: .01em; }
+  .cc-num { font: 600 clamp(17px, 5.4vw, 23px) ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace; letter-spacing: .06em; white-space: nowrap; position: relative; z-index: 1; }
+  .cc-bottom { display: flex; gap: 16px; align-items: flex-end; position: relative; z-index: 1; }
+  .cc-bottom .grow { min-width: 0; }
+  .cc-bottom small { display: block; font-size: 10px; opacity: .75; text-transform: uppercase; letter-spacing: .08em; }
+  .cc-bottom b { display: block; font-size: 14px; letter-spacing: .06em; text-transform: uppercase; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .cc-mark { position: absolute; right: -14px; bottom: -12px; width: 140px; height: 125px; opacity: .13; fill: currentColor; }
+  .cc[data-focus="num"] .cc-num, .cc[data-focus="name"] .cc-bottom .grow, .cc[data-focus="exp"] .cc-bottom > span:last-child { outline: 2px solid currentColor; outline-offset: 5px; border-radius: 6px; }
+  .cc-stripe { height: 44px; background: #0E0D0B; }
+  .cc-sign { display: flex; align-items: center; gap: 10px; margin: 0 22px; }
+  .cc-sign span { flex: 1; height: 38px; border-radius: 6px; background: repeating-linear-gradient(-45deg, #FFFFFF 0 6px, #EDE6F2 6px 12px); }
+  .cc-sign b { background: #FFFFFF; color: #15130F; border-radius: 6px; padding: 8px 12px; font: 700 16px ui-monospace, Menlo, Consolas, monospace; letter-spacing: .15em; min-width: 66px; text-align: center; }
+  .cc-note { margin: 0 22px; font-size: 11px; opacity: .85; line-height: 1.4; }
+  .df-form { margin-top: 4px; }
+  @media (prefers-reduced-motion: reduce) { .cc, .cc-face { transition: none; } .cc-scene { animation: none; } }
   /* Vídeo de boas-vindas (pop-up, 1 vez por aluno) */
   #intro { position: fixed; inset: 0; z-index: 100; background: #0B0A09; display: grid; place-items: center; animation: in .25s ease-out; }
   #intro video { width: 100%; height: 100%; object-fit: contain; background: #0B0A09; }
@@ -814,6 +877,8 @@ const P = {
   volume: "M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z",
   volumeOff: "M16.5 12c0-1.77-1.02-3.29-2.5-4.03v2.21l2.45 2.45c.03-.2.05-.41.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51A8.796 8.796 0 0 0 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3 3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06a8.99 8.99 0 0 0 3.69-1.81L19.73 21 21 19.73l-9-9L4.27 3zM12 4 9.91 6.09 12 8.18V4z",
   money: "M19 14V6c0-1.1-.9-2-2-2H3c-1.1 0-2 .9-2 2v8c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zm-9-1c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3 3zm13-6v11c0 1.1-.9 2-2 2H4v-2h17V7h2z",
+  credit: "M20 4H4c-1.11 0-1.99.89-1.99 2L2 18c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V6c0-1.11-.89-2-2-2zm0 14H4v-6h16v6zm0-10H4V6h16v2z",
+  qr: "M3 11h8V3H3v8zm2-6h4v4H5V5zM3 21h8v-8H3v8zm2-6h4v4H5v-4zM13 3v8h8V3h-8zm6 6h-4V5h4v4zM19 19h2v2h-2zM13 13h2v2h-2zM15 15h2v2h-2zM13 17h2v2h-2zM15 19h2v2h-2zM17 17h2v2h-2zM17 13h2v2h-2zM19 15h2v2h-2z",
   moon: "M12 3a9 9 0 1 0 9 9c0-.46-.04-.92-.1-1.36a5.39 5.39 0 0 1-4.4 2.26 5.4 5.4 0 0 1-3.14-9.8c-.44-.06-.9-.1-1.36-.1z"
 };
 const icon = (n, cls = "i", style = "") => `<svg class="${cls}" viewBox="0 0 24 24" aria-hidden="true"${style ? ` style="${style}"` : ""}><path d="${P[n]}"/></svg>`;
@@ -1442,6 +1507,7 @@ function navItems() {
   const items = [["inicio", "Início", "home"], ["chamada", "Chamada", "roll"], ["agenda", "Agenda", "scale"], ["mural", "Mural", "grid"], ["alunos", "Alunos", "people"], ["graduacao", "Graduação", "belt"], ["campeonatos", "Campeonatos", "trophy"], ["estudos", "Estudos", "school"], ["funcoes", "Funções", "hand"]];
   if (isMestre()) items.push(["equipe", "Equipe", "staff"]);
   if (isMestre()) { finEnsure(); if (finPaid()) items.splice(5, 0, ["financeiro", "Financeiro", "money"]); }
+  if (typeof payCard !== "undefined" && payCard && state.view !== "assinatura" && (payCard.num || payCard.cvv || payCard.done)) payClear();
   if (isAdmin()) items.splice(1, 0, ["insights", "Insights", "chart"]);
   return canTeach() ? items : items.filter(([k]) => k !== "chamada" && k !== "graduacao");
 }
@@ -2961,7 +3027,7 @@ views.funcoes = () => {
   </div>`;
 };
 
-const TITLES = { insights: "Insights", inicio: "Início", chamada: "Chamada", mural: "Mural do tatame", alunos: "Alunos", aluno: "Ficha do aluno", agenda: "Agenda e escala", graduacao: "Graduação", campeonatos: "Campeonatos", funcoes: "Funções da equipe", financeiro: "Financeiro", estudos: "Estudos", equipe: "Equipe técnica", mais: "Mais" };
+const TITLES = { insights: "Insights", inicio: "Início", chamada: "Chamada", mural: "Mural do tatame", alunos: "Alunos", aluno: "Ficha do aluno", agenda: "Agenda e escala", graduacao: "Graduação", campeonatos: "Campeonatos", funcoes: "Funções da equipe", financeiro: "Financeiro", assinatura: "Plano e pagamento", estudos: "Estudos", equipe: "Equipe técnica", mais: "Mais" };
 
 function shell() {
   const items = navItems();
@@ -3630,7 +3696,7 @@ function finMaisRow() {
   if (!isMestre()) return "";
   finEnsure();
   const k = (fin.data && fin.data.kind) || "social";
-  return group("Projeto e financeiro", "", `<button class="row" data-a="nav" data-view="financeiro"><span class="grow">${esc(FIN_KIND_LABEL[k])}<small>${k === "social" ? "Toque para ativar mensalidades, planos e caixa" : "Mensalidades, planos, caixa e ajustes"}</small></span>${chev()}</button>`, "padding:0 16px");
+  return group("Projeto e financeiro", "", `<button class="row" data-a="nav" data-view="financeiro"><span class="grow">${esc(FIN_KIND_LABEL[k])}<small>${k === "social" ? "Toque para ativar mensalidades, planos e caixa" : "Mensalidades, planos, caixa e ajustes"}</small></span>${chev()}</button>${payMaisRow()}`, "padding:0 16px");
 }
 
 /* ---------- janelas (sheets) ---------- */
@@ -3816,6 +3882,204 @@ async function finInitKind() {
   try { await rpc("fin_save", { p_version: 0, p_data: Object.assign(finDefault(), { kind: k }) }); } catch (e) { /* servidor sem o 07_financeiro.sql: o Professor ativa depois em Mais */ }
 }
 
+/* ================= ASSINATURA DO DOJO FÁCIL (o Professor escolhe o plano e paga) =================
+   Planos por número de alunos ativos: quanto mais alunos, maior o plano.
+   PAGAMENTO ONLINE AINDA NÃO LIGADO (DF_PAY.ativo = false): os dados do cartão ficam só na memória
+   desta tela para animar o cartão e conferir se estão certos. Nada é enviado nem guardado.
+   Para cobrar de verdade, ligar um gateway (Mercado Pago, Asaas, Pagar.me) que tokeniza o cartão. */
+const DF_PLANOS = [
+  { id: "branca", nome: "Faixa Branca", ate: 30, preco: 4990, cor: "#F4F4F5" },
+  { id: "azul", nome: "Faixa Azul", ate: 60, preco: 8990, cor: "#1E40AF" },
+  { id: "roxa", nome: "Faixa Roxa", ate: 120, preco: 14990, cor: "#6B21A8" },
+  { id: "marrom", nome: "Faixa Marrom", ate: 250, preco: 24990, cor: "#7C2D12" },
+  { id: "preta", nome: "Faixa Preta", ate: null, preco: 39990, cor: "#0A0A0A" }
+];
+const DF_PAY = { ativo: false };
+var payCard = { num: "", name: "", exp: "", cvv: "", done: false };
+const payClear = () => { payCard = { num: "", name: "", exp: "", cvv: "", done: false }; };
+const dfCount = () => myStudents().filter((s) => s.active).length;
+const dfFits = (p, n) => p.ate === null || n <= p.ate;
+const dfRecommended = (n) => DF_PLANOS.find((p) => dfFits(p, n)) || DF_PLANOS[DF_PLANOS.length - 1];
+const dfLimit = (p) => (p.ate === null ? "Alunos ilimitados" : `Até ${p.ate} alunos`);
+
+/* bandeira pelo começo do número */
+function ccBrand(d) {
+  if (/^(4011(78|79)|43(1274|8935)|45(1416|7393|763[12])|50(4175|6699|67[0-7]\d|9000)|627780|63(6297|6368)|650(0[3-5]|4[0-9]|5[0-3]|9[2-7]|541|700|720|901)|651652|655000|655021)/.test(d)) return "elo";
+  if (/^(606282|3841)/.test(d)) return "hipercard";
+  if (/^3[47]/.test(d)) return "amex";
+  if (/^4/.test(d)) return "visa";
+  if (/^(5[1-5]|2(2[2-9]|[3-6]\d|7[01]|720))/.test(d)) return "mastercard";
+  return "";
+}
+const CC_LABEL = { visa: "VISA", mastercard: "Mastercard", elo: "elo", amex: "AMEX", hipercard: "Hipercard" };
+const ccLen = (b) => (b === "amex" ? 15 : 16);
+const ccFormat = (d, b) => (b === "amex" ? [d.slice(0, 4), d.slice(4, 10), d.slice(10, 15)] : d.match(/.{1,4}/g) || []).filter(Boolean).join(" ");
+const ccLuhn = (d) => { let s = 0; for (let i = 0; i < d.length; i++) { let n = Number(d[d.length - 1 - i]); if (i % 2) { n *= 2; if (n > 9) n -= 9; } s += n; } return d.length >= 13 && s % 10 === 0; };
+function ccExpOk(v) {
+  const m = /^(\d{2})\/(\d{2})$/.exec(v); if (!m) return false;
+  const mo = Number(m[1]), y = 2000 + Number(m[2]); if (mo < 1 || mo > 12) return false;
+  const t = today(); return y > t.getFullYear() || (y === t.getFullYear() && mo >= t.getMonth() + 1);
+}
+function ccPreviewNum(d, b) {
+  const len = ccLen(b), full = (d + "•".repeat(Math.max(0, len - d.length))).slice(0, Math.max(len, d.length));
+  return b === "amex" ? `${full.slice(0, 4)} ${full.slice(4, 10)} ${full.slice(10)}` : full.match(/.{1,4}/g).join(" ");
+}
+
+views.assinatura = () => {
+  if (!isMestre()) return `<div class="panel">${empty("Só o Professor responsável", "O plano do Dojo Fácil é escolhido pelo Professor responsável do projeto.")}</div>`;
+  finEnsure();
+  const n = dfCount(), rec = dfRecommended(n);
+  if (!state.payPlan || !dfFits(DF_PLANOS.find((p) => p.id === state.payPlan) || rec, n)) state.payPlan = rec.id;
+  const sel = DF_PLANOS.find((p) => p.id === state.payPlan) || rec;
+  const free = fin.loaded && !finPaid();
+  if (state.payStep === "pagar" && !free) return payCheckout(sel, n);
+  const pct = sel.ate === null ? 100 : Math.min(100, Math.round((n / sel.ate) * 100));
+  return `<div class="stack">
+    <div class="hello">
+      <span class="eyebrow">${icon("credit", "i", "width:18px;height:18px")}Plano do Dojo Fácil</span>
+      <h2>${n} ${n === 1 ? "aluno ativo" : "alunos ativos"}</h2>
+      <p>O plano acompanha o tamanho da sua turma: quanto mais alunos, maior o plano. Indicamos a ${rec.nome}.</p>
+    </div>
+    ${free ? `<div class="fin-alert">${icon("ok", "i")}<span class="grow"><b>Projeto social gratuito não paga</b>Seu projeto está marcado como gratuito, então o Dojo Fácil é de graça para você. Os planos abaixo valem para academias e projetos com mensalidade.</span></div>` : ""}
+    <div class="df-plans" role="radiogroup" aria-label="Planos do Dojo Fácil">
+      ${DF_PLANOS.map((p) => {
+        const ok = dfFits(p, n), on = p.id === sel.id;
+        return `<button class="df-plan ${on ? "on" : ""}" role="radio" aria-checked="${on}" data-a="payPlan" data-v="${p.id}" ${ok ? "" : `disabled aria-disabled="true"`}>
+          <span class="df-belt ${p.id}" style="background:${p.cor}"><i></i></span>
+          <span class="df-name"><b>${p.nome}</b><small>${dfLimit(p)}</small></span>
+          ${p.id === rec.id ? `<span class="pill blue">Indicado</span>` : !ok ? `<span class="pill">Você tem ${n}</span>` : ""}
+          <span class="df-price"><b>${brl(p.preco)}</b><small>/mês</small></span>
+        </button>`;
+      }).join("")}
+    </div>
+    <div class="panel df-meter">
+      <div class="df-meter-top"><span><b>${sel.nome}</b> · ${dfLimit(sel)}</span><span>${n}${sel.ate === null ? "" : ` / ${sel.ate}`}</span></div>
+      <div class="progress ${pct >= 90 && sel.ate !== null ? "" : "pos"}"><span style="width:${pct}%"></span></div>
+      <small>${sel.ate === null ? "Cresça sem limite de alunos." : n >= sel.ate ? "Você chegou ao limite deste plano." : `Cabem mais ${sel.ate - n} ${sel.ate - n === 1 ? "aluno" : "alunos"} neste plano. Quando passar, o app sugere o próximo.`}</small>
+    </div>
+    <div class="panel"><ul class="df-feats">
+      <li>${icon("check", "")}Chamada, FO, grade, escala e graduação</li>
+      <li>${icon("check", "")}Financeiro: mensalidades, planos, cobrança e caixa</li>
+      <li>${icon("check", "")}Mural com fotos e vídeos do treino</li>
+      <li>${icon("check", "")}Equipe ilimitada: professores, instrutores e monitores</li>
+    </ul></div>
+    <button class="btn" data-a="payGo" ${free ? "disabled" : ""}>${free ? "Grátis para projeto social" : `Continuar com ${sel.nome} · ${brl(sel.preco)}/mês`}</button>
+  </div>`;
+};
+
+function payCheckout(sel, n) {
+  const tab = state.payTab || "cartao";
+  const d = payCard.num, b = ccBrand(d);
+  return `<div class="stack">
+    <div class="df-sum">
+      <span class="df-belt ${sel.id}" style="background:${sel.cor}"><i></i></span>
+      <span class="grow"><b>${sel.nome}</b><small>${dfLimit(sel)} · você tem ${n}</small></span>
+      <span class="df-price"><b>${brl(sel.preco)}</b><small>/mês</small></span>
+      <button class="link small" data-a="payBack">Trocar</button>
+    </div>
+    ${DF_PAY.ativo ? "" : `<div class="fin-alert">${icon("lock", "i")}<span class="grow"><b>Pagamento online em fase de testes</b>Nada será cobrado. Os dados do cartão não saem deste aparelho e não ficam guardados.</span></div>`}
+    <div class="chips" role="tablist" aria-label="Forma de pagamento">
+      <button class="chip ${tab === "cartao" ? "on" : ""}" role="tab" aria-selected="${tab === "cartao"}" data-a="payTab" data-v="cartao">${icon("credit", "")}Cartão de crédito</button>
+      <button class="chip ${tab === "pix" ? "on" : ""}" role="tab" aria-selected="${tab === "pix"}" data-a="payTab" data-v="pix">${icon("qr", "")}Pix</button>
+    </div>
+    ${tab === "pix" ? `<div class="panel">${empty("Pix chega em breve", "Em breve você vai poder pagar o plano com QR Code do Pix, todo mês.", `<button class="btn sm outline" data-a="payTab" data-v="cartao">${icon("credit")}Usar cartão</button>`)}</div>` : payCard.done ? `
+    <div class="panel df-done">
+      <span class="df-ok">${icon("ok", "")}</span>
+      <b>Dados do cartão conferidos</b>
+      <p>Quando o pagamento online for ativado, é assim que você vai assinar a ${sel.nome}. Por enquanto, nada foi cobrado e os dados do cartão foram apagados.</p>
+      <button class="btn outline" data-a="payAgain">Testar de novo</button>
+    </div>` : `
+    <div class="cc-scene"><div class="cc ${b ? "b-" + b : ""}" id="ccCard">
+      <div class="cc-face cc-front">
+        <div class="cc-top"><span class="cc-chip"></span><span class="cc-brand" id="ccBrand">${CC_LABEL[b] || ""}</span></div>
+        <div class="cc-num" id="ccNum">${ccPreviewNum(d, b)}</div>
+        <div class="cc-bottom"><span class="grow"><small>Nome no cartão</small><b id="ccName">${esc(payCard.name || "SEU NOME AQUI")}</b></span><span><small>Validade</small><b id="ccExp">${esc(payCard.exp || "MM/AA")}</b></span></div>
+        <svg class="cc-mark" viewBox="4 13 92 82" aria-hidden="true"><use href="#ccMk"/></svg>
+      </div>
+      <div class="cc-face cc-back">
+        <div class="cc-stripe"></div>
+        <div class="cc-sign"><span></span><b id="ccCvv">${payCard.cvv ? "•".repeat(payCard.cvv.length) : "CVV"}</b></div>
+        <small class="cc-note">O código de segurança fica no verso do cartão. No Amex, são 4 dígitos na frente.</small>
+      </div>
+    </div></div>
+    <svg width="0" height="0" style="position:absolute" aria-hidden="true"><symbol id="ccMk" viewBox="4 13 92 82"><path d="M26 34C37 31 44 24 50 15c6 9 13 16 24 19v8C63 40 56 34 50 28c-6 6-13 12-24 14z"/><rect x="38" y="38" width="24" height="12"/><path d="M6 62C27 58 40 48 50 38c10 10 23 20 44 24v10C73 69 60 61 50 52 40 61 27 69 6 72z"/><rect x="24" y="68" width="11" height="22" rx="2"/><rect x="65" y="68" width="11" height="22" rx="2"/><rect x="14" y="86" width="72" height="7" rx="3"/></symbol></svg>
+    <form id="payForm" class="df-form" novalidate autocomplete="on">
+      <div class="f field" style="margin-bottom:16px"><label class="lbl" for="ccNumIn">Número do cartão</label><div class="box"><input id="ccNumIn" data-pay="num" inputmode="numeric" autocomplete="cc-number" placeholder="0000 0000 0000 0000" value="${esc(ccFormat(d, b))}"></div></div>
+      <div class="f field" style="margin-bottom:16px"><label class="lbl" for="ccNameIn">Nome impresso no cartão</label><div class="box"><input id="ccNameIn" data-pay="name" autocomplete="cc-name" placeholder="Como está no cartão" value="${esc(payCard.name)}" maxlength="26"></div></div>
+      <div class="row2">
+        <div class="f field" style="margin-bottom:16px"><label class="lbl" for="ccExpIn">Validade</label><div class="box"><input id="ccExpIn" data-pay="exp" inputmode="numeric" autocomplete="cc-exp" placeholder="MM/AA" value="${esc(payCard.exp)}" maxlength="5"></div></div>
+        <div class="f field" style="margin-bottom:16px"><label class="lbl" for="ccCvvIn">Código de segurança</label><div class="box"><input id="ccCvvIn" data-pay="cvv" inputmode="numeric" autocomplete="cc-csc" placeholder="CVV" value="${esc(payCard.cvv)}" maxlength="4"></div></div>
+      </div>
+      <button class="btn" type="submit">${icon("lock")}Assinar · ${brl(sel.preco)}/mês</button>
+      <p class="muted small" style="margin:12px 4px 0;text-align:center;line-height:1.5">Renovação mensal. Os dados do cartão não ficam guardados no Dojo Fácil.</p>
+    </form>`}
+  </div>`;
+}
+
+/* digitação: atualiza o cartão sem redesenhar a tela */
+document.addEventListener("input", (e) => {
+  const t = e.target, k = t.dataset && t.dataset.pay;
+  if (!k) return;
+  const card = document.getElementById("ccCard");
+  if (k === "num") {
+    const raw = t.value.replace(/\D/g, ""), b = ccBrand(raw), d = raw.slice(0, ccLen(b));
+    payCard.num = d; t.value = ccFormat(d, b);
+    if (card) { card.className = `cc ${b ? "b-" + b : ""}`; document.getElementById("ccNum").textContent = ccPreviewNum(d, b); document.getElementById("ccBrand").textContent = CC_LABEL[b] || ""; }
+    document.getElementById("ccCvvIn").maxLength = b === "amex" ? 4 : 3;
+  } else if (k === "name") {
+    t.value = t.value.replace(/[^A-Za-zÀ-ÿ' ]/g, "").toUpperCase().replace(/\s{2,}/g, " ");
+    payCard.name = t.value;
+    const el = document.getElementById("ccName"); if (el) el.textContent = t.value || "SEU NOME AQUI";
+  } else if (k === "exp") {
+    let v = t.value.replace(/\D/g, "").slice(0, 4);
+    if (v.length === 1 && Number(v) > 1) v = "0" + v;
+    t.value = v.length > 2 ? `${v.slice(0, 2)}/${v.slice(2)}` : v;
+    payCard.exp = t.value;
+    const el = document.getElementById("ccExp"); if (el) el.textContent = t.value || "MM/AA";
+  } else if (k === "cvv") {
+    t.value = t.value.replace(/\D/g, "").slice(0, ccBrand(payCard.num) === "amex" ? 4 : 3);
+    payCard.cvv = t.value;
+    const el = document.getElementById("ccCvv"); if (el) el.textContent = t.value ? "•".repeat(t.value.length) : "CVV";
+  }
+});
+/* foco no código de segurança: o cartão vira para mostrar o verso */
+document.addEventListener("focusin", (e) => {
+  const card = document.getElementById("ccCard"); if (!card || !e.target.dataset) return;
+  const k = e.target.dataset.pay;
+  if (!k) return;
+  card.classList.toggle("flip", k === "cvv" && ccBrand(payCard.num) !== "amex");
+  card.dataset.focus = k;
+});
+document.addEventListener("focusout", (e) => {
+  const card = document.getElementById("ccCard");
+  if (card && e.target.dataset && e.target.dataset.pay) { card.classList.remove("flip"); delete card.dataset.focus; }
+});
+document.addEventListener("submit", (e) => {
+  if (e.target.id !== "payForm") return;
+  e.preventDefault(); e.stopImmediatePropagation();
+  const d = payCard.num, b = ccBrand(d);
+  if (d.length < ccLen(b) || !ccLuhn(d)) { toast("Confira o número do cartão."); document.getElementById("ccNumIn").focus(); return; }
+  if (payCard.name.trim().split(/\s+/).length < 2) { toast("Digite o nome como está impresso no cartão."); document.getElementById("ccNameIn").focus(); return; }
+  if (!ccExpOk(payCard.exp)) { toast("Confira a validade (mês/ano) do cartão."); document.getElementById("ccExpIn").focus(); return; }
+  if (payCard.cvv.length < (b === "amex" ? 4 : 3)) { toast("Digite o código de segurança."); document.getElementById("ccCvvIn").focus(); return; }
+  if (!DF_PAY.ativo) { payClear(); payCard.done = true; render(); window.scrollTo(0, 0); return; }
+}, true);
+
+function payClick(a, id, v) {
+  if (!isMestre()) return;
+  if (a === "payOpen") { state.payStep = ""; payClear(); go("assinatura"); return; }
+  if (a === "payPlan") { state.payPlan = v; render(); return; }
+  if (a === "payGo") { state.payStep = "pagar"; state.payTab = "cartao"; payClear(); render(); window.scrollTo(0, 0); return; }
+  if (a === "payBack") { state.payStep = ""; payClear(); render(); window.scrollTo(0, 0); return; }
+  if (a === "payTab") { state.payTab = v; render(); return; }
+  if (a === "payAgain") { payClear(); render(); return; }
+}
+function payMaisRow() {
+  if (!isMestre()) return "";
+  const n = dfCount(), rec = dfRecommended(n), free = fin && fin.loaded && !finPaid();
+  return `<button class="row" data-a="payOpen"><span class="grow">Plano do Dojo Fácil<small>${free ? "Grátis para projeto social" : `${rec.nome} indicada · ${n} ${n === 1 ? "aluno" : "alunos"} · ${brl(rec.preco)}/mês`}</small></span>${chev()}</button>`;
+}
+
 function go(view) { state.view = view; state.sheet = null; render(); window.scrollTo(0, 0); document.documentElement.classList.remove("tabs-off"); }
 
 /* Barra inferior flutuante: esconde ao rolar para baixo, mostra ao rolar para cima (como no iPhone) */
@@ -3988,6 +4252,7 @@ document.addEventListener("click", (e) => {
   if (el.dataset.toast) { toast(el.dataset.toast); return; }
   const a = el.dataset.a, id = el.dataset.id, v = el.dataset.v;
   if (a && (a.startsWith("fin") || a === "mKind" || a === "copyPix")) { finClick(a, id, v, el); return; }
+  if (a && a.startsWith("pay")) { payClick(a, id, v, el); return; }
   /* cada projeto só mexe nos próprios alunos, aulas e equipe */
   if (state.user && isStaff() && id) {
     const sOther = ["fo", "openStudent", "editStudent", "archiveStudent", "grad", "aceitar", "recusar"].includes(a) && student(id) && student(id).pid !== myPid();
