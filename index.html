@@ -487,6 +487,67 @@
   .st-cta.ghost { background: rgba(255, 255, 255, .14); color: #fff; }
   .st-cta svg { width: 22px; height: 22px; fill: currentColor; flex: none; }
   @media (prefers-reduced-motion: reduce) { .st-big, .st-k, .st-slide h2, .st-slide p, .st-belts span, .st-acts { animation: none; } }
+  /* Financeiro */
+  .fin-nav { display: grid; grid-template-columns: 44px 1fr 44px; align-items: center; gap: 10px; text-align: center; }
+  .fin-nav b { display: block; font-family: "Bricolage Grotesque", "Figtree", system-ui, sans-serif; font-size: 20px; font-weight: 800; letter-spacing: -.02em; }
+  .fin-nav b::first-letter { text-transform: uppercase; }
+  .fin-nav small { color: var(--muted); font-size: 13px; }
+  .fin-alert { display: flex; align-items: center; gap: 12px; background: var(--lilac-soft); color: var(--lilac-ink); border-radius: 20px; padding: 14px 16px; }
+  .fin-alert svg.i { width: 24px; height: 24px; flex: none; fill: currentColor; }
+  .fin-alert b { display: block; color: var(--ink); font-size: 15px; }
+  .fin-alert .grow { font-size: 14px; line-height: 1.4; min-width: 0; }
+  .fin-saldo { display: grid; gap: 2px; }
+  .fin-saldo span { color: var(--muted); font-size: 14px; }
+  .fin-saldo b { font-family: "Bricolage Grotesque", "Figtree", system-ui, sans-serif; font-size: 34px; font-weight: 800; letter-spacing: -.03em; font-variant-numeric: tabular-nums; }
+  .fin-saldo small { color: var(--muted); font-size: 13px; }
+  .fin :not(.pill).pos, .fin-link .pos { color: var(--pos); }
+  .fin :not(.pill).neg, .fin-link .neg { color: var(--abs); }
+  .fin-sum { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1px; background: var(--line); border-radius: 20px; overflow: hidden; }
+  .fin-sum > span { background: var(--surface); padding: 12px 14px; display: grid; gap: 2px; min-width: 0; }
+  .fin-sum small { color: var(--muted); font-size: 13px; }
+  .fin-sum b { font-size: clamp(14px, 4vw, 17px); font-variant-numeric: tabular-nums; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .fin-row { display: flex; align-items: center; flex-wrap: wrap; gap: 8px 12px; padding: 12px 0; border-bottom: 1px solid var(--line); }
+  .fin-row:last-child { border-bottom: 0; }
+  .fin-hit { flex: 1 1 150px; min-width: 0; text-align: left; background: none; border: 0; padding: 0; color: var(--ink); cursor: pointer; font: inherit; }
+  .fin-hit b { display: block; font-size: 16px; font-weight: 700; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .fin-hit small { display: block; color: var(--muted); font-size: 13px; margin-top: 2px; }
+  .fin-amt { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; font-variant-numeric: tabular-nums; flex: none; }
+  .fin-acts { display: flex; gap: 8px; flex-wrap: wrap; margin-left: auto; }
+  .fin-acts .btn.sm, .fin-row > .btn.sm { margin: 0; text-decoration: none; }
+  .fin-link { display: flex; align-items: center; gap: 14px; width: 100%; border: 0; text-align: left; color: var(--ink); cursor: pointer; font: inherit; }
+  .fin-link b { display: block; font-size: 16px; }
+  .fin-link small { display: block; color: var(--muted); font-size: 14px; margin-top: 2px; }
+  .fin-hist { display: grid; font-size: 14px; font-variant-numeric: tabular-nums; }
+  .fin-hist > div { display: grid; grid-template-columns: 1fr 1.2fr 1.2fr 1.2fr; gap: 8px; padding: 9px 0; border-bottom: 1px solid var(--line); text-align: right; }
+  .fin-hist > div > span:first-child { text-align: left; font-weight: 700; }
+  .fin-hist > div:last-child { border-bottom: 0; }
+  .fin-hist .fh-h { color: var(--muted); font-size: 12px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; padding-top: 0; }
+  .fin-hist .on { background: var(--lilac-soft); border-radius: 10px; padding-inline: 8px; margin-inline: -8px; border-bottom-color: transparent; }
+  .fin-dir { width: 40px; height: 40px; border-radius: 13px; display: grid; place-items: center; flex: none; }
+  .fin-dir svg { width: 20px; height: 20px; fill: currentColor; }
+  .fin-dir.in { background: var(--pos-soft); color: var(--pos); }
+  .fin-dir.out { background: var(--abs-soft); color: var(--abs); }
+  .fin-kinds { display: grid; gap: 10px; }
+  .fin-kind { display: flex; align-items: center; gap: 14px; width: 100%; text-align: left; background: var(--surface); color: var(--ink); border: 2px solid transparent; border-radius: 18px; padding: 14px 16px; cursor: pointer; font: inherit; transition: border-color .15s; }
+  .fin-kind b { display: block; font-size: 16px; }
+  .fin-kind small { display: block; color: var(--muted); font-size: 13.5px; margin-top: 2px; line-height: 1.4; }
+  .fin-kind.on { border-color: var(--ink); }
+  .fin-radio { width: 22px; height: 22px; border-radius: 50%; border: 2px solid var(--faint); flex: none; display: grid; place-items: center; }
+  .fin-kind.on .fin-radio { border-color: var(--ink); }
+  .fin-kind.on .fin-radio::after { content: ""; width: 10px; height: 10px; border-radius: 50%; background: var(--ink); }
+  .grp .fin-kinds .fin-kind { background: var(--ground); }
+  .fin-check { display: flex; gap: 12px; align-items: flex-start; background: var(--surface); border-radius: 16px; padding: 14px; cursor: pointer; }
+  .fin-check input { width: 22px; height: 22px; margin: 2px 0 0; accent-color: var(--ink); flex: none; }
+  .fin-check b { display: block; }
+  .fin-check small { display: block; color: var(--muted); font-size: 13.5px; }
+  .fin-next { display: flex; align-items: center; gap: 12px; padding: 8px 0 12px; }
+  .fin-next small { display: block; color: var(--muted); font-size: 14px; }
+  .fin-next b { display: block; font-family: "Bricolage Grotesque", "Figtree", system-ui, sans-serif; font-size: 30px; font-weight: 800; letter-spacing: -.03em; font-variant-numeric: tabular-nums; }
+  .fin-next.atrasado b { color: var(--abs); }
+  .fin-pix { display: flex; align-items: center; gap: 12px; background: var(--ground); border-radius: 16px; padding: 12px 14px; margin-bottom: 6px; }
+  .fin-pix small { display: block; color: var(--muted); font-size: 13px; }
+  .fin-pixkey { display: block; font-size: 15px; overflow-wrap: anywhere; user-select: all; }
+  .fin-pix .grow { min-width: 0; }
   /* Vídeo de boas-vindas (pop-up, 1 vez por aluno) */
   #intro { position: fixed; inset: 0; z-index: 100; background: #0B0A09; display: grid; place-items: center; animation: in .25s ease-out; }
   #intro video { width: 100%; height: 100%; object-fit: contain; background: #0B0A09; }
@@ -735,6 +796,7 @@ const P = {
   pause: "M6 19h4V5H6v14zm8-14v14h4V5h-4z",
   volume: "M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z",
   volumeOff: "M16.5 12c0-1.77-1.02-3.29-2.5-4.03v2.21l2.45 2.45c.03-.2.05-.41.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51A8.796 8.796 0 0 0 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3 3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06a8.99 8.99 0 0 0 3.69-1.81L19.73 21 21 19.73l-9-9L4.27 3zM12 4 9.91 6.09 12 8.18V4z",
+  money: "M19 14V6c0-1.1-.9-2-2-2H3c-1.1 0-2 .9-2 2v8c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zm-9-1c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3 3zm13-6v11c0 1.1-.9 2-2 2H4v-2h17V7h2z",
   moon: "M12 3a9 9 0 1 0 9 9c0-.46-.04-.92-.1-1.36a5.39 5.39 0 0 1-4.4 2.26 5.4 5.4 0 0 1-3.14-9.8c-.44-.06-.9-.1-1.36-.1z"
 };
 const icon = (n, cls = "i", style = "") => `<svg class="${cls}" viewBox="0 0 24 24" aria-hidden="true"${style ? ` style="${style}"` : ""}><path d="${P[n]}"/></svg>`;
@@ -916,7 +978,7 @@ const state = {
   nickname: "", isKid: false, belt: "branca", degrees: 0, lastGrad: "",
   callDate: TODAY(), callClass: null, q: "", aud: "Todos", sel: null, tab: "fo",
   week: iso(mondayOf(today())), gfilter: "elegivel", from: "alunos", feed: "todos", frole: null, iper: 30,
-  reqPid: null, mProj: "", mCity: "", mName: "", mEmail: "", mBelt: "preta", mDeg: 0
+  reqPid: null, mProj: "", mCity: "", mName: "", mEmail: "", mBelt: "preta", mDeg: 0, mKind: "social"
 };
 
 /* Tema: claro (padrão, branco amarelado) ou escuro, escolhido pela pessoa e lembrado neste navegador */
@@ -1362,6 +1424,7 @@ function navItems() {
   if (!isStaff()) return [["inicio", "Início", "home"], ["mural", "Mural", "grid"], ["agenda", "Agenda", "scale"], ["estudos", "Estudos", "school"], ["campeonatos", "Campeonatos", "trophy"]];
   const items = [["inicio", "Início", "home"], ["chamada", "Chamada", "roll"], ["agenda", "Agenda", "scale"], ["mural", "Mural", "grid"], ["alunos", "Alunos", "people"], ["graduacao", "Graduação", "belt"], ["campeonatos", "Campeonatos", "trophy"], ["estudos", "Estudos", "school"], ["funcoes", "Funções", "hand"]];
   if (isMestre()) items.push(["equipe", "Equipe", "staff"]);
+  if (isMestre()) { finEnsure(); if (finPaid()) items.splice(5, 0, ["financeiro", "Financeiro", "money"]); }
   if (isAdmin()) items.splice(1, 0, ["insights", "Insights", "chart"]);
   return canTeach() ? items : items.filter(([k]) => k !== "chamada" && k !== "graduacao");
 }
@@ -1532,7 +1595,7 @@ const auth = {
       <p class="lead">Como você vai usar o Dojo Fácil?</p>
       <div class="stack" style="gap:12px">
         <button class="switch-row" style="margin:0" data-a="goAuth" data-to="profile"><span class="bdg">${icon("person")}</span><span class="grow">Sou aluno<small>Ou responsável por um aluno. Escolha o projeto em que treina e peça para entrar.</small></span>${chev()}</button>
-        <button class="switch-row" style="margin:0" data-a="goAuth" data-to="mestre"><span class="bdg">${icon("belt")}</span><span class="grow">Sou professor de um projeto<small>Cadastre seu projeto social e aprove os alunos que pedirem para entrar.</small></span>${chev()}</button>
+        <button class="switch-row" style="margin:0" data-a="goAuth" data-to="mestre"><span class="bdg">${icon("belt")}</span><span class="grow">Sou professor ou dono de academia<small>Cadastre seu projeto social ou sua academia e aprove os alunos que pedirem para entrar.</small></span>${chev()}</button>
       </div>
       <div class="signup"><span>Já tem conta?</span><button class="link" data-a="goAuth" data-to="login">Entrar</button></div>
     </div>`,
@@ -1541,11 +1604,12 @@ const auth = {
   mestre: () => `
     <div class="screen onb">
       <div class="onb-top"><button class="sq-btn" data-a="goAuth" data-to="tipo" aria-label="Voltar">${icon("back", "")}</button></div>
-      <h1 class="big">Cadastre seu projeto</h1>
+      <h1 class="big">Cadastre seu projeto ou academia</h1>
       <p class="lead">Você será o Professor responsável pelo projeto. Os alunos vão encontrar o projeto no cadastro e pedir para entrar, e você aceita ou recusa.</p>
       <form id="mestreForm" novalidate>
+        ${mKindPicker()}
         <h2>Projeto</h2>
-        ${field({ id: "mProj", label: "Nome do projeto", ic: "grid", placeholder: "Ex.: Guerreiros do Tatame", value: state.mProj })}
+        ${field({ id: "mProj", label: (state.mKind || "social") === "academia" ? "Nome da academia" : "Nome do projeto", ic: "grid", placeholder: "Ex.: Guerreiros do Tatame", value: state.mProj })}
         ${field({ id: "mCity", label: "Cidade · UF", ic: "home", placeholder: "Ex.: Macapá · AP", value: state.mCity })}
         <h2 style="margin-top:8px">Seus dados</h2>
         ${field({ id: "mName", label: "Nome completo", ic: "person", placeholder: "Seu nome e sobrenome", value: state.mName })}
@@ -1733,6 +1797,7 @@ function inicioStaff() {
       </div>`;
     }).join("") : empty("Sem aulas hoje", upcoming ? `Próxima aula: ${DOW[parse(upcoming.date).getDay()]} ${brShort(upcoming.date)} às ${upcoming.time}.` : "Crie a grade na Agenda."), "padding:4px 16px")}
 
+    ${finHomeCard()}
     <div class="kpis">
       <div class="kpi"><span>Alunos ativos</span><b>${active.length}</b></div>
       <div class="kpi"><span>Presença média · 90 dias</span><b>${avg}%</b></div>
@@ -1791,6 +1856,7 @@ function inicioAluno() {
       <div class="kpi"><span>Campeonatos</span><b>${db.comps.filter((c) => c.sid === s.id).length}</b></div>
     </div>
     <div class="grid-2">
+      ${finAlunoCard()}
       ${g ? criteriaPanel(g) : ""}
       ${group("Próximas aulas", `<button class="link small" data-a="nav" data-view="agenda">Agenda</button>`,
         next.map((c) => `<div class="class-row"><div class="time">${c.time}</div><div class="grow"><div class="nm">${esc(c.technique)}</div><div class="meta"><span>${DOW[parse(c.date).getDay()]} ${brShort(c.date)}</span><span>${esc(staffName(c.instructor))}</span></div></div></div>`).join("") || empty("Sem aulas na grade", "A grade da semana é publicada às sextas."), "padding:4px 16px")}
@@ -2267,6 +2333,7 @@ views.mais = () => {
       ${!CLOUD ? `<button class="row" data-a="reset"><span class="grow">Restaurar dados de exemplo<small>Apaga o que foi registrado neste navegador</small></span>${chev()}</button>` : ""}
       ${!isStaff() ? `<button class="row" data-a="excluirConta" style="color:var(--abs)"><span class="grow">Excluir minha conta<small>Apaga seu perfil e todos os seus dados do projeto</small></span>${chev()}</button>` : ""}`, "padding:0 16px")}
     ${isMestre() && db.projects.length <= 1 ? group("Projeto", "", `<button class="row" data-a="zerar"><span class="grow">Começar do zero<small>Apaga os dados de exemplo e deixa só o seu projeto e você</small></span>${chev()}</button>`, "padding:0 16px") : ""}
+    ${finMaisRow()}
     ${group("Sobre", "", `<button class="row" data-a="introReplay"><span class="grow">Vídeo de boas-vindas<small>Assista de novo o vídeo do Dojo Fácil</small></span>${chev()}</button>
       <a class="row" href="politica-de-privacidade.html" target="_blank" rel="noopener" style="text-decoration:none"><span class="grow">Política de Privacidade</span>${chev()}</a>
       <a class="row" href="excluir-conta.html" target="_blank" rel="noopener" style="text-decoration:none"><span class="grow">Excluir conta e dados<small>Como pedir a exclusão pelo app ou por e-mail</small></span>${chev()}</a>`, "padding:0 16px")}
@@ -2877,7 +2944,7 @@ views.funcoes = () => {
   </div>`;
 };
 
-const TITLES = { insights: "Insights", inicio: "Início", chamada: "Chamada", mural: "Mural do tatame", alunos: "Alunos", aluno: "Ficha do aluno", agenda: "Agenda e escala", graduacao: "Graduação", campeonatos: "Campeonatos", funcoes: "Funções da equipe", estudos: "Estudos", equipe: "Equipe técnica", mais: "Mais" };
+const TITLES = { insights: "Insights", inicio: "Início", chamada: "Chamada", mural: "Mural do tatame", alunos: "Alunos", aluno: "Ficha do aluno", agenda: "Agenda e escala", graduacao: "Graduação", campeonatos: "Campeonatos", funcoes: "Funções da equipe", financeiro: "Financeiro", estudos: "Estudos", equipe: "Equipe técnica", mais: "Mais" };
 
 function shell() {
   const items = navItems();
@@ -3235,6 +3302,471 @@ function openIntro(sid, replay) {
   v.play().then(() => { play.hidden = true; }).catch(() => {}); // alguns aparelhos deixam tocar direto
 }
 
+/* ================= FINANCEIRO (academia e projeto social com mensalidade) =================
+   Fica numa tabela própria no servidor (app_finance), que só o Professor responsável lê e grava
+   (funções fin_get / fin_save, em supabase/07_financeiro.sql). Instrutor e monitor não veem.
+   O aluno vê só as próprias mensalidades (fin_mine). Valores sempre em centavos. */
+var fin = { key: "", data: null, version: 0, loaded: false, busy: false, err: "", mine: null, chain: Promise.resolve() };
+const FIN_KINDS = [
+  ["social", "Projeto social gratuito", "Aulas sem custo para os alunos. Sem financeiro."],
+  ["social_pago", "Projeto social com mensalidade", "Valor acessível. Liga mensalidades, planos e caixa."],
+  ["academia", "Academia", "Mensalidades, planos, caixa e controle de quem está em atraso."]
+];
+const FIN_KIND_LABEL = Object.fromEntries(FIN_KINDS.map(([k, l]) => [k, l]));
+const FIN_CYCLES = [[1, "Mensal"], [3, "Trimestral"], [6, "Semestral"], [12, "Anual"]];
+const FIN_CYCLE_LABEL = Object.fromEntries(FIN_CYCLES);
+const FIN_METHODS = ["Pix", "Dinheiro", "Cartão", "Transferência"];
+const FIN_OUT = ["Aluguel", "Contas (água, luz, internet)", "Salários e repasses", "Kimonos e material", "Eventos e campeonatos", "Manutenção", "Impostos e taxas", "Outros"];
+const FIN_IN = ["Venda de kimono ou material", "Matrícula", "Evento ou seminário", "Doação ou patrocínio", "Outros"];
+const finDefault = () => ({ kind: "social", plans: [], subs: {}, charges: [], cash: [], pix: "", payee: "", dueDay: 10 });
+const brl = (c) => ((Number(c) || 0) / 100).toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+const toCents = (v) => { const s = String(v ?? "").trim().replace(/[^\d,.]/g, ""); if (!s) return NaN; const n = s.includes(",") ? Number(s.replace(/\./g, "").replace(",", ".")) : Number(s); return Number.isFinite(n) ? Math.round(n * 100) : NaN; };
+const centsIn = (c) => (c || c === 0 ? (c / 100).toFixed(2).replace(".", ",") : "");
+const ymNow = () => TODAY().slice(0, 7);
+const ymAdd = (ym, n) => { const [y, m] = ym.split("-").map(Number); const d = new Date(y, m - 1 + n, 1); return `${d.getFullYear()}-${pad(d.getMonth() + 1)}`; };
+const ymLabel = (ym) => { const [y, m] = ym.split("-").map(Number); return `${MON[m - 1]} de ${y}`; };
+const ymShort = (ym) => { const [y, m] = ym.split("-").map(Number); return `${MON[m - 1].slice(0, 3)}/${String(y).slice(2)}`; };
+const ymDiff = (a, b) => { const [ya, ma] = a.split("-").map(Number), [yb, mb] = b.split("-").map(Number); return (yb - ya) * 12 + (mb - ma); };
+const dueFor = (ym, day) => { const [y, m] = ym.split("-").map(Number); const last = new Date(y, m, 0).getDate(); return `${ym}-${pad(Math.min(Math.max(1, Number(day) || 10), last))}`; };
+const chStatus = (c) => (c.paidAt ? "pago" : c.due < TODAY() ? "atrasado" : "aberto");
+const CH_PILL = { pago: ["pos", "Pago"], atrasado: ["neg", "Em atraso"], aberto: ["blue", "Em aberto"] };
+const sumC = (list) => list.reduce((n, c) => n + (Number(c.amount) || 0), 0);
+const finPaid = () => !!(fin && fin.data && fin.data.kind && fin.data.kind !== "social");
+const finStudent = (sid) => student(sid) || { id: sid, first: "Aluno", last: "removido", nick: "", phone: "", guardian: "" };
+const finTa = (name, label, value = "", ph = "") => `<div class="f field" style="margin-bottom:16px"><label class="lbl" for="f_${name}">${label}</label><div class="notebox"><textarea id="f_${name}" name="${name}" rows="2" maxlength="120" placeholder="${esc(ph)}">${esc(value)}</textarea></div></div>`;
+
+function finKey() { const u = state.user; return u ? `${u.staffId || u.studentId || u.email}|${myPid()}` : ""; }
+function finEnsure() {
+  if (!fin) return;
+  const k = finKey();
+  if (fin.key !== k) Object.assign(fin, { key: k, data: null, version: 0, loaded: false, busy: false, err: "", mine: null, chain: Promise.resolve() });
+  if (!k || fin.loaded || fin.busy) return;
+  if (!isMestre() && isStaff()) return;
+  fin.busy = true;
+  setTimeout(() => { fin.busy = false; finLoad(); }, 0);
+}
+function finMineFrom(f, sid) {
+  if (!f || (f.kind || "social") === "social") return { kind: "social" };
+  const sub = (f.subs || {})[sid] || null, plan = sub && (f.plans || []).find((p) => p.id === sub.plan);
+  return { kind: f.kind, pix: f.pix || "", payee: f.payee || "", free: !!(sub && sub.free), plan: plan ? { name: plan.name, months: plan.months } : null,
+    charges: (f.charges || []).filter((c) => c.sid === sid).sort((a, b) => b.due.localeCompare(a.due)).slice(0, 12) };
+}
+async function finLoad() {
+  if (!state.user || fin.busy) return;
+  const k = finKey();
+  if (!CLOUD) {
+    db.fin = db.fin || {};
+    if (isMestre()) fin.data = db.fin[myPid()] = Object.assign(finDefault(), db.fin[myPid()] || {});
+    else fin.mine = finMineFrom(db.fin[myPid()], state.user.studentId);
+    fin.loaded = true; safeRender(); return;
+  }
+  fin.busy = true;
+  try {
+    if (isMestre()) {
+      const r = await rpc("fin_get");
+      if (fin.key !== k) return;
+      fin.data = Object.assign(finDefault(), (r && r.data) || {}); fin.version = (r && r.version) || 0;
+    } else {
+      const r = await rpc("fin_mine");
+      if (fin.key !== k) return;
+      fin.mine = r;
+    }
+    fin.err = "";
+  } catch (e) {
+    if (fin.key !== k) return;
+    fin.err = /fin_(get|mine)|schema cache|does not exist|Could not find/i.test(e.message || "") ? "setup" : "net";
+  }
+  fin.busy = false; fin.loaded = true; safeRender();
+}
+/* grava tudo (depois de mudar fin.data). Uma gravação por vez, sempre com a versão mais nova. */
+function finCommit(msg) {
+  if (msg) toast(msg);
+  render();
+  if (!CLOUD) { db.fin = db.fin || {}; db.fin[myPid()] = fin.data; persist(); return; }
+  const k = fin.key, snap = JSON.parse(JSON.stringify(fin.data));
+  fin.chain = fin.chain.then(async () => {
+    if (fin.key !== k) return;
+    try {
+      const v = await rpc("fin_save", { p_version: fin.version, p_data: snap });
+      if (fin.key !== k) return;
+      if (v == null) { toast("O financeiro foi alterado em outro aparelho. Recarreguei: confira e repita a última ação."); fin.loaded = false; await finLoad(); return; }
+      fin.version = v;
+    } catch (e) {
+      if (fin.key !== k) return;
+      toast(/fin_save|schema cache|Could not find/i.test(e.message || "") ? "O financeiro ainda não foi ativado no servidor." : "Não foi possível salvar o financeiro. Confira a internet e tente de novo.");
+      fin.loaded = false; await finLoad();
+    }
+  });
+}
+
+/* mensalidades do mês para quem tem plano (respeita plano trimestral, semestral e anual) */
+function finDue(ym) {
+  const f = fin.data, out = [];
+  for (const s of myStudents().filter((x) => x.active)) {
+    const sub = f.subs[s.id]; if (!sub || sub.free) continue;
+    const plan = f.plans.find((p) => p.id === sub.plan); if (!plan) continue;
+    const start = sub.start || ym, gap = ymDiff(start, ym);
+    if (gap < 0 || gap % (plan.months || 1)) continue;
+    if (f.charges.some((c) => c.sid === s.id && c.ref === ym)) continue;
+    out.push({ id: "c" + uid(), sid: s.id, ref: ym, plan: plan.id, desc: plan.name, amount: sub.price != null ? sub.price : plan.price, due: dueFor(ym, sub.due || f.dueDay) });
+  }
+  return out;
+}
+
+const finWa = (s, text) => { let d = String(s.phone || "").replace(/\D/g, ""); if (d.length < 10) return ""; if (d.length <= 11) d = "55" + d; return `https://wa.me/${d}?text=${encodeURIComponent(text)}`; };
+function finCobranca(s, list) {
+  const f = fin.data, who = f.payee || project(myPid()).name, total = sumC(list);
+  const late = list.filter((c) => chStatus(c) === "atrasado");
+  const refs = list.map((c) => ymLabel(c.ref)).join(", ");
+  const resp = s.guardian ? `, ${s.guardian.split(" ")[0]}` : "";
+  return `Olá${resp}! Aqui é ${who}. A mensalidade de ${display(s)} (${refs}), no valor de ${brl(total)}, ${late.length ? `está em aberto desde ${br(late[late.length - 1].due)}` : `vence em ${br(list[0].due)}`}.${f.pix ? ` Pix: ${f.pix}.` : ""} Qualquer dúvida, é só chamar. Oss!`;
+}
+const finRecibo = (s, c) => `Olá! Recebemos o pagamento da mensalidade de ${display(s)} (${ymLabel(c.ref)}): ${brl(c.amount)}, via ${(c.method || "Pix").toLowerCase()}, em ${br(c.paidAt)}. Obrigado! Oss!`;
+
+/* ---------- telas ---------- */
+const finMonthNav = (ym) => `<div class="daynav fin-nav"><button class="sq-btn" data-a="finMonth" data-d="-1" aria-label="Mês anterior">${icon("left", "")}</button><div><b>${ymLabel(ym)}</b>${ym === ymNow() ? `<small>Mês atual</small>` : `<button class="link small" data-a="finMonth" data-d="0">Voltar para o mês atual</button>`}</div><button class="sq-btn" data-a="finMonth" data-d="1" aria-label="Próximo mês">${icon("right", "")}</button></div>`;
+
+views.financeiro = () => {
+  finEnsure();
+  if (!isMestre()) return `<div class="panel">${empty("Só o Professor responsável", "O financeiro do projeto fica só com o Professor responsável.")}</div>`;
+  if (!fin.loaded) return `<div class="panel">${empty("Abrindo o financeiro…", "Um instante.")}</div>`;
+  if (fin.err === "setup") return `<div class="panel">${empty("O financeiro está sendo ativado", "Em breve você poderá controlar mensalidades, planos e caixa por aqui. Tente de novo mais tarde.", `<button class="btn sm" data-a="finRetry">${icon("restore")}Tentar de novo</button>`)}</div>`;
+  if (fin.err === "net" && !fin.data) return `<div class="panel">${empty("Sem conexão", "O financeiro precisa de internet para abrir.", `<button class="btn sm" data-a="finRetry">${icon("restore")}Tentar de novo</button>`)}</div>`;
+  if (!finPaid()) return `<div class="stack">
+    <div class="hello"><span class="eyebrow">${icon("money", "i", "width:18px;height:18px")}Financeiro</span><h2>Seu projeto é gratuito</h2><p>Se você cobra mensalidade, mude o tipo do projeto. Os alunos não veem nada disso até você gerar as mensalidades.</p></div>
+    ${finKindPicker()}
+  </div>`;
+  const sec = state.finSec || "resumo";
+  const tabs = [["resumo", "Resumo"], ["mensalidades", "Mensalidades"], ["planos", "Planos"], ["caixa", "Caixa"], ["ajustes", "Ajustes"]];
+  const body = { resumo: finResumo, mensalidades: finMensalidades, planos: finPlanos, caixa: finCaixa, ajustes: finAjustes }[sec] || finResumo;
+  return `<div class="stack fin">
+    <div class="chips" role="tablist" aria-label="Financeiro">${tabs.map(([k, l]) => `<button class="chip ${k === sec ? "on" : ""}" role="tab" aria-selected="${k === sec}" data-a="finSec" data-v="${k}">${l}</button>`).join("")}</div>
+    ${body()}
+  </div>`;
+};
+
+function finKindPicker() {
+  const cur = (fin.data && fin.data.kind) || "social";
+  return `<div class="fin-kinds" role="radiogroup" aria-label="Tipo do projeto">${FIN_KINDS.map(([k, l, d]) => `<button class="fin-kind ${k === cur ? "on" : ""}" role="radio" aria-checked="${k === cur}" data-a="finKind" data-v="${k}"><span class="fin-radio"></span><span class="grow"><b>${l}</b><small>${d}</small></span></button>`).join("")}</div>`;
+}
+
+function finResumo() {
+  const f = fin.data, ym = state.finMonth || ymNow(), t = TODAY();
+  const inM = (d, m = ym) => !!d && d.slice(0, 7) === m;
+  const mens = (m) => sumC(f.charges.filter((c) => c.paidAt && inM(c.paidAt, m)));
+  const ent = (m) => sumC(f.cash.filter((x) => x.type === "in" && inM(x.date, m)));
+  const sai = (m) => sumC(f.cash.filter((x) => x.type === "out" && inM(x.date, m)));
+  const recebido = mens(ym) + ent(ym), despesas = sai(ym), saldo = recebido - despesas;
+  const aReceber = sumC(f.charges.filter((c) => !c.paidAt && c.ref === ym && c.due >= t));
+  const late = f.charges.filter((c) => !c.paidAt && c.due < t);
+  const bySid = {};
+  late.forEach((c) => { (bySid[c.sid] = bySid[c.sid] || []).push(c); });
+  const debtors = Object.entries(bySid).map(([sid, list]) => ({ s: finStudent(sid), list: list.sort((a, b) => a.due.localeCompare(b.due)), total: sumC(list) })).sort((a, b) => b.total - a.total);
+  const ativos = myStudents().filter((s) => s.active);
+  const semPlano = ativos.filter((s) => !f.subs[s.id]).length;
+  const pend = finDue(ym).length;
+  const hist = [5, 4, 3, 2, 1, 0].map((i) => { const m = ymAdd(ym, -i); return [m, mens(m) + ent(m), sai(m)]; });
+  return `
+    ${finMonthNav(ym)}
+    ${!f.plans.length ? `<div class="fin-alert">${icon("money", "i")}<span class="grow"><b>Comece pelos planos</b>Crie os planos (ex.: Mensal adulto, Infantil) e escolha o plano de cada aluno.</span><button class="btn sm" data-a="finSec" data-v="planos">Criar planos</button></div>`
+      : pend ? `<div class="fin-alert">${icon("cal", "i")}<span class="grow"><b>${pend} ${pend === 1 ? "mensalidade" : "mensalidades"} de ${MON[Number(ym.slice(5)) - 1]} para gerar</b>Gere as cobranças do mês para acompanhar quem pagou.</span><button class="btn sm" data-a="finGen">Gerar agora</button></div>` : ""}
+    <div class="kpis">
+      <div class="kpi"><span>Recebido no mês</span><b class="pos">${brl(recebido)}</b></div>
+      <div class="kpi"><span>A receber no mês</span><b>${brl(aReceber)}</b></div>
+      <div class="kpi"><span>Em atraso (total)</span><b class="${late.length ? "neg" : ""}">${brl(sumC(late))}</b></div>
+      <div class="kpi"><span>Despesas do mês</span><b>${brl(despesas)}</b></div>
+    </div>
+    <div class="panel fin-saldo"><span>Saldo de ${MON[Number(ym.slice(5)) - 1]}</span><b class="${saldo < 0 ? "neg" : "pos"}">${brl(saldo)}</b><small>Recebido menos despesas do mês</small></div>
+    ${group("Em atraso", `<span class="muted small">${debtors.length} ${debtors.length === 1 ? "aluno" : "alunos"}</span>`, debtors.length ? `<div class="list">${debtors.map(({ s, list, total }) => {
+      const wa = finWa(s, finCobranca(s, list));
+      return `<div class="fin-row">${avat(fullName(s), s.photo)}<button class="grow fin-hit" data-a="finSec" data-v="mensalidades"><b>${esc(fullName(s))}</b><small>${list.map((c) => ymShort(c.ref)).join(", ")} · desde ${br(list[0].due)}</small></button><b class="neg fin-amt">${brl(total)}</b>${wa ? `<a class="btn sm outline" href="${wa}" target="_blank" rel="noopener">${icon("chat")}Cobrar</a>` : ""}</div>`;
+    }).join("")}</div>` : empty("Ninguém em atraso", "Todas as mensalidades vencidas foram pagas."), "padding:4px 16px")}
+    ${semPlano ? `<button class="panel fin-link" data-a="finSec" data-v="planos"><span class="grow"><b>${semPlano} ${semPlano === 1 ? "aluno ativo está" : "alunos ativos estão"} sem plano</b><small>Sem plano, o aluno não recebe mensalidade. Toque para definir.</small></span>${chev()}</button>` : ""}
+    ${group("Últimos 6 meses", "", `<div class="fin-hist" role="table" aria-label="Recebido e despesas por mês">
+      <div class="fh-h" role="row"><span role="columnheader">Mês</span><span role="columnheader">Recebido</span><span role="columnheader">Despesas</span><span role="columnheader">Saldo</span></div>
+      ${hist.map(([m, r, d]) => `<div role="row" class="${m === ym ? "on" : ""}"><span role="cell">${ymShort(m)}</span><span role="cell" class="pos">${brl(r)}</span><span role="cell">${brl(d)}</span><span role="cell" class="${r - d < 0 ? "neg" : ""}">${brl(r - d)}</span></div>`).join("")}
+    </div>`)}`;
+}
+
+function finMensalidades() {
+  const f = fin.data, ym = state.finMonth || ymNow(), flt = state.finFilter || "todos";
+  const list = f.charges.filter((c) => c.ref === ym).map((c) => [c, chStatus(c)]);
+  const lateOld = f.charges.filter((c) => c.ref < ym && chStatus(c) === "atrasado");
+  const count = (st) => list.filter(([, x]) => x === st).length;
+  const shown = list.filter(([, x]) => flt === "todos" || x === flt).sort((a, b) => fullName(finStudent(a[0].sid)).localeCompare(fullName(finStudent(b[0].sid))));
+  const pend = finDue(ym).length;
+  const filters = [["todos", `Todas (${list.length})`], ["aberto", `Em aberto (${count("aberto")})`], ["atrasado", `Em atraso (${count("atrasado")})`], ["pago", `Pagas (${count("pago")})`]];
+  return `
+    ${finMonthNav(ym)}
+    <div class="fin-sum"><span><small>Previsto</small><b>${brl(sumC(list.map(([c]) => c)))}</b></span><span><small>Recebido</small><b class="pos">${brl(sumC(list.filter(([, x]) => x === "pago").map(([c]) => c)))}</b></span><span><small>Falta</small><b>${brl(sumC(list.filter(([, x]) => x !== "pago").map(([c]) => c)))}</b></span></div>
+    ${pend ? `<button class="btn" data-a="finGen">${icon("plus")}Gerar ${pend} ${pend === 1 ? "mensalidade" : "mensalidades"} de ${MON[Number(ym.slice(5)) - 1]}</button>` : ""}
+    <div class="chips" role="tablist" aria-label="Filtro">${filters.map(([k, l]) => `<button class="chip ${k === flt ? "on" : ""}" role="tab" aria-selected="${k === flt}" data-a="finFilter" data-v="${k}">${l}</button>`).join("")}</div>
+    ${group(`Mensalidades de ${MON[Number(ym.slice(5)) - 1]}`, "", shown.length ? `<div class="list">${shown.map(([c, st]) => finChargeRow(c, st)).join("")}</div>`
+      : empty(list.length ? "Nada neste filtro" : "Nenhuma mensalidade neste mês", list.length ? "Escolha outro filtro." : f.plans.length ? "Defina o plano dos alunos e toque em Gerar." : "Crie os planos primeiro, na aba Planos."), "padding:4px 16px")}
+    ${lateOld.length ? group("De meses anteriores, em atraso", "", `<div class="list">${lateOld.sort((a, b) => a.due.localeCompare(b.due)).map((c) => finChargeRow(c, "atrasado", true)).join("")}</div>`, "padding:4px 16px") : ""}`;
+}
+function finChargeRow(c, st, showRef) {
+  const s = finStudent(c.sid), [cls, lbl] = CH_PILL[st];
+  const wa = st !== "pago" ? finWa(s, finCobranca(s, [c])) : finWa(s, finRecibo(s, c));
+  return `<div class="fin-row">
+    ${avat(fullName(s), s.photo)}
+    <button class="grow fin-hit" data-a="finCharge" data-id="${c.id}"><b>${esc(fullName(s))}</b><small>${showRef ? ymShort(c.ref) + " · " : ""}${esc(c.desc || "Mensalidade")} · ${st === "pago" ? `pago em ${brShort(c.paidAt)}` : `vence ${brShort(c.due)}`}</small></button>
+    <span class="fin-amt"><b>${brl(c.amount)}</b><span class="pill ${cls}">${lbl}</span></span>
+    <span class="fin-acts">${st !== "pago" ? `<button class="btn sm" data-a="finReceive" data-id="${c.id}">${icon("check")}Receber</button>` : ""}${wa ? `<a class="btn sm outline" href="${wa}" target="_blank" rel="noopener" aria-label="${st === "pago" ? "Enviar recibo" : "Cobrar"} pelo WhatsApp">${icon("chat")}${st === "pago" ? "Recibo" : "Cobrar"}</a>` : ""}</span>
+  </div>`;
+}
+
+function finPlanos() {
+  const f = fin.data;
+  const ativos = myStudents().filter((s) => s.active).sort((a, b) => fullName(a).localeCompare(fullName(b)));
+  const users = (pid) => ativos.filter((s) => (f.subs[s.id] || {}).plan === pid).length;
+  return `
+    ${group("Planos", `<button class="btn sm" data-a="finPlan">${icon("plus")}Novo plano</button>`, f.plans.length ? `<div class="list">${f.plans.map((p) => `<button class="row" data-a="finPlan" data-id="${p.id}"><span class="bdg">${icon("money")}</span><span class="grow">${esc(p.name)}<small>${FIN_CYCLE_LABEL[p.months] || "Mensal"} · ${users(p.id)} ${users(p.id) === 1 ? "aluno" : "alunos"}</small></span><b>${brl(p.price)}</b>${chev()}</button>`).join("")}</div>`
+      : empty("Nenhum plano ainda", "Ex.: Mensal adulto R$ 120, Infantil R$ 90, Família R$ 200.", `<button class="btn sm" data-a="finPlan">${icon("plus")}Criar o primeiro plano</button>`), "padding:0 16px")}
+    ${group("Plano de cada aluno", `<span class="muted small">${ativos.filter((s) => f.subs[s.id]).length}/${ativos.length} com plano</span>`, ativos.length ? `<div class="list">${ativos.map((s) => {
+      const sub = f.subs[s.id], p = sub && f.plans.find((x) => x.id === sub.plan);
+      const info = !sub ? `<span class="pill neg">Sem plano</span>` : sub.free ? `<span class="pill blue">Bolsista</span>` : `<b>${brl(sub.price != null ? sub.price : p ? p.price : 0)}</b>`;
+      return `<button class="row" data-a="finAluno" data-id="${s.id}">${avat(fullName(s), s.photo)}<span class="grow">${esc(fullName(s))}<small>${!sub ? "Toque para escolher o plano" : sub.free ? "Sem mensalidade" : `${esc(p ? p.name : "Plano removido")} · vence dia ${sub.due || f.dueDay}`}</small></span>${info}${chev()}</button>`;
+    }).join("")}</div>` : empty("Nenhum aluno ativo", "Quando os alunos entrarem no projeto, eles aparecem aqui."), "padding:0 16px")}`;
+}
+
+function finCaixa() {
+  const f = fin.data, ym = state.finMonth || ymNow();
+  const inM = (d) => !!d && d.slice(0, 7) === ym;
+  const mens = f.charges.filter((c) => c.paidAt && inM(c.paidAt)).map((c) => ({ id: c.id, mens: true, type: "in", date: c.paidAt, amount: c.amount, desc: `Mensalidade · ${display(finStudent(c.sid))}`, cat: c.method || "Pix" }));
+  const rows = [...f.cash.filter((x) => inM(x.date)), ...mens].sort((a, b) => b.date.localeCompare(a.date));
+  const tin = sumC(rows.filter((x) => x.type === "in")), tout = sumC(rows.filter((x) => x.type === "out"));
+  return `
+    ${finMonthNav(ym)}
+    <div class="fin-sum"><span><small>Entradas</small><b class="pos">${brl(tin)}</b></span><span><small>Saídas</small><b class="neg">${brl(tout)}</b></span><span><small>Saldo</small><b class="${tin - tout < 0 ? "neg" : ""}">${brl(tin - tout)}</b></span></div>
+    <div class="row2"><button class="btn outline" style="margin:0" data-a="finCash" data-t="in">${icon("plus")}Entrada</button><button class="btn outline" style="margin:0" data-a="finCash" data-t="out">${icon("minus")}Despesa</button></div>
+    ${group(`Movimento de ${MON[Number(ym.slice(5)) - 1]}`, "", rows.length ? `<div class="list">${rows.map((x) => `<button class="row" ${x.mens ? `data-a="finCharge"` : `data-a="finCash" data-t="${x.type}"`} data-id="${x.id}"><span class="fin-dir ${x.type}">${icon(x.type === "in" ? "plus" : "minus", "")}</span><span class="grow">${esc(x.desc)}<small>${brShort(x.date)} · ${esc(x.cat || "")}</small></span><b class="${x.type === "in" ? "pos" : "neg"}">${x.type === "in" ? "+" : "−"} ${brl(x.amount)}</b></button>`).join("")}</div>`
+      : empty("Nada no caixa neste mês", "Mensalidades recebidas entram sozinhas. Lance aqui as outras entradas e as despesas."), "padding:0 16px")}`;
+}
+
+function finAjustes() {
+  const f = fin.data;
+  return `
+    ${group("Tipo do projeto", "", finKindPicker(), "padding:12px")}
+    ${group("Recebimento", `<button class="btn sm" data-a="finCfg">${icon("edit")}Editar</button>`, `
+      <div class="row static"><span class="grow">Chave Pix<small>${f.pix ? esc(f.pix) : "Não informada"}</small></span></div>
+      <div class="row static"><span class="grow">Nome que aparece nas cobranças<small>${esc(f.payee || project(myPid()).name)}</small></span></div>
+      <div class="row static" style="border-bottom:0"><span class="grow">Vencimento padrão<small>Todo dia ${f.dueDay || 10}</small></span></div>`, "padding:0 16px")}
+    <p class="muted small" style="margin:-8px 4px 0;line-height:1.5">Só você, Professor responsável, vê o financeiro. Instrutores e monitores não têm acesso. Cada aluno vê apenas as próprias mensalidades e a chave Pix.</p>`;
+}
+
+/* cartão no Início do Professor e do aluno */
+function finHomeCard() {
+  finEnsure();
+  if (!isMestre() || !finPaid()) return "";
+  const f = fin.data, ym = ymNow(), t = TODAY();
+  const rec = sumC(f.charges.filter((c) => c.paidAt && c.paidAt.slice(0, 7) === ym));
+  const late = f.charges.filter((c) => !c.paidAt && c.due < t);
+  const nLate = new Set(late.map((c) => c.sid)).size;
+  return `<button class="panel fin-link" data-a="nav" data-view="financeiro"><span class="bdg">${icon("money")}</span><span class="grow"><b>Financeiro · ${MON[Number(ym.slice(5)) - 1]}</b><small>${brl(rec)} recebidos${nLate ? ` · <span class="neg">${nLate} ${nLate === 1 ? "aluno" : "alunos"} em atraso</span>` : " · ninguém em atraso"}</small></span>${chev()}</button>`;
+}
+function finAlunoCard() {
+  finEnsure();
+  const m = fin.mine;
+  if (!m || m.kind === "social" || (!m.plan && !(m.charges || []).length)) return "";
+  const ch = m.charges || [], open = ch.filter((c) => !c.paidAt).sort((a, b) => a.due.localeCompare(b.due));
+  const last = ch.filter((c) => c.paidAt).slice(0, 3);
+  const next = open[0];
+  return group("Mensalidade", m.plan ? `<span class="muted small">${esc(m.plan.name)}</span>` : "", `
+    ${m.free ? `<p style="margin:6px 0 10px"><span class="pill blue">Bolsista</span> Você não paga mensalidade.</p>` : next ? `<div class="fin-next ${chStatus(next)}"><span class="grow"><small>${chStatus(next) === "atrasado" ? "Em atraso desde" : "Vence em"} ${br(next.due)}${open.length > 1 ? ` · ${open.length} em aberto` : ""}</small><b>${brl(sumC(open))}</b></span><span class="pill ${CH_PILL[chStatus(next)][0]}">${CH_PILL[chStatus(next)][1]}</span></div>` : `<p style="margin:6px 0 10px"><span class="pill pos">Em dia</span> Nenhuma mensalidade em aberto.</p>`}
+    ${!m.free && m.pix ? `<div class="fin-pix"><span class="grow"><small>Pix${m.payee ? ` · ${esc(m.payee)}` : ""}</small><b class="fin-pixkey">${esc(m.pix)}</b></span><button class="btn sm outline" data-a="copyPix" data-v="${esc(m.pix)}">${icon("copy")}Copiar</button></div>` : ""}
+    ${last.length ? `<div class="list" style="margin-top:6px">${last.map((c) => `<div class="row static"><span class="grow">${ymLabel(c.ref)}<small>Pago em ${br(c.paidAt)}</small></span><b>${brl(c.amount)}</b></div>`).join("")}</div>` : ""}`, "padding:8px 16px");
+}
+function finMaisRow() {
+  if (!isMestre()) return "";
+  finEnsure();
+  const k = (fin.data && fin.data.kind) || "social";
+  return group("Projeto e financeiro", "", `<button class="row" data-a="nav" data-view="financeiro"><span class="grow">${esc(FIN_KIND_LABEL[k])}<small>${k === "social" ? "Toque para ativar mensalidades, planos e caixa" : "Mensalidades, planos, caixa e ajustes"}</small></span>${chev()}</button>`, "padding:0 16px");
+}
+
+/* ---------- janelas (sheets) ---------- */
+Object.assign(sheets, {
+  finPlan: () => {
+    const p = state.sheet.id ? fin.data.plans.find((x) => x.id === state.sheet.id) : null;
+    return `<form id="sheetForm" data-kind="finPlan">
+      ${sheetHead(p ? "Editar plano" : "Novo plano")}
+      ${fi("name", "Nome do plano", p ? p.name : "", "text", true, 'maxlength="40" placeholder="Ex.: Mensal adulto"')}
+      <div class="row2">${fi("price", "Valor (R$)", p ? centsIn(p.price) : "", "text", true, 'inputmode="decimal" placeholder="120,00"')}${fs("months", "Cobrança", FIN_CYCLES.map(([n, l]) => opt(n, l, p ? p.months : 1)).join(""))}</div>
+      <p class="muted small" style="margin:-4px 0 14px">No plano trimestral, semestral ou anual, a mensalidade é gerada uma vez a cada período, com o valor do período.</p>
+      <button class="btn" type="submit">${p ? "Salvar plano" : "Criar plano"}</button>
+      ${p ? `<button class="btn outline" type="button" data-a="finDelPlan" data-id="${p.id}" style="color:var(--abs)">Excluir plano</button>` : ""}
+    </form>`;
+  },
+  finAluno: () => {
+    const f = fin.data, s = finStudent(state.sheet.sid), sub = f.subs[s.id] || {};
+    return `<form id="sheetForm" data-kind="finAluno">
+      ${sheetHead("Plano do aluno")}
+      <p class="modal-p" style="margin:-6px 0 16px">${esc(fullName(s))}</p>
+      ${fs("plan", "Plano", opt("", "Sem plano", sub.plan || "") + f.plans.map((p) => opt(p.id, `${p.name} · ${brl(p.price)}`, sub.plan || "")).join(""))}
+      <div class="row2">${fi("price", "Valor diferente (opcional)", sub.price != null ? centsIn(sub.price) : "", "text", false, 'inputmode="decimal" placeholder="Ex.: desconto"')}${fs("due", "Dia do vencimento", Array.from({ length: 28 }, (_, i) => opt(i + 1, `Dia ${i + 1}`, sub.due || f.dueDay || 10)).join(""))}</div>
+      <label class="fin-check"><input type="checkbox" name="free" ${sub.free ? "checked" : ""}> <span><b>Bolsista</b><small>Não gera mensalidade para este aluno.</small></span></label>
+      <button class="btn" type="submit" style="margin-top:16px">Salvar</button>
+    </form>`;
+  },
+  finReceive: () => {
+    const c = fin.data.charges.find((x) => x.id === state.sheet.id); if (!c) return sheetHead("Mensalidade não encontrada");
+    const s = finStudent(c.sid);
+    return `<form id="sheetForm" data-kind="finReceive">
+      ${sheetHead("Receber mensalidade")}
+      <p class="modal-p" style="margin:-6px 0 16px">${esc(fullName(s))} · ${ymLabel(c.ref)}</p>
+      <div class="row2">${fi("amount", "Valor recebido (R$)", centsIn(c.amount), "text", true, 'inputmode="decimal"')}${fi("paidAt", "Data", TODAY(), "date", true)}</div>
+      ${fs("method", "Forma de pagamento", FIN_METHODS.map((m) => opt(m, m, "Pix")).join(""))}
+      <button class="btn" type="submit">${icon("check")}Confirmar recebimento</button>
+    </form>`;
+  },
+  finCharge: () => {
+    const c = fin.data.charges.find((x) => x.id === state.sheet.id); if (!c) return sheetHead("Mensalidade não encontrada");
+    const s = finStudent(c.sid), st = chStatus(c);
+    return `<form id="sheetForm" data-kind="finCharge">
+      ${sheetHead("Mensalidade")}
+      <p class="modal-p" style="margin:-6px 0 12px">${esc(fullName(s))} · ${ymLabel(c.ref)} <span class="pill ${CH_PILL[st][0]}">${CH_PILL[st][1]}</span></p>
+      ${c.paidAt ? `<p class="muted" style="margin:0 0 16px">Pago em ${br(c.paidAt)} via ${esc(c.method || "Pix")}.</p>` : ""}
+      <div class="row2">${fi("amount", "Valor (R$)", centsIn(c.amount), "text", true, 'inputmode="decimal"')}${fi("due", "Vencimento", c.due, "date", true)}</div>
+      <button class="btn" type="submit">Salvar alterações</button>
+      ${c.paidAt ? `<button class="btn outline" type="button" data-a="finUndo" data-id="${c.id}">Desfazer recebimento</button>` : `<button class="btn outline" type="button" data-a="finReceive" data-id="${c.id}">${icon("check")}Receber</button>`}
+      <button class="btn outline" type="button" data-a="finDelCharge" data-id="${c.id}" style="color:var(--abs)">Excluir mensalidade</button>
+    </form>`;
+  },
+  finCash: () => {
+    const sh = state.sheet, x = sh.id ? fin.data.cash.find((y) => y.id === sh.id) : null, type = x ? x.type : sh.type || "out";
+    const cats = type === "in" ? FIN_IN : FIN_OUT;
+    return `<form id="sheetForm" data-kind="finCash">
+      ${sheetHead(x ? (type === "in" ? "Editar entrada" : "Editar despesa") : type === "in" ? "Nova entrada" : "Nova despesa")}
+      ${fi("desc", "Descrição", x ? x.desc : "", "text", true, `maxlength="60" placeholder="${type === "in" ? "Ex.: Venda de 2 kimonos" : "Ex.: Aluguel do espaço"}"`)}
+      <div class="row2">${fi("amount", "Valor (R$)", x ? centsIn(x.amount) : "", "text", true, 'inputmode="decimal" placeholder="0,00"')}${fi("date", "Data", x ? x.date : TODAY(), "date", true)}</div>
+      <div class="row2">${fs("cat", "Categoria", cats.map((c) => opt(c, c, x ? x.cat : cats[0])).join(""))}${fs("method", "Forma", FIN_METHODS.map((m) => opt(m, m, x ? x.method : "Pix")).join(""))}</div>
+      <button class="btn" type="submit">${x ? "Salvar" : type === "in" ? "Lançar entrada" : "Lançar despesa"}</button>
+      ${x ? `<button class="btn outline" type="button" data-a="finDelCash" data-id="${x.id}" style="color:var(--abs)">Excluir lançamento</button>` : ""}
+    </form>`;
+  },
+  finCfg: () => {
+    const f = fin.data;
+    return `<form id="sheetForm" data-kind="finCfg">
+      ${sheetHead("Recebimento")}
+      ${fi("pix", "Chave Pix", f.pix, "text", false, 'maxlength="80" placeholder="CPF, CNPJ, e-mail, telefone ou chave aleatória"')}
+      ${fi("payee", "Nome nas cobranças", f.payee, "text", false, `maxlength="60" placeholder="${esc(project(myPid()).name)}"`)}
+      ${fs("dueDay", "Vencimento padrão", Array.from({ length: 28 }, (_, i) => opt(i + 1, `Todo dia ${i + 1}`, f.dueDay || 10)).join(""))}
+      <p class="muted small" style="margin:-4px 0 14px">A chave Pix aparece para o aluno no Início e vai junto na mensagem de cobrança do WhatsApp.</p>
+      <button class="btn" type="submit">Salvar</button>
+    </form>`;
+  }
+});
+
+function finSubmit(kind, fd) {
+  const f = fin.data, sh = state.sheet;
+  if (!f || !sh) return;
+  if (kind === "finPlan") {
+    const name = (fd.name || "").trim(), price = toCents(fd.price), months = Number(fd.months) || 1;
+    if (name.length < 2) return toast("Digite o nome do plano.");
+    if (!(price > 0)) return toast("Digite o valor do plano. Ex.: 120,00");
+    if (f.plans.some((p) => p.id !== sh.id && p.name.toLowerCase() === name.toLowerCase())) return toast("Já existe um plano com esse nome.");
+    const p = sh.id && f.plans.find((x) => x.id === sh.id);
+    if (p) Object.assign(p, { name, price, months }); else f.plans.push({ id: "pl" + uid(), name, price, months });
+    state.sheet = null; return finCommit(p ? "Plano atualizado." : "Plano criado. Agora escolha o plano de cada aluno.");
+  }
+  if (kind === "finAluno") {
+    const sid = sh.sid, plan = fd.plan || "", free = fd.free === "on";
+    if (!plan && !free) { delete f.subs[sid]; state.sheet = null; return finCommit("Aluno sem plano."); }
+    const price = String(fd.price || "").trim() ? toCents(fd.price) : null;
+    if (price !== null && !(price >= 0)) return toast("Valor inválido. Ex.: 100,00");
+    const old = f.subs[sid] || {};
+    f.subs[sid] = { plan, price, due: Number(fd.due) || f.dueDay || 10, free, start: old.plan === plan && old.start ? old.start : state.finMonth || ymNow() };
+    state.sheet = null; return finCommit("Plano do aluno salvo.");
+  }
+  if (kind === "finReceive") {
+    const c = f.charges.find((x) => x.id === sh.id), amount = toCents(fd.amount);
+    if (!c) return;
+    if (!(amount > 0)) return toast("Digite o valor recebido.");
+    Object.assign(c, { amount, paidAt: fd.paidAt || TODAY(), method: fd.method || "Pix" });
+    state.sheet = null; return finCommit(`Recebido: ${brl(amount)} de ${display(finStudent(c.sid))}.`);
+  }
+  if (kind === "finCharge") {
+    const c = f.charges.find((x) => x.id === sh.id), amount = toCents(fd.amount);
+    if (!c) return;
+    if (!(amount > 0)) return toast("Digite o valor.");
+    if (!fd.due) return toast("Escolha o vencimento.");
+    Object.assign(c, { amount, due: fd.due });
+    state.sheet = null; return finCommit("Mensalidade atualizada.");
+  }
+  if (kind === "finCash") {
+    const desc = (fd.desc || "").trim(), amount = toCents(fd.amount), x = sh.id && f.cash.find((y) => y.id === sh.id);
+    if (desc.length < 2) return toast("Digite a descrição.");
+    if (!(amount > 0)) return toast("Digite o valor.");
+    const rec = { desc, amount, date: fd.date || TODAY(), cat: fd.cat || "Outros", method: fd.method || "Pix" };
+    if (x) Object.assign(x, rec); else f.cash.push({ id: "k" + uid(), type: sh.type === "in" ? "in" : "out", ...rec });
+    state.sheet = null; return finCommit(x ? "Lançamento atualizado." : sh.type === "in" ? "Entrada lançada." : "Despesa lançada.");
+  }
+  if (kind === "finCfg") {
+    Object.assign(f, { pix: (fd.pix || "").trim(), payee: (fd.payee || "").trim(), dueDay: Number(fd.dueDay) || 10 });
+    state.sheet = null; return finCommit("Recebimento salvo.");
+  }
+}
+
+function finClick(a, id, v, el) {
+  if (a === "mKind") { state.mKind = v; render(); return; }
+  if (a === "copyPix") {
+    const done = () => toast("Chave Pix copiada.");
+    try { navigator.clipboard.writeText(v).then(done, () => toast(`Chave Pix: ${v}`)); } catch (e) { toast(`Chave Pix: ${v}`); }
+    return;
+  }
+  if (a === "finRetry") { fin.loaded = false; fin.err = ""; finEnsure(); render(); return; }
+  if (!isMestre() || !fin.data) return;
+  const f = fin.data;
+  switch (a) {
+    case "finSec": state.finSec = v; if (state.view !== "financeiro") go("financeiro"); else { render(); window.scrollTo(0, 0); } break;
+    case "finMonth": state.finMonth = el.dataset.d === "0" ? ymNow() : ymAdd(state.finMonth || ymNow(), Number(el.dataset.d)); render(); break;
+    case "finFilter": state.finFilter = v; render(); break;
+    case "finKind": {
+      if (f.kind === v) break;
+      f.kind = v;
+      finCommit(v === "social" ? "Projeto marcado como gratuito. O financeiro fica guardado, mas escondido." : `Tipo salvo: ${FIN_KIND_LABEL[v]}. O Financeiro está no menu.`);
+      break;
+    }
+    case "finGen": {
+      const ym = state.finMonth || ymNow(), add = finDue(ym);
+      if (!add.length) { toast("Nenhuma mensalidade nova para gerar neste mês."); break; }
+      f.charges.push(...add);
+      state.finSec = "mensalidades";
+      finCommit(`${add.length} ${add.length === 1 ? "mensalidade gerada" : "mensalidades geradas"} para ${MON[Number(ym.slice(5)) - 1]}.`);
+      break;
+    }
+    case "finPlan": openSheet({ kind: "finPlan", id: id || "" }); break;
+    case "finAluno": openSheet({ kind: "finAluno", sid: id }); break;
+    case "finCharge": openSheet({ kind: "finCharge", id }); break;
+    case "finReceive": openSheet({ kind: "finReceive", id }); break;
+    case "finCash": openSheet({ kind: "finCash", type: el.dataset.t || "out", id: id || "" }); break;
+    case "finCfg": openSheet({ kind: "finCfg" }); break;
+    case "finUndo": { const c = f.charges.find((x) => x.id === id); if (!c) break; c.paidAt = null; c.method = null; state.sheet = null; finCommit("Recebimento desfeito."); break; }
+    case "finDelCharge": {
+      if (state.sheet && state.sheet.confirm !== id) { state.sheet.confirm = id; toast("Toque de novo em Excluir para confirmar."); break; }
+      f.charges = f.charges.filter((x) => x.id !== id); state.sheet = null; finCommit("Mensalidade excluída."); break;
+    }
+    case "finDelPlan": {
+      const used = Object.values(f.subs).filter((s) => s.plan === id).length;
+      if (used) { toast(`${used} ${used === 1 ? "aluno usa" : "alunos usam"} este plano. Troque o plano deles antes de excluir.`); break; }
+      f.plans = f.plans.filter((p) => p.id !== id); state.sheet = null; finCommit("Plano excluído."); break;
+    }
+    case "finDelCash": {
+      if (state.sheet && state.sheet.confirm !== id) { state.sheet.confirm = id; toast("Toque de novo em Excluir para confirmar."); break; }
+      f.cash = f.cash.filter((x) => x.id !== id); state.sheet = null; finCommit("Lançamento excluído."); break;
+    }
+  }
+}
+
+/* escolha do tipo no cadastro do Professor */
+const mKindPicker = () => `<h2>Tipo</h2><div class="fin-kinds" role="radiogroup" aria-label="Tipo do projeto" style="margin-bottom:22px">${FIN_KINDS.map(([k, l, d]) => `<button type="button" class="fin-kind ${k === (state.mKind || "social") ? "on" : ""}" role="radio" aria-checked="${k === (state.mKind || "social")}" data-a="mKind" data-v="${k}"><span class="fin-radio"></span><span class="grow"><b>${l}</b><small>${d}</small></span></button>`).join("")}</div>`;
+async function finInitKind() {
+  const k = state.mKind || "social";
+  if (k === "social") return;
+  if (!CLOUD) { db.fin = db.fin || {}; db.fin[myPid()] = Object.assign(finDefault(), { kind: k }); persist(); return; }
+  try { await rpc("fin_save", { p_version: 0, p_data: Object.assign(finDefault(), { kind: k }) }); } catch (e) { /* servidor sem o 07_financeiro.sql: o Professor ativa depois em Mais */ }
+}
+
 function go(view) { state.view = view; state.sheet = null; render(); window.scrollTo(0, 0); document.documentElement.classList.remove("tabs-off"); }
 
 /* Barra inferior flutuante: esconde ao rolar para baixo, mostra ao rolar para cima (como no iPhone) */
@@ -3406,6 +3938,7 @@ document.addEventListener("click", (e) => {
   if (!el) return;
   if (el.dataset.toast) { toast(el.dataset.toast); return; }
   const a = el.dataset.a, id = el.dataset.id, v = el.dataset.v;
+  if (a && (a.startsWith("fin") || a === "mKind" || a === "copyPix")) { finClick(a, id, v, el); return; }
   /* cada projeto só mexe nos próprios alunos, aulas e equipe */
   if (state.user && isStaff() && id) {
     const sOther = ["fo", "openStudent", "editStudent", "archiveStudent", "grad", "aceitar", "recusar"].includes(a) && student(id) && student(id).pid !== myPid();
@@ -3723,6 +4256,7 @@ document.addEventListener("submit", (e) => {
           await rpc("create_project", { p_name: name, p_city: state.mCity.trim(), p_color: PROJ_COLORS.find((c) => !used.has(c)) || PROJ_COLORS[0],
             p_person: { name: state.mName.trim().replace(/\s+/g, " "), belt: state.mBelt || "preta", degrees: Number(state.mDeg) || 0, phone: state.phone || "" } });
         } catch (e) { return toast(e.message || "Não foi possível cadastrar o projeto."); }
+        await finInitKind();
         if (await afterAuth()) toast(`“${name}” cadastrado! Os alunos já podem pedir para entrar.`);
       })();
       return;
@@ -3736,6 +4270,7 @@ document.addEventListener("submit", (e) => {
     db.projects.push({ id: pid, name, city: state.mCity.trim(), color: PROJ_COLORS.find((c) => !used.has(c)) || PROJ_COLORS[db.projects.length % PROJ_COLORS.length] });
     db.staff.push({ id: "t" + uid(), pid, name: state.mName.trim().replace(/\s+/g, " "), role: "mestre", belt: state.mBelt || "preta", degrees: Math.min((state.mBelt || "preta") === "preta" ? 10 : 4, Number(state.mDeg) || 0), email, phone: state.phone || "" });
     login(email);
+    finInitKind();
     toast(`“${name}” cadastrado! Os alunos já podem pedir para entrar.`);
     return;
   }
@@ -3744,6 +4279,7 @@ document.addEventListener("submit", (e) => {
   if (id !== "sheetForm") return;
   const kind = form.dataset.kind;
   const fd = Object.fromEntries(new FormData(form));
+  if (kind && kind.startsWith("fin")) { finSubmit(kind, fd); return; }
 
   if (kind === "novaSenha") {
     if (!passOk()) return;
